@@ -1,0 +1,25 @@
+.filter-bar {
+  display: flex;
+  width: 100%;
+  margin: 20px 10px;
+}
+
+.filter-bar form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-bar form div {
+  margin-right: 10px;
+}
+
+.filter-bar form input {
+  background-color: #fff !important;
+}
+
+.filter-icon {
+  font-size: 20px;
+  margin-top: 5px;
+  margin-left: 10px;
+}

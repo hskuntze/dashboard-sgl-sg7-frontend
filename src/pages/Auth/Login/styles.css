@@ -1,0 +1,90 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 1px 0px 10px 4px #ccc;
+  width: 300px;
+}
+
+.login-form-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.login-form-logo {
+  display: none;
+}
+
+.login-input {
+  width: 300px;
+}
+
+@media (min-width: 576px) {
+  .login-form {
+    width: 80%;
+  }
+}
+
+@media (min-width: 992px) {
+  .login-container {
+    height: 100vh;
+  }
+
+  .login-form {
+    width: 900px;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+  }
+
+  .login-logos {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .login-logos img {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .logotipo-sisfron {
+    width: 240px;
+    height: 62px;
+  }
+
+  .logotipo-ctcea {
+    width: 230px;
+    height: 53px;
+  }
+
+  .login-form-content {
+    min-height: 400px;
+  }
+
+  .login-form-logo {
+    display: unset;
+  }
+
+  .login-form-logo img {
+    width: auto;
+    height: 187px;
+    margin-right: 60px;
+    margin-bottom: 40px;
+  }
+}
