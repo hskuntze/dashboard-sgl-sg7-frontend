@@ -9,25 +9,9 @@ import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 
 import "./styles.css";
 
-const QtdMaterialRm = () => {
+const QtdMaterialRmExtraSmall = () => {
   const [data, setData] = useState<QtdMaterialRmType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [size, setSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    const updateSize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    updateSize(); // Atualiza no início
-    window.addEventListener("resize", updateSize); // Atualiza ao redimensionar
-
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -78,16 +62,6 @@ const QtdMaterialRm = () => {
       width: 500,
       height: 500,
     },
-    title: {
-      text: "Materiais Classe VII - RM",
-      align: "center",
-      style: {
-        fontSize: "24px",
-        fontWeight: "bold",
-        color: "#141824",
-        fontFamily: "Nunito, serif",
-      },
-    },
     labels: labels,
     tooltip: {
       enabled: true,
@@ -110,8 +84,8 @@ const QtdMaterialRm = () => {
       },
       formatter: function (val: number, opts) {
         const rmLabel = opts.w.config.labels[opts.seriesIndex]; // Obtém o nome da RM
-        const value = opts.w.config.series[opts.seriesIndex].toLocaleString(); // Obtém o valor formatado
-        return `${value}\t${rmLabel}`; // Exibe "xª RM" e o valor na fatia da pizza
+        const value = val; // Obtém o valor formatado
+        return [`${value.toFixed(2)}%`, rmLabel]; // Exibe "xª RM" e o valor na fatia da pizza
       },
     },
     legend: {
@@ -122,6 +96,7 @@ const QtdMaterialRm = () => {
       formatter: (val) => `${val}`,
       width: 400,
       offsetX: 80,
+      show: false,
     },
     colors: [
       "#A7C0F2",
@@ -154,8 +129,8 @@ const QtdMaterialRm = () => {
             options={options}
             series={values}
             type="pie"
-            height={500}
-            width={600}
+            height={210}
+            width={300}
           />
         </div>
       )}
@@ -163,4 +138,4 @@ const QtdMaterialRm = () => {
   );
 };
 
-export default QtdMaterialRm;
+export default QtdMaterialRmExtraSmall;

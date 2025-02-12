@@ -241,7 +241,7 @@
 
 .top-list-buttons {
   margin: 10px 10px 0 10px;
-  width: 300px;
+  width: 150px;
   display: flex;
   justify-content: space-between;
 }
@@ -252,12 +252,12 @@
 }
 
 .loader-div {
-  margin: 0 auto;
+  margin: auto;
   width: 100px;
 }
 
 .list-container {
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 .table-container {

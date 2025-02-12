@@ -9,25 +9,9 @@ import { QtdMaterialCmdoType } from "types/relatorio/qtdmaterialcmdo";
 
 import "./styles.css";
 
-const QtdMaterialCmdo = () => {
+const QtdMaterialCmdoSmall = () => {
   const [data, setData] = useState<QtdMaterialCmdoType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [size, setSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    const updateSize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    updateSize(); // Atualiza no início
-    window.addEventListener("resize", updateSize); // Atualiza ao redimensionar
-
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -40,9 +24,7 @@ const QtdMaterialCmdo = () => {
 
     requestBackend(requestParams)
       .then((res) => {
-        let data = res.data as QtdMaterialCmdoType[];
-        data = data.filter(item => item.cmdo !== "");
-        setData(data);
+        setData(res.data as QtdMaterialCmdoType[]);
       })
       .catch(() => {
         toast.error(
@@ -58,22 +40,14 @@ const QtdMaterialCmdo = () => {
     loadData();
   }, [loadData]);
 
+  const sortedData = data.sort((a, b) => b.quantidade - a.quantidade).filter((a, b) => a.cmdo !== "");
+
   const options: ApexOptions = {
     chart: {
       type: "bar",
       background: "transparent",
       toolbar: {
         show: false,
-      },
-    },
-    title: {
-      text: "Materiais Classe VII - CMDO/ODS",
-      align: "center",
-      style: {
-        fontSize: "24px",
-        fontWeight: "bold",
-        color: "#141824",
-        fontFamily: "Nunito, serif",
       },
     },
     plotOptions: {
@@ -86,7 +60,7 @@ const QtdMaterialCmdo = () => {
             {
               from: 0,
               to: 100000,
-              color: "#7A869D",
+              color: "#006CFA",
             },
           ],
         },
@@ -96,11 +70,10 @@ const QtdMaterialCmdo = () => {
       show: false,
     },
     xaxis: {
-      categories: data.map((item) => item.cmdo),
+      categories: sortedData.map((item) => item.cmdo),
       title: {
-        text: "Quantidade",
         style: {
-          fontSize: "14px",
+          fontSize: "0px",
           fontWeight: "bold",
           color: "#141824",
           fontFamily: "Nunito, serif",
@@ -109,14 +82,14 @@ const QtdMaterialCmdo = () => {
     },
     yaxis: {
       title: {
-        text: "Comando",
         style: {
-          fontSize: "14px",
+          fontSize: "0px",
           fontWeight: "bold",
           color: "#141824",
           fontFamily: "Nunito, serif",
         },
       },
+      show: true,
     },
     tooltip: {
       enabled: true,
@@ -131,12 +104,13 @@ const QtdMaterialCmdo = () => {
     },
     dataLabels: {
       style: {
-        colors: ["#141824"],
+        colors: ["#303030"],
         fontWeight: 700,
         fontFamily: "Nunito, serif",
-        fontSize: "18px",
+        fontSize: "14px",
       },
       offsetX: 5,
+      enabled: true,
     },
     legend: {
       show: false,
@@ -146,7 +120,7 @@ const QtdMaterialCmdo = () => {
   const series = [
     {
       name: "Quantidade",
-      data: data.map((item) => item.quantidade),
+      data: sortedData.map((item) => item.quantidade),
     },
   ];
 
@@ -162,8 +136,8 @@ const QtdMaterialCmdo = () => {
             options={options}
             series={series}
             type="bar"
-            height={size.height > 1400 ? 400 : 600}
-            width={size.width > 2500 ? 500 : 700}
+            height={300}
+            width={450}
           />
         </div>
       )}
@@ -171,4 +145,4 @@ const QtdMaterialCmdo = () => {
   );
 };
 
-export default QtdMaterialCmdo;
+export default QtdMaterialCmdoSmall;

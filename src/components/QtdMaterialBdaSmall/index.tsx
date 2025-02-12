@@ -7,25 +7,9 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 
-const QtdMaterialBda = () => {
+const QtdMaterialBdaSmall = () => {
   const [data, setData] = useState<QtdMaterialBdaType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [size, setSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    const updateSize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    updateSize(); // Atualiza no início
-    window.addEventListener("resize", updateSize); // Atualiza ao redimensionar
-
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -54,8 +38,10 @@ const QtdMaterialBda = () => {
     loadData();
   }, [loadData]);
 
-  // Ordena os dados do maior para o menor para facilitar a visualização
-  const sortedData = [...data].sort((a, b) => b.quantidade - a.quantidade).filter((item) => item.bda !== "");
+  // Ordena os dados do maior para o menor e seleciona os 10 primeiros
+  const top10Data = [...data]
+    .sort((a, b) => b.quantidade - a.quantidade)
+    .slice(0, 10);
 
   const options: ApexOptions = {
     chart: {
@@ -66,21 +52,21 @@ const QtdMaterialBda = () => {
       },
     },
     title: {
-      text: "Materiais - BDA",
+      text: "",
       align: "center",
       style: {
         fontFamily: "Nunito, serif",
-        fontSize: "24px",
+        fontSize: "2px",
         fontWeight: "bold",
         color: "#141824",
       },
     },
     plotOptions: {
       bar: {
-        horizontal: false, // Define barras verticais
-        columnWidth: "80%", // Define a largura das colunas
+        horizontal: true, // Define barras verticais
+        columnWidth: "100%", // Define a largura das colunas
         dataLabels: {
-          position: "top", // Exibe os valores no topo das barras
+          position: "center", // Exibe os valores no topo das barras
         },
       },
     },
@@ -93,7 +79,6 @@ const QtdMaterialBda = () => {
         colors: ["#31374a"],
         fontWeight: 700,
       },
-      offsetY: -20,
     },
     tooltip: {
       enabled: true,
@@ -107,22 +92,17 @@ const QtdMaterialBda = () => {
       },
     },
     xaxis: {
-      categories: sortedData.map((item) => item.bda),
+      categories: top10Data.map((item) => item.bda), // Usa apenas os 10 maiores
       labels: {
-        rotate: -90,
+        show: true,
         style: {
           fontSize: "12px",
           colors: "#31374a",
         },
-        offsetX: -1,
-        offsetY: -5,
       },
     },
     yaxis: {
-      show: false,
-      title: {
-        text: "Quantidade",
-      },
+      show: true,
       labels: {
         formatter: (val: number) => `${val}`, // Formata os valores do eixo Y
       },
@@ -130,7 +110,7 @@ const QtdMaterialBda = () => {
     grid: {
       show: false,
     },
-    colors: ["#386346"], // Define a cor das barras
+    colors: ["#00A023"], // Define a cor das barras
     legend: {
       show: true, // Oculta a legenda
     },
@@ -139,7 +119,7 @@ const QtdMaterialBda = () => {
   const series = [
     {
       name: "Quantidade",
-      data: sortedData.map((item) => item.quantidade),
+      data: top10Data.map((item) => item.quantidade), // Usa apenas os 10 maiores
     },
   ];
 
@@ -155,8 +135,8 @@ const QtdMaterialBda = () => {
             options={options}
             series={series}
             type="bar"
-            height={600}
-            width={size.width > 2500 ? 1600 : 1500}
+            height={300}
+            width={450}
           />
         </div>
       )}
@@ -164,4 +144,4 @@ const QtdMaterialBda = () => {
   );
 };
 
-export default QtdMaterialBda;
+export default QtdMaterialBdaSmall;

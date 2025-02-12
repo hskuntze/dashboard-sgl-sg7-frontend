@@ -4,6 +4,8 @@ import MaterialOMInspect from "./Inspect";
 import MaterialOMIndisponivel from "./ListIndisponivel";
 import MaterialOMList from "./List";
 
+import "./styles.css";
+
 const MaterialOM = () => {
   return (
     <Routes>

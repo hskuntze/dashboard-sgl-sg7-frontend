@@ -13,58 +13,43 @@
 
 .div-qtds {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto auto;
   gap: 16px;
   justify-content: center;
   align-items: center;
   height: 100%;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.div-qtds .card-qtd {
+  cursor: pointer;
 }
 
 .card-qtd:nth-child(1) {
-  grid-area: card1;
-  background-color: #a5b8ab;
+  grid-column: span 3;
+  width: auto;
 }
 
 .card-qtd:nth-child(2) {
-  grid-area: card2;
-  background-color: #a5b8ab;
+  grid-column: span 3;
+  width: auto;
 }
 
 .card-qtd:nth-child(3) {
-  grid-area: card3;
-  background-color: #a7c0f2;
+  grid-column: span 2;
+  width: auto;
 }
 
 .card-qtd:nth-child(4) {
-  grid-area: card4;
-  background-color: #a7c0f2;
+  grid-column: span 2;
+  width: auto;
 }
 
 .card-qtd:nth-child(5) {
-  grid-area: card5;
-  background-color: #a7c0f2;
-}
-
-.card-qtd:nth-child(6) {
-  grid-area: card6;
-  background-color: #a7c0f2;
-}
-
-.card-qtd:nth-child(7) {
-  grid-area: card7;
-  background-color: #b8aaa5;
-}
-
-.card-qtd:nth-child(8) {
-  grid-area: card8;
-  background-color: #b8aaa5;
-}
-
-.div-qtds {
-  grid-template-areas:
-    "card1 card2 card7 card8"
-    "card4 card3 card5 card6";
+  grid-column: span 2;
+  width: auto;
 }
 
 .card-qtd {
@@ -113,6 +98,15 @@
   max-width: 200px !important;
 }
 
+.card-link-chamado {
+  background-color: #a5b8ab;
+  transition: background-color 0.3s ease-in-out !important;
+}
+
+.card-link-chamado:hover {
+  background-color: #639673;
+}
+
 .card-link-material {
   background-color: #a7c0f2 !important;
   transition: background-color 0.3s ease-in-out !important;
@@ -136,20 +130,7 @@
   }
 
   .div-qtds {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 12px;
-  }
-}
-
-@media (min-width: 1920px) {
-  .card-qtd {
-    width: 235px;
-    height: 225px;
-  }
-
-  .div-qtds {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 12px;
   }

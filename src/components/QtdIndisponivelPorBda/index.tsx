@@ -5,42 +5,26 @@ import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 
 import "./styles.css";
+import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
 
-const QtdMaterialRm = () => {
-  const [data, setData] = useState<QtdMaterialRmType[]>([]);
+const QtdIndisponivelPorBda = () => {
+  const [data, setData] = useState<QtdIndisponivelPorBdaType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [size, setSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    const updateSize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    updateSize(); // Atualiza no início
-    window.addEventListener("resize", updateSize); // Atualiza ao redimensionar
-
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/rm",
+      url: "/materiaisom/qtd/indisponivelbda",
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as QtdMaterialRmType[]);
+        setData(res.data as QtdIndisponivelPorBdaType[]);
       })
       .catch(() => {
         toast.error(
@@ -56,19 +40,16 @@ const QtdMaterialRm = () => {
     loadData();
   }, [loadData]);
 
-  // Função para extrair o número da RM (ex: "3ª RM" -> 3)
-  const extractNumber = (rm: string) => {
-    const match = rm.match(/^(\d+)ª RM$/);
-    return match ? parseInt(match[1], 10) : 999; // Se não encontrar, coloca no final
-  };
-
-  // Ordena os dados corretamente de 1 a 12
-  const sortedData = [...data].sort(
-    (a, b) => extractNumber(a.rm) - extractNumber(b.rm)
-  );
+  const sortedData = data.sort((a, b) => b.quantidade - a.quantidade).slice(0, 10);
 
   // Define os rótulos e valores para o gráfico de pizza
-  const labels = sortedData.map((item) => item.rm);
+  const labels = sortedData.map((item) => {
+    // Verifica se o valor é "Vinculação direta ao CMDO"
+    if (item.bda === "Vinculação direta ao CMDO") {
+      return "Vinculação direta"; // Substitui pelo valor desejado
+    }
+    return item.bda; // Mantém os outros valores inalterados
+  });
   const values = sortedData.map((item) => item.quantidade);
 
   const options: ApexOptions = {
@@ -77,16 +58,6 @@ const QtdMaterialRm = () => {
       background: "transparent",
       width: 500,
       height: 500,
-    },
-    title: {
-      text: "Materiais Classe VII - RM",
-      align: "center",
-      style: {
-        fontSize: "24px",
-        fontWeight: "bold",
-        color: "#141824",
-        fontFamily: "Nunito, serif",
-      },
     },
     labels: labels,
     tooltip: {
@@ -109,9 +80,9 @@ const QtdMaterialRm = () => {
         colors: ["#FFF"],
       },
       formatter: function (val: number, opts) {
-        const rmLabel = opts.w.config.labels[opts.seriesIndex]; // Obtém o nome da RM
-        const value = opts.w.config.series[opts.seriesIndex].toLocaleString(); // Obtém o valor formatado
-        return `${value}\t${rmLabel}`; // Exibe "xª RM" e o valor na fatia da pizza
+        const rmLabel = opts.w.config.labels[opts.seriesIndex];
+        const value = val;
+        return [`${value.toFixed(2)}%`, rmLabel];
       },
     },
     legend: {
@@ -122,20 +93,19 @@ const QtdMaterialRm = () => {
       formatter: (val) => `${val}`,
       width: 400,
       offsetX: 80,
+      show: false,
     },
     colors: [
-      "#A7C0F2",
-      "#ABBCDD",
-      "#ABB5C8",
-      "#9AA2B3",
-      "#7A869D",
-      "#5E6C88",
-      "#465573",
-      "#31405E",
-      "#202D48",
-      "#121D33",
-      "#0E1A33",
-      "#0A1833",
+      "#7300F5",
+      "#7F16DB",
+      "#7927C2",
+      "#7132A8",
+      "#67398F",
+      "#5A3B75",
+      "#4B375C",
+      "#392E42",
+      "#2E2933",
+      "#4C4850",
     ],
     stroke: {
       show: false,
@@ -154,8 +124,8 @@ const QtdMaterialRm = () => {
             options={options}
             series={values}
             type="pie"
-            height={500}
-            width={600}
+            height={400}
+            width={400}
           />
         </div>
       )}
@@ -163,4 +133,4 @@ const QtdMaterialRm = () => {
   );
 };
 
-export default QtdMaterialRm;
+export default QtdIndisponivelPorBda;

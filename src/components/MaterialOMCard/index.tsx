@@ -44,7 +44,7 @@ const MaterialOMCard = ({ element }: Props) => {
       </td>
       <td>
         <div className="card-buttons">
-          <Link to={`/dashboard-sgl-sg7/materialom/visualizar/${element.id}`}>
+          <Link to={`/dashboard-sgl-sg7/materialom/visualizar/${element.sn}`}>
             <button className="act-button submit-button">
               <i className="bi bi-file-earmark-text" />
             </button>

@@ -51,7 +51,7 @@ const MaterialOMInspect = () => {
             </div>
           ) : (
             <div className="inspect-content">
-              <h5>{material?.id}</h5>
+              <h5>{material?.sn}</h5>
               <span>
                 <b>Nome eqp.: </b> {material?.nomeeqp}
               </span>
@@ -94,7 +94,7 @@ const MaterialOMInspect = () => {
         </div>
       </div>
       <div style={{marginLeft: "20px"}}>
-        <Link to="/dashboard-sgl-sg7">
+        <Link to="/dashboard-sgl-sg7/materialom">
           <button type="button" className="button delete-button">
             Voltar
           </button>

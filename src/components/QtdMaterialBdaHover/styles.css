@@ -1,0 +1,30 @@
+.data-list {
+  margin-top: 5px;
+  padding-left: 0;
+  list-style-type: none;
+  column-count: 2; /* Divide a lista em 2 colunas */
+  column-gap: 20px; /* Espaço entre as colunas */
+  max-height: 600px; /* Respeita a altura do modal */
+  overflow-y: auto; /* Permite rolagem caso a lista seja muito longa */
+}
+
+.data-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.data-label {
+  font-weight: bold;
+}
+
+.data-value {
+  color: #386346;
+}
+
+.hint {
+  color: #838383;
+  font-size: 14px;
+  font-style: italic;
+}

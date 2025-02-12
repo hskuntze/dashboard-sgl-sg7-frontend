@@ -1,4 +1,4 @@
-import { ColorRing } from "react-loader-spinner";
+import { Triangle } from "react-loader-spinner";
 
 interface Props {
   width?: string;
@@ -7,14 +7,14 @@ interface Props {
 
 const Loader = ({ height, width }: Props) => {
   return (
-    <ColorRing
+    <Triangle
       visible={true}
-      height={height ? height : "60"}
-      width={width ? width : "60"}
-      ariaLabel="color-ring-loading"
+      height="80"
+      width="80"
+      color="#009B3A"
+      ariaLabel="triangle-loading"
       wrapperStyle={{}}
-      wrapperClass="color-ring-wrapper"
-      colors={["#009B3A", "#FEDF00", "#002776", "#FFF", "#009B3A"]}
+      wrapperClass=""
     />
   );
 };

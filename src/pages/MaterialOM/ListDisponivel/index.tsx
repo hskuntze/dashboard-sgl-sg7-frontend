@@ -8,6 +8,9 @@ import { FilterMaterialType } from "types/filtermaterialom";
 import { MaterialOMType } from "types/materialom";
 import { SpringPage } from "types/vendor/spring";
 import { requestBackend } from "utils/requests";
+import jsPDF from "jspdf";
+import * as XLSX from "xlsx";
+import QtdMaterialRmExtraSmall from "components/QtdMaterialRmExtraSmall";
 
 type ControlComponentsData = {
   activePage: number;
@@ -72,9 +75,113 @@ const MaterialOMDisponivel = () => {
     })();
   }, [controlComponentsData, rowsPerPage]);
 
+  const handleExportToExcel = () => {
+    if (page && page.content.length > 0) {
+      const capacitadosProcessado = page.content.map((u) => ({
+        "Nome eqp.": u.nomeeqp,
+        Modelo: u.modelo,
+        Fabricante: u.fabricante,
+        PN: u.pn,
+        SN: u.sn,
+        Disponibilidade: u.disponibilidade,
+        "Motivo da indisponibilidade": u.motivoindisp,
+        RM: u.rm,
+        CMDO: u.cmdo,
+        BDA: u.bda,
+        OM: u.om,
+        DE: u.de,
+        "Cidade/UF": u.cidadeestado,
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(capacitadosProcessado);
+      const wb = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(wb, ws, "Materiais");
+      XLSX.writeFile(wb, "materiais.xlsx");
+    }
+  };
+
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Materiais", 5, 20);
+
+    doc.setFontSize(12);
+    const yStart = 30;
+    let y = yStart;
+    const lineHeight = 10;
+    const marginLeft = 15;
+    const colWidth = 50;
+
+    if (page && page.content.length > 0) {
+      page.content?.forEach((u, i) => {
+        doc.setFont("helvetica", "bold");
+        doc.text(u.nomeeqp, marginLeft, y);
+        y += lineHeight;
+
+        const data = [
+          ["Nome eqp.", u.nomeeqp],
+          ["Modelo", u.modelo],
+          ["Fabricante", u.fabricante],
+          ["PN", u.pn],
+          ["SN", u.sn],
+          ["Disponibilidade", u.disponibilidade],
+          ["Motivo da indisponibilidade", u.motivoindisp],
+          ["RM", u.rm],
+          ["CMDO", u.cmdo],
+          ["BDA", u.bda],
+          ["OM", u.om],
+          ["DE", u.de],
+          ["Cidade/UF", u.cidadeestado],
+        ];
+
+        data.forEach(([k, v]) => {
+          doc.setFont("helvetica", "bold");
+          doc.text(k, marginLeft, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(v, marginLeft + colWidth, y);
+          y += lineHeight;
+
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+          }
+        });
+
+        y += 10;
+      });
+    }
+
+    doc.save("materiais.pdf");
+  };
+
   return (
     <div className="list-container">
-      <h2 style={{marginLeft: "10px", marginTop: "20px"}}>Materiais Disponíveis</h2>
+      <h2 style={{ marginLeft: "10px", marginTop: "20px" }}>
+        Materiais Disponíveis
+      </h2>
+      <div>
+        <div className="top-list-buttons">
+          <button
+            onClick={handleExportPDF}
+            type="button"
+            className="act-button create-button"
+          >
+            <i className="bi bi-filetype-pdf" />
+          </button>
+          <button
+            onClick={handleExportToExcel}
+            type="button"
+            className="act-button create-button"
+          >
+            <i className="bi bi-file-earmark-excel" />
+          </button>
+        </div>
+        <div className="fixed-graph">
+          <QtdMaterialRmExtraSmall />
+        </div>
+      </div>
       <div>
         <FilterMaterialOM onSubmitFilter={handleSubmitFilter} />
       </div>
