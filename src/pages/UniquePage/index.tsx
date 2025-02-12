@@ -16,10 +16,15 @@ import { useCallback, useEffect, useState } from "react";
 import { AxiosRequestConfig } from "axios";
 import { requestBackend } from "utils/requests";
 import { toast } from "react-toastify";
-import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
 import QtdIndisponivelPorBda from "components/QtdIndisponivelPorBda";
 import { useNavigate } from "react-router-dom";
+import TextLoader from "components/TextLoader";
+import { QtdMaterialCidadeEstadoType } from "types/relatorio/qtdmaterialcidadeestado";
+import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
+import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
+import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
+import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
 
 type DisponibilidadeMaterial = {
   disponibilidade: string;
@@ -32,6 +37,13 @@ const UniquePage = () => {
   const [qtdChamadosAbertos, setQtdChamadosAbertos] = useState<string>();
   const [disponibilidadeMaterial, setDisponibilidadeMaterial] =
     useState<DisponibilidadeMaterial[]>();
+
+  const [loadingChamados, setLoadingChamados] = useState<boolean>(false);
+  const [loadingChamadosAbertos, setLoadingChamadosAbertos] =
+    useState<boolean>(false);
+  const [loadingMateriais, setLoadingMateriais] = useState<boolean>(false);
+  const [loadingDisponibilidade, setLoadingDisponibilidade] =
+    useState<boolean>(false);
 
   // Função para garantir a ordem correta dos dados
   const organizeDisponibilidadeMaterial = (data: DisponibilidadeMaterial[]) => {
@@ -50,47 +62,22 @@ const UniquePage = () => {
 
   const navigate = useNavigate();
 
-  const [bdaData, setBdaData] = useState<QtdMaterialBdaType[]>([]);
-  const [loadingBda, setLoadingBda] = useState<boolean>(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isFixed, setIsFixed] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoadingBda(true);
-
-      try {
-        const res = await requestBackend({
-          url: "/materiaisom/qtd/bda",
-          method: "GET",
-          withCredentials: true,
-        });
-        setBdaData(res.data as QtdMaterialBdaType[]);
-      } catch {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por brigada."
-        );
-      } finally {
-        setLoadingBda(false);
-      }
-    };
-
-    loadData(); // Busca os dados apenas uma vez na montagem
-  }, []);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isFixed) {
-      // Atualiza a posição somente se o modal não estiver fixado
-      setPosition({ x: e.clientX, y: e.clientY });
-    }
-  };
-
-  const handleClick = () => {
-    setIsFixed(!isFixed); // Alterna entre fixar e desfixar o modal
-  };
+  const [selectedCmdoUf, setSelectedCmdoUf] = useState<
+    QtdMaterialCidadeEstadoType[]
+  >([]);
+  const [selectedCmdoRm, setSelectedCmdoRm] = useState<QtdMaterialRmType[]>([]);
+  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<
+    CategoriaMaterialIndisponivelType[]
+  >([]);
+  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>(
+    []
+  );
+  const [selectedCmdoIndisponivelBda, setSelectedCmdoIndisponivelBda] =
+    useState<QtdIndisponivelPorBdaType[]>([]);
 
   const loadQtdTotal = useCallback(() => {
+    setLoadingMateriais(true);
+
     const requestParams: AxiosRequestConfig = {
       url: "/materiaisom/total",
       method: "GET",
@@ -103,10 +90,15 @@ const UniquePage = () => {
       })
       .catch((err) => {
         toast.error("Não foi possível carregar a quantidade de materiais.");
+      })
+      .finally(() => {
+        setLoadingMateriais(false);
       });
   }, []);
 
   const loadQtdChamados = useCallback(() => {
+    setLoadingChamados(true);
+
     const requestParams: AxiosRequestConfig = {
       url: "/chamados",
       method: "GET",
@@ -119,10 +111,15 @@ const UniquePage = () => {
       })
       .catch((err) => {
         toast.error("Não foi possível carregar a quantidade de chamados.");
+      })
+      .finally(() => {
+        setLoadingChamados(false);
       });
   }, []);
 
   const loadQtdChamadosAbertos = useCallback(() => {
+    setLoadingChamadosAbertos(true);
+
     const requestParams: AxiosRequestConfig = {
       url: "/chamados/abertos",
       method: "GET",
@@ -137,10 +134,15 @@ const UniquePage = () => {
         toast.error(
           "Não foi possível carregar a quantidade de chamados abertos."
         );
+      })
+      .finally(() => {
+        setLoadingChamadosAbertos(false);
       });
   }, []);
 
   const loadDisponibilidadeMaterial = useCallback(() => {
+    setLoadingDisponibilidade(true);
+
     const requestParams: AxiosRequestConfig = {
       url: "/materiaisom/qtd/disponibilidade",
       method: "GET",
@@ -157,8 +159,97 @@ const UniquePage = () => {
         toast.error(
           "Não foi possível carregar a quantidade de materiais disponíveis."
         );
+      })
+      .finally(() => {
+        setLoadingDisponibilidade(false);
       });
   }, []);
+
+  const handleSelectCmdo = (cmdo: string | null) => {
+    if (cmdo !== null) {
+      const requestParamsUf: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/ufcmdo/${cmdo}`,
+        method: "GET",
+        withCredentials: true,
+      };
+
+      const requestParamsRm: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/rmcmdo/${cmdo}`,
+        method: "GET",
+        withCredentials: true,
+      };
+
+      const requestParamsBda: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/bdacmdo/${cmdo}`,
+        method: "GET",
+        withCredentials: true,
+      };
+
+      const requestParamsIndisponivelBda: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/indisponivelbdacmdo/${cmdo}`,
+        method: "GET",
+        withCredentials: true,
+      };
+
+      const requestParamsCatIndisponivel: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/ctgmtindisponivelcmdo/${cmdo}`,
+        method: "GET",
+        withCredentials: true,
+      };
+
+      requestBackend(requestParamsUf)
+        .then((res) => {
+          setSelectedCmdoUf(res.data as QtdMaterialCidadeEstadoType[]);
+        })
+        .catch((err) => {
+          toast.error("Erro ao tentar carregar dados de UF por CMDO.");
+        });
+
+      requestBackend(requestParamsRm)
+        .then((res) => {
+          setSelectedCmdoRm(res.data as QtdMaterialRmType[]);
+        })
+        .catch((err) => {
+          toast.error("Erro ao tentar carregar dados de RM por CMDO.");
+        });
+
+      requestBackend(requestParamsBda)
+        .then((res) => {
+          setSelectedCmdoBda(res.data as QtdMaterialBdaType[]);
+        })
+        .catch((err) => {
+          toast.error("Erro ao tentar carregar dados de BDA por CMDO.");
+        });
+
+      requestBackend(requestParamsIndisponivelBda)
+        .then((res) => {
+          setSelectedCmdoIndisponivelBda(
+            res.data as QtdIndisponivelPorBdaType[]
+          );
+        })
+        .catch((err) => {
+          toast.error(
+            "Erro ao tentar carregar dados de indisponível por BDA por CMDO."
+          );
+        });
+
+      requestBackend(requestParamsCatIndisponivel)
+        .then((res) => {
+          setSelectedCmdoCategoria(res.data as CategoriaMaterialIndisponivelType[]);
+        })
+        .catch((err) => {
+          toast.error(
+            "Erro ao tentar carregar dados de categoria indisponível por CMDO."
+          );
+        });
+    } else {
+      setSelectedCmdoUf([]);
+      setSelectedCmdoRm([]);
+      setSelectedCmdoBda([]);
+      setSelectedCmdoIndisponivelBda([]);
+      setSelectedCmdoCategoria([]);
+    }
+  };
 
   useEffect(() => {
     loadQtdTotal();
@@ -186,7 +277,11 @@ const UniquePage = () => {
                 alt="all-tickets"
               />
               <div>
-                <h6>{qtdChamados} chamados</h6>
+                {loadingChamados ? (
+                  <TextLoader />
+                ) : (
+                  <h6>{qtdChamados} chamados</h6>
+                )}
                 <span>SGL - Garantia</span>
               </div>
             </div>
@@ -197,15 +292,17 @@ const UniquePage = () => {
                 alt="all-tickets"
               />
               <div>
-                <h6>{qtdChamadosAbertos} chamados abertos</h6>
+                {loadingChamadosAbertos ? (
+                  <TextLoader />
+                ) : (
+                  <h6>{qtdChamadosAbertos} chamados abertos</h6>
+                )}
                 <span>SGL - Garantia</span>
               </div>
             </div>
             <div
               className="object-row clickable-div material-om"
-              onClick={() =>
-                navigate("/dashboard-sgl-sg7/materialom")
-              }
+              onClick={() => navigate("/dashboard-sgl-sg7/materialom")}
             >
               <img
                 className="small-icon"
@@ -213,7 +310,11 @@ const UniquePage = () => {
                 alt="all-tickets"
               />
               <div>
-                <h6>{totalMateriais} materiais</h6>
+                {loadingMateriais ? (
+                  <TextLoader />
+                ) : (
+                  <h6>{totalMateriais} materiais</h6>
+                )}
                 <span>Classe VII | OM</span>
               </div>
             </div>
@@ -229,12 +330,16 @@ const UniquePage = () => {
                 alt="all-tickets"
               />
               <div>
-                <h6>
-                  {(disponibilidadeMaterial &&
-                    disponibilidadeMaterial.at(0)?.quantidade) ||
-                    0}{" "}
-                  materiais disponíveis
-                </h6>
+                {loadingDisponibilidade ? (
+                  <TextLoader />
+                ) : (
+                  <h6>
+                    {(disponibilidadeMaterial &&
+                      disponibilidadeMaterial.at(0)?.quantidade) ||
+                      0}{" "}
+                    materiais disponíveis
+                  </h6>
+                )}
                 <span>Classe VII | OM</span>
               </div>
             </div>
@@ -250,12 +355,16 @@ const UniquePage = () => {
                 alt="all-tickets"
               />
               <div>
-                <h6>
-                  {(disponibilidadeMaterial &&
-                    disponibilidadeMaterial.at(1)?.quantidade) ||
-                    0}{" "}
-                  materiais indisponíveis
-                </h6>
+                {loadingDisponibilidade ? (
+                  <TextLoader />
+                ) : (
+                  <h6>
+                    {(disponibilidadeMaterial &&
+                      disponibilidadeMaterial.at(1)?.quantidade) ||
+                      0}{" "}
+                    materiais indisponíveis
+                  </h6>
+                )}
                 <span>Classe VII | OM</span>
               </div>
             </div>
@@ -264,19 +373,19 @@ const UniquePage = () => {
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">por CMDO/ODS</span>
-            <QtdMaterialCmdoSmall />
+            <QtdMaterialCmdoSmall onSelectedItem={handleSelectCmdo} />
           </div>
           {/* Por UF */}
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">por UF</span>
-            <QtdMaterialCidadeEstadoSmall />
+            <QtdMaterialCidadeEstadoSmall selectedData={selectedCmdoUf} />
           </div>
           {/* Por RM */}
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">por RM</span>
-            <QtdMaterialRmSmall />
+            <QtdMaterialRmSmall selectedData={selectedCmdoRm} />
           </div>
           {/* Por Ano (CHAMADOS) */}
           <div className="grid-object">
@@ -290,19 +399,19 @@ const UniquePage = () => {
             <span className="span-subtitle">
               Indisponibilidade por categoria
             </span>
-            <QtdCategoriaMaterialIndisponivelSmall />
+            <QtdCategoriaMaterialIndisponivelSmall selectedData={selectedCmdoCategoria} />
           </div>
           {/* Por BDA */}
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">por BDA</span>
-            <QtdMaterialBdaSmall />
+            <QtdMaterialBdaSmall selectedData={selectedCmdoBda} />
           </div>
           {/* Chamados por OM */}
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">indisponíveis por BDA</span>
-            <QtdIndisponivelPorBda />
+            <QtdIndisponivelPorBda selectedData={selectedCmdoIndisponivelBda} />
           </div>
         </div>
       </div>

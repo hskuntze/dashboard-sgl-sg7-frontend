@@ -9,32 +9,41 @@ import { QtdMaterialCidadeEstadoType } from "types/relatorio/qtdmaterialcidadees
 
 import "./styles.css";
 
-const QtdMaterialCidadeEstadoSmall = () => {
+interface Props {
+  selectedData?: QtdMaterialCidadeEstadoType[];
+}
+
+const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
   const [data, setData] = useState<QtdMaterialCidadeEstadoType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/cidadeestado",
-      method: "GET",
-      withCredentials: true,
-    };
+    if (selectedData && selectedData.length > 0) {
+      setData(selectedData);
+      setLoading(false);
+    } else {
+      const requestParams: AxiosRequestConfig = {
+        url: "/materiaisom/qtd/cidadeestado",
+        method: "GET",
+        withCredentials: true,
+      };
 
-    requestBackend(requestParams)
-      .then((res) => {
-        setData(res.data as QtdMaterialCidadeEstadoType[]);
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por cidade e estado."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+      requestBackend(requestParams)
+        .then((res) => {
+          setData(res.data as QtdMaterialCidadeEstadoType[]);
+        })
+        .catch(() => {
+          toast.error(
+            "Erro ao carregar dados de quantidade de materiais por cidade e estado."
+          );
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [selectedData]);
 
   useEffect(() => {
     loadData();
@@ -72,7 +81,8 @@ const QtdMaterialCidadeEstadoSmall = () => {
             {
               from: 0,
               to: 100000,
-              color: "#0E1A33",
+              color:
+                selectedData && selectedData.length > 0 ? "#7AACBF" : "#0E1A33",
             },
           ],
         },
@@ -107,12 +117,13 @@ const QtdMaterialCidadeEstadoSmall = () => {
     },
     dataLabels: {
       style: {
-        colors: ["#fff"],
+        colors: selectedData && selectedData.length > 0 ? ["#333"] : ["#fff"],
         fontWeight: 700,
         fontFamily: "Nunito, serif",
         fontSize: "11px",
       },
       enabled: true,
+      offsetY: 10,
     },
     tooltip: {
       enabled: true,

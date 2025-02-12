@@ -5,45 +5,59 @@ import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-
-import "./styles.css";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
 
-const QtdCategoriaMaterialIndisponivelSmall = () => {
+import "./styles.css";
+
+interface Props {
+  selectedData?: CategoriaMaterialIndisponivelType[];
+}
+
+const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
   const [data, setData] = useState<CategoriaMaterialIndisponivelType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/ctgmtindisponivel",
-      method: "GET",
-      withCredentials: true,
-    };
+    if (selectedData && selectedData.length > 0) {
+      setData(selectedData);
+      setLoading(false);
+    } else {
+      const requestParams: AxiosRequestConfig = {
+        url: "/materiaisom/qtd/ctgmtindisponivel",
+        method: "GET",
+        withCredentials: true,
+      };
 
-    requestBackend(requestParams)
-      .then((res) => {
-        setData(res.data as CategoriaMaterialIndisponivelType[]);
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de categorias de materiais indisponíveis."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+      requestBackend(requestParams)
+        .then((res) => {
+          setData(res.data as CategoriaMaterialIndisponivelType[]);
+        })
+        .catch(() => {
+          toast.error(
+            "Erro ao carregar dados de quantidade de categorias de materiais indisponíveis."
+          );
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [selectedData]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const top10Data = [...data]
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .slice(0, 10)
-    .filter((a, b) => a.categoria !== "OUTROS");
+  const top10Data =
+    selectedData && selectedData.length > 0
+      ? [...data]
+          .sort((a, b) => b.quantidade - a.quantidade)
+          .slice(0, 10)
+      : [...data]
+          .sort((a, b) => b.quantidade - a.quantidade)
+          .slice(0, 10)
+          .filter((a, b) => a.categoria !== "OUTROS");
 
   const options: ApexOptions = {
     chart: {
@@ -118,9 +132,9 @@ const QtdCategoriaMaterialIndisponivelSmall = () => {
         borderColor: "#ccc",
         borderRadius: 5,
         borderWidth: 1,
-        foreColor: "#fff"
+        foreColor: "#fff",
       },
-      offsetY: 20
+      offsetY: 20,
     },
     tooltip: {
       enabled: true,

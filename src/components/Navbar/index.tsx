@@ -56,11 +56,13 @@ const Navbar = () => {
               alt="Logotipo CTCEA"
             />
           </div>
-          <div className="sair-topo">
-            <button onClick={logout} className="nav-link">
-              Sair <i className="bi bi-door-open" />
-            </button>
-          </div>
+          {!isAdmin && (
+            <div className="sair-topo">
+              <button onClick={logout} className="nav-link">
+                Sair <i className="bi bi-door-open" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
       {isAdmin && (

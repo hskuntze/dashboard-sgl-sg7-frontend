@@ -5,42 +5,53 @@ import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-
-import "./styles.css";
 import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
 
-const QtdIndisponivelPorBda = () => {
+import "./styles.css";
+
+interface Props {
+  selectedData?: QtdIndisponivelPorBdaType[];
+}
+
+const QtdIndisponivelPorBda = ({ selectedData }: Props) => {
   const [data, setData] = useState<QtdIndisponivelPorBdaType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/indisponivelbda",
-      method: "GET",
-      withCredentials: true,
-    };
+    if (selectedData && selectedData.length > 0) {
+      setData(selectedData);
+      setLoading(false);
+    } else {
+      const requestParams: AxiosRequestConfig = {
+        url: "/materiaisom/qtd/indisponivelbda",
+        method: "GET",
+        withCredentials: true,
+      };
 
-    requestBackend(requestParams)
-      .then((res) => {
-        setData(res.data as QtdIndisponivelPorBdaType[]);
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por comando."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+      requestBackend(requestParams)
+        .then((res) => {
+          setData(res.data as QtdIndisponivelPorBdaType[]);
+        })
+        .catch(() => {
+          toast.error(
+            "Erro ao carregar dados de quantidade de materiais por comando."
+          );
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [selectedData]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const sortedData = data.sort((a, b) => b.quantidade - a.quantidade).slice(0, 10);
+  const sortedData = data
+    .sort((a, b) => b.quantidade - a.quantidade)
+    .slice(0, 10);
 
   // Define os rótulos e valores para o gráfico de pizza
   const labels = sortedData.map((item) => {
@@ -84,6 +95,16 @@ const QtdIndisponivelPorBda = () => {
         const value = val;
         return [`${value.toFixed(2)}%`, rmLabel];
       },
+      dropShadow: {
+        enabled: true,
+        top: 1,
+        left: 1,
+        blur: 3,
+        opacity: 0.7,
+      },
+      offsetX: 0, // Ajusta o deslocamento horizontal
+      offsetY: 0, // Ajusta o deslocamento vertical
+      distributed: true,
     },
     legend: {
       position: "bottom",
@@ -109,6 +130,14 @@ const QtdIndisponivelPorBda = () => {
     ],
     stroke: {
       show: false,
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          minAngleToShowLabel: 20,
+          offset: -30,
+        },
+      },
     },
   };
 

@@ -9,7 +9,11 @@ import { QtdMaterialCmdoType } from "types/relatorio/qtdmaterialcmdo";
 
 import "./styles.css";
 
-const QtdMaterialCmdoSmall = () => {
+interface Props {
+  onSelectedItem: (cmdo: string | null) => void;
+}
+
+const QtdMaterialCmdoSmall = ({ onSelectedItem }: Props) => {
   const [data, setData] = useState<QtdMaterialCmdoType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -40,7 +44,11 @@ const QtdMaterialCmdoSmall = () => {
     loadData();
   }, [loadData]);
 
-  const sortedData = data.sort((a, b) => b.quantidade - a.quantidade).filter((a, b) => a.cmdo !== "");
+  const sortedData = data
+    .sort((a, b) => b.quantidade - a.quantidade)
+    .filter((a, b) => a.cmdo !== "");
+
+  const [selectedItem, setSelectedItem] = useState<QtdMaterialCmdoType | null>(null);
 
   const options: ApexOptions = {
     chart: {
@@ -48,6 +56,22 @@ const QtdMaterialCmdoSmall = () => {
       background: "transparent",
       toolbar: {
         show: false,
+      },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const selectedIndex = config.dataPointIndex;
+          const clickedItem = sortedData[selectedIndex];
+
+          if (clickedItem && clickedItem.cmdo === selectedItem?.cmdo) {
+            // Desseleção: o mesmo item foi clicado novamente
+            setSelectedItem(null);
+            onSelectedItem(null); // Notifica que nenhum item está selecionado
+          } else {
+            // Seleção: um novo item foi clicado
+            setSelectedItem(clickedItem);
+            onSelectedItem(clickedItem.cmdo);
+          }
+        },
       },
     },
     plotOptions: {
