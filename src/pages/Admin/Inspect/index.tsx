@@ -42,7 +42,7 @@ const UsuarioInspect = () => {
     <div className="inspect-container">
       <div>
         {loading ? (
-          <div className="loading-div">
+          <div className="loader-div">
             <Loader />
           </div>
         ) : (

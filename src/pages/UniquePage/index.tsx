@@ -25,6 +25,7 @@ import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
+import Map from "components/Map";
 
 type DisponibilidadeMaterial = {
   disponibilidade: string;
@@ -397,7 +398,7 @@ const UniquePage = () => {
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">
-              Indisponibilidade por categoria
+              indisponibilidade por categoria
             </span>
             <QtdCategoriaMaterialIndisponivelSmall selectedData={selectedCmdoCategoria} />
           </div>
@@ -409,9 +410,10 @@ const UniquePage = () => {
           </div>
           {/* Chamados por OM */}
           <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
+            {/* <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">indisponíveis por BDA</span>
-            <QtdIndisponivelPorBda selectedData={selectedCmdoIndisponivelBda} />
+            <QtdIndisponivelPorBda selectedData={selectedCmdoIndisponivelBda} /> */}
+            <Map />
           </div>
         </div>
       </div>
