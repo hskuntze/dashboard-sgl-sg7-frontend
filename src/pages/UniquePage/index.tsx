@@ -17,15 +17,16 @@ import { AxiosRequestConfig } from "axios";
 import { requestBackend } from "utils/requests";
 import { toast } from "react-toastify";
 import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
-import QtdIndisponivelPorBda from "components/QtdIndisponivelPorBda";
+// import QtdIndisponivelPorBda from "components/QtdIndisponivelPorBda";
 import { useNavigate } from "react-router-dom";
 import TextLoader from "components/TextLoader";
 import { QtdMaterialCidadeEstadoType } from "types/relatorio/qtdmaterialcidadeestado";
 import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
-import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
+// import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
 import Map from "components/Map";
+import { GeorefUnidade } from "types/georef";
 
 type DisponibilidadeMaterial = {
   disponibilidade: string;
@@ -63,18 +64,13 @@ const UniquePage = () => {
 
   const navigate = useNavigate();
 
-  const [selectedCmdoUf, setSelectedCmdoUf] = useState<
-    QtdMaterialCidadeEstadoType[]
-  >([]);
+  const [selectedCmdoUf, setSelectedCmdoUf] = useState<QtdMaterialCidadeEstadoType[]>([]);
   const [selectedCmdoRm, setSelectedCmdoRm] = useState<QtdMaterialRmType[]>([]);
-  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<
-    CategoriaMaterialIndisponivelType[]
-  >([]);
-  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>(
-    []
-  );
-  const [selectedCmdoIndisponivelBda, setSelectedCmdoIndisponivelBda] =
-    useState<QtdIndisponivelPorBdaType[]>([]);
+  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<CategoriaMaterialIndisponivelType[]>([]);
+  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>([]);
+  // const [selectedCmdoIndisponivelBda, setSelectedCmdoIndisponivelBda] =
+  //   useState<QtdIndisponivelPorBdaType[]>([]);
+  const [selectedCmdoMapa, setSelectedCmdoMapa] = useState<GeorefUnidade[]>([]);
 
   const loadQtdTotal = useCallback(() => {
     setLoadingMateriais(true);
@@ -186,14 +182,20 @@ const UniquePage = () => {
         withCredentials: true,
       };
 
-      const requestParamsIndisponivelBda: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/indisponivelbdacmdo/${cmdo}`,
+      // const requestParamsIndisponivelBda: AxiosRequestConfig = {
+      //   url: `/materiaisom/qtd/indisponivelbdacmdo/${cmdo}`,
+      //   method: "GET",
+      //   withCredentials: true,
+      // };
+
+      const requestParamsCatIndisponivel: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/ctgmtindisponivelcmdo/${cmdo}`,
         method: "GET",
         withCredentials: true,
       };
 
-      const requestParamsCatIndisponivel: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/ctgmtindisponivelcmdo/${cmdo}`,
+      const requestParamsMapa: AxiosRequestConfig = {
+        url: `/materiaisom/georef/unidades/${cmdo}`,
         method: "GET",
         withCredentials: true,
       };
@@ -222,33 +224,46 @@ const UniquePage = () => {
           toast.error("Erro ao tentar carregar dados de BDA por CMDO.");
         });
 
-      requestBackend(requestParamsIndisponivelBda)
-        .then((res) => {
-          setSelectedCmdoIndisponivelBda(
-            res.data as QtdIndisponivelPorBdaType[]
-          );
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar dados de indisponível por BDA por CMDO."
-          );
-        });
+      // requestBackend(requestParamsIndisponivelBda)
+      //   .then((res) => {
+      //     setSelectedCmdoIndisponivelBda(
+      //       res.data as QtdIndisponivelPorBdaType[]
+      //     );
+      //   })
+      //   .catch((err) => {
+      //     toast.error(
+      //       "Erro ao tentar carregar dados de indisponível por BDA por CMDO."
+      //     );
+      //   });
 
       requestBackend(requestParamsCatIndisponivel)
         .then((res) => {
-          setSelectedCmdoCategoria(res.data as CategoriaMaterialIndisponivelType[]);
+          setSelectedCmdoCategoria(
+            res.data as CategoriaMaterialIndisponivelType[]
+          );
         })
         .catch((err) => {
           toast.error(
             "Erro ao tentar carregar dados de categoria indisponível por CMDO."
           );
         });
+
+      requestBackend(requestParamsMapa)
+        .then((res) => {
+          setSelectedCmdoMapa(res.data as GeorefUnidade[]);
+        })
+        .catch((err) => {
+          toast.error(
+            "Erro ao tentar carregar dados de georeferenciamento por CMDO."
+          );
+        });
     } else {
       setSelectedCmdoUf([]);
       setSelectedCmdoRm([]);
       setSelectedCmdoBda([]);
-      setSelectedCmdoIndisponivelBda([]);
+      // setSelectedCmdoIndisponivelBda([]);
       setSelectedCmdoCategoria([]);
+      setSelectedCmdoMapa([]);
     }
   };
 
@@ -400,7 +415,9 @@ const UniquePage = () => {
             <span className="span-subtitle">
               indisponibilidade por categoria
             </span>
-            <QtdCategoriaMaterialIndisponivelSmall selectedData={selectedCmdoCategoria} />
+            <QtdCategoriaMaterialIndisponivelSmall
+              selectedData={selectedCmdoCategoria}
+            />
           </div>
           {/* Por BDA */}
           <div className="grid-object">
@@ -413,7 +430,7 @@ const UniquePage = () => {
             {/* <span className="span-title">Materiais Classe VII</span>
             <span className="span-subtitle">indisponíveis por BDA</span>
             <QtdIndisponivelPorBda selectedData={selectedCmdoIndisponivelBda} /> */}
-            <Map />
+            <Map selectedData={selectedCmdoMapa} />
           </div>
         </div>
       </div>
