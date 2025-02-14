@@ -7,32 +7,41 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 
-const QtdMaterialBdaSmall = () => {
+interface Props {
+  selectedData?: QtdMaterialBdaType[];
+}
+
+const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
   const [data, setData] = useState<QtdMaterialBdaType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/bda",
-      method: "GET",
-      withCredentials: true,
-    };
+    if (selectedData && selectedData.length > 0) {
+      setData(selectedData);
+      setLoading(false);
+    } else {
+      const requestParams: AxiosRequestConfig = {
+        url: "/materiaisom/qtd/bda",
+        method: "GET",
+        withCredentials: true,
+      };
 
-    requestBackend(requestParams)
-      .then((res) => {
-        setData(res.data as QtdMaterialBdaType[]);
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por comando."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+      requestBackend(requestParams)
+        .then((res) => {
+          setData(res.data as QtdMaterialBdaType[]);
+        })
+        .catch(() => {
+          toast.error(
+            "Erro ao carregar dados de quantidade de materiais por comando."
+          );
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [selectedData]);
 
   useEffect(() => {
     loadData();

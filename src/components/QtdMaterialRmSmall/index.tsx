@@ -9,32 +9,41 @@ import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 
 import "./styles.css";
 
-const QtdMaterialRmSmall = () => {
+interface Props {
+  selectedData?: QtdMaterialRmType[];
+}
+
+const QtdMaterialRmSmall = ({ selectedData }: Props) => {
   const [data, setData] = useState<QtdMaterialRmType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/rm",
-      method: "GET",
-      withCredentials: true,
-    };
+    if (selectedData && selectedData.length > 0) {
+      setData(selectedData);
+      setLoading(false);
+    } else {
+      const requestParams: AxiosRequestConfig = {
+        url: "/materiaisom/qtd/rm",
+        method: "GET",
+        withCredentials: true,
+      };
 
-    requestBackend(requestParams)
-      .then((res) => {
-        setData(res.data as QtdMaterialRmType[]);
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por comando."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+      requestBackend(requestParams)
+        .then((res) => {
+          setData(res.data as QtdMaterialRmType[]);
+        })
+        .catch(() => {
+          toast.error(
+            "Erro ao carregar dados de quantidade de materiais por comando."
+          );
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [selectedData]);
 
   useEffect(() => {
     loadData();
@@ -114,6 +123,14 @@ const QtdMaterialRmSmall = () => {
     ],
     stroke: {
       show: false,
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          minAngleToShowLabel: 20,
+          offset: -10,
+        },
+      },
     },
   };
 

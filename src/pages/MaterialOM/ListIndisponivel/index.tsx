@@ -25,7 +25,7 @@ const MaterialOMIndisponivel = () => {
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
-      filterData: { nomeeqp: null, pn: null, sn: null },
+      filterData: { nomeeqp: null, pn: null, sn: null, cmdo: null },
     });
 
   const handlePageChange = (
@@ -78,7 +78,7 @@ const MaterialOMIndisponivel = () => {
   const handleExportToExcel = () => {
     if (page && page.content.length > 0) {
       const capacitadosProcessado = page.content.map((u) => ({
-        "Nome eqp.": u.nomeeqp,
+        "Nome eqp.": u.equipamento,
         Modelo: u.modelo,
         Fabricante: u.fabricante,
         PN: u.pn,
@@ -86,11 +86,15 @@ const MaterialOMIndisponivel = () => {
         Disponibilidade: u.disponibilidade,
         "Motivo da indisponibilidade": u.motivoindisp,
         RM: u.rm,
-        CMDO: u.cmdo,
+        CMDO: u.cmdoOds,
         BDA: u.bda,
         OM: u.om,
         DE: u.de,
-        "Cidade/UF": u.cidadeestado,
+        "Cidade/UF": u.cidade + "/" + u.estado,
+        Subsistema: u.subsistema,
+        Grupo: u.grupo,
+        Longitude: u.longitude,
+        Latitude: u.latitude,
       }));
 
       const ws = XLSX.utils.json_to_sheet(capacitadosProcessado);
@@ -105,7 +109,7 @@ const MaterialOMIndisponivel = () => {
     const doc = new jsPDF();
 
     doc.setFontSize(18);
-    doc.text("Materiais", 5, 20);
+    doc.text("Materiais disponíveis", 5, 20);
 
     doc.setFontSize(12);
     const yStart = 30;
@@ -117,23 +121,29 @@ const MaterialOMIndisponivel = () => {
     if (page && page.content.length > 0) {
       page.content?.forEach((u, i) => {
         doc.setFont("helvetica", "bold");
-        doc.text(u.nomeeqp, marginLeft, y);
+        doc.text(u.equipamento + ", " + u.sn, marginLeft, y);
         y += lineHeight;
 
         const data = [
-          ["Nome eqp.", u.nomeeqp],
-          ["Modelo", u.modelo],
-          ["Fabricante", u.fabricante],
-          ["PN", u.pn],
-          ["SN", u.sn],
-          ["Disponibilidade", u.disponibilidade],
-          ["Motivo da indisponibilidade", u.motivoindisp],
-          ["RM", u.rm],
-          ["CMDO", u.cmdo],
-          ["BDA", u.bda],
-          ["OM", u.om],
-          ["DE", u.de],
-          ["Cidade/UF", u.cidadeestado],
+          ["Nome eqp.", u.equipamento ?? "-"],
+          ["Modelo", u.modelo ?? "-"],
+          ["Fabricante", u.fabricante ?? "-"],
+          ["PN", u.pn ?? "-"],
+          ["SN", u.sn ?? "-"],
+          ["Disponibilidade", u.disponibilidade ?? "-"],
+          ["Motivo da indisponibilidade", u.motivoindisp ?? "-"],
+          ["RM", u.rm ?? "-"],
+          ["CMDO", u.cmdoOds ?? "-"],
+          ["BDA", u.bda ?? "-"],
+          ["OM", u.om ?? "-"],
+          ["DE", u.de ?? "-"],
+          ["Cidade", u.cidade ?? "-"],
+          ["UF", u.estado ?? "-"],
+          ["Subsistema", u.subsistema ?? "-"],
+          ["Grupo", u.grupo ?? "-"],
+          ["Tipo Eqp.", u.tipo_eqp ?? "-"],
+          ["Longitude", String(u.longitude) ?? "-"],
+          ["Latitude", String(u.latitude) ?? "-"],
         ];
 
         data.forEach(([k, v]) => {
@@ -153,7 +163,7 @@ const MaterialOMIndisponivel = () => {
       });
     }
 
-    doc.save("materiais.pdf");
+    doc.save("materiais_disponiveis.pdf");
   };
 
   return (
@@ -208,7 +218,7 @@ const MaterialOMIndisponivel = () => {
           </thead>
           <tbody className="table-body">
             {page?.content.map((el) => (
-              <MaterialOMCard element={el} key={el.id} />
+              <MaterialOMCard element={el} key={el.sn} />
             ))}
           </tbody>
           <tfoot>

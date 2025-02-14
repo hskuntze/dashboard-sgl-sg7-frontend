@@ -46,14 +46,14 @@ const MaterialOMInspect = () => {
       <div className="inspect-container">
         <div>
           {loading ? (
-            <div className="loading-div">
+            <div className="loader-div">
               <Loader />
             </div>
           ) : (
             <div className="inspect-content">
               <h5>{material?.sn}</h5>
               <span>
-                <b>Nome eqp.: </b> {material?.nomeeqp}
+                <b>Nome eqp.: </b> {material?.equipamento}
               </span>
               <span>
                 <b>PN: </b> {material?.pn}
@@ -78,7 +78,7 @@ const MaterialOMInspect = () => {
                 <b>DE: </b> {material?.de}
               </span>
               <span>
-                <b>CMDO: </b> {material?.cmdo}
+                <b>CMDO: </b> {material?.cmdoOds}
               </span>
               <span>
                 <b>Brigada: </b> {material?.bda}
@@ -87,7 +87,22 @@ const MaterialOMInspect = () => {
                 <b>OM: </b> {material?.om}
               </span>
               <span>
-                <b>Cidade/UF: </b> {material?.cidadeestado}
+                <b>Cidade/UF: </b> {material?.cidade + "/" + material?.estado}
+              </span>
+              <span>
+                <b>Subsistema: </b> {material?.subsistema}
+              </span>
+              <span>
+                <b>Grupo: </b> {material?.grupo}
+              </span>
+              <span>
+                <b>Tipo Eqp.: </b> {material?.tipo_eqp}
+              </span>
+              <span>
+                <b>Latitude: </b> {material?.latitude}
+              </span>
+              <span>
+                <b>Longitude: </b> {material?.longitude}
               </span>
             </div>
           )}

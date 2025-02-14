@@ -115,6 +115,14 @@ const QtdMaterialRmExtraSmall = () => {
     stroke: {
       show: false,
     },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          minAngleToShowLabel: 30,
+          offset: -5,
+        },
+      },
+    },
   };
 
   return (

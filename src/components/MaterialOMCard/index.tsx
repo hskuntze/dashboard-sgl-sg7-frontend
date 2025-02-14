@@ -13,7 +13,7 @@ const MaterialOMCard = ({ element }: Props) => {
   return (
     <tr className="card-container">
       <td>
-        <div className="card-content">{element.nomeeqp}</div>
+        <div className="card-content">{element.equipamento}</div>
       </td>
       <td>
         <div className="card-content">{element.pn}</div>
@@ -34,7 +34,7 @@ const MaterialOMCard = ({ element }: Props) => {
         <div className="card-content">{element.de}</div>
       </td>
       <td>
-        <div className="card-content">{element.cmdo}</div>
+        <div className="card-content">{element.cmdoOds}</div>
       </td>
       <td>
         <div className="card-content">{element.bda}</div>

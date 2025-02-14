@@ -43,17 +43,15 @@ const Routes = () => {
                 roles={[
                   { id: 1, autorizacao: "PERFIL_ADMIN" },
                   { id: 2, autorizacao: "PERFIL_USUARIO" },
-                  { id: 3, autorizacao: "PERFIL_OPERADOR_NOC" },
-                  { id: 4, autorizacao: "PERFIL_OPERADOR_OM" },
                   { id: 5, autorizacao: "PERFIL_SLI" },
                 ]}
               >
-                <Home />
+                <UniquePage />
               </PrivateRoute>
             }
           />
           <Route
-            path="/dashboard-sgl-sg7/unique-page"
+            path="/dashboard-sgl-sg7/old"
             element={
               <PrivateRoute
                 roles={[
@@ -62,7 +60,7 @@ const Routes = () => {
                   { id: 5, autorizacao: "PERFIL_SLI" },
                 ]}
               >
-                <UniquePage />
+                <Home />
               </PrivateRoute>
             }
           />
