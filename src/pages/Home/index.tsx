@@ -6,10 +6,9 @@ import { toast } from "react-toastify";
 import QtdMaterialCmdo from "components/QtdMaterialCmdo";
 import QtdMaterialBda from "components/QtdMaterialBda";
 import QtdMaterialRm from "components/QtdMaterialRm";
-import QtdMaterialTotalGauge from "components/QtdMaterialTotalGauge";
 import QtdMaterialCidadeEstado from "components/QtdMaterialCidadeEstado";
 import QtdChamadoAno from "components/QtdChamadoAno";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Loader from "components/Loader";
 
 /**
@@ -18,8 +17,6 @@ import Loader from "components/Loader";
  */
 const Home = () => {
   const [totalMateriais, setTotalMateriais] = useState<string>();
-  const [qtdEtapas, setQtdEtapas] = useState<string>();
-  const [qtdContratos, setQtdContratos] = useState<string>();
   const [qtdChamados, setQtdChamados] = useState<string>();
   const [qtdChamadosAbertos, setQtdChamadosAbertos] = useState<string>();
   const [disponibilidadeMaterial, setDisponibilidadeMaterial] = useState<
@@ -31,10 +28,10 @@ const Home = () => {
     ]
   >();
 
+  const navigate = useNavigate();
+
   const [loadingQtdTotal, setLoadingQtdTotal] = useState(false);
   const [loadingDisponibilidade, setLoadingDisponibilidade] = useState(false);
-  const [loadingContrato, setLoadingContrato] = useState(false);
-  const [loadingEtapa, setLoadingEtapa] = useState(false);
 
   const loadQtdTotal = useCallback(() => {
     setLoadingQtdTotal(true);
@@ -54,52 +51,6 @@ const Home = () => {
       })
       .finally(() => {
         setLoadingQtdTotal(false);
-      });
-  }, []);
-
-  const loadQtdContratos = useCallback(() => {
-    setLoadingContrato(true);
-
-    const requestParams: AxiosRequestConfig = {
-      url: "/safe/contratos",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        setQtdContratos(res.data);
-      })
-      .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de contratos do SAFE."
-        );
-      })
-      .finally(() => {
-        setLoadingContrato(false);
-      });
-  }, []);
-
-  const loadQtdEtapas = useCallback(() => {
-    setLoadingEtapa(true);
-
-    const requestParams: AxiosRequestConfig = {
-      url: "/safe/etapas",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        setQtdEtapas(res.data);
-      })
-      .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de etapas do SAFE."
-        );
-      })
-      .finally(() => {
-        setLoadingEtapa(false);
       });
   }, []);
 
@@ -165,27 +116,23 @@ const Home = () => {
     loadQtdChamados();
     loadQtdChamadosAbertos();
     loadDisponibilidadeMaterial();
-    loadQtdContratos();
-    loadQtdEtapas();
   }, [
     loadQtdTotal,
     loadQtdChamados,
     loadQtdChamadosAbertos,
     loadDisponibilidadeMaterial,
-    loadQtdContratos,
-    loadQtdEtapas,
   ]);
 
   return (
     <div className="home-container">
       <div className="dashboard">
         <div className="div-qtds">
-          <div className="card-qtd">
-            <h6>Total Chamados - SGL (Garantia) </h6>
+          <div className="card-qtd card-link-chamado">
+            <h6>Chamados - SGL (Garantia) </h6>
             <span>{qtdChamados}</span>
           </div>
-          <div className="card-qtd">
-            <h6>Total Chamados Abertos - SGL (Garantia)</h6>
+          <div className="card-qtd card-link-chamado">
+            <h6>Chamados Abertos - SGL (Garantia)</h6>
             <span>{qtdChamadosAbertos}</span>
           </div>
           {loadingDisponibilidade ? (
@@ -195,19 +142,25 @@ const Home = () => {
           ) : (
             disponibilidadeMaterial?.map((d) =>
               d.disponibilidade === "Disponível" ? (
-                <Link to={"/dashboard-sgl-sg7/materialom/disponivel"}>
-                  <div className="card-qtd card-link-material">
-                    <h6>Materiais Disponíveis Classe VII nas OM</h6>
-                    <span>{d.quantidade}</span>
-                  </div>
-                </Link>
+                <div
+                  className="card-qtd card-link-material"
+                  onClick={() =>
+                    navigate("/dashboard-sgl-sg7/materialom/disponivel")
+                  }
+                >
+                  <h6>Materiais Disponíveis Classe VII nas OM</h6>
+                  <span>{d.quantidade}</span>
+                </div>
               ) : (
-                <Link to={"/dashboard-sgl-sg7/materialom/indisponivel"}>
-                  <div className="card-qtd card-link-material">
-                    <h6>Materiais Indisponíveis Classe VII nas OM</h6>
-                    <span>{d.quantidade}</span>
-                  </div>
-                </Link>
+                <div
+                  className="card-qtd card-link-material"
+                  onClick={() =>
+                    navigate("/dashboard-sgl-sg7/materialom/indisponivel")
+                  }
+                >
+                  <h6>Materiais Indisponíveis Classe VII nas OM</h6>
+                  <span>{d.quantidade}</span>
+                </div>
               )
             )
           )}
@@ -216,37 +169,14 @@ const Home = () => {
               <Loader />
             </div>
           ) : (
-            <Link to={"/dashboard-sgl-sg7/materialom"}>
-              <div className="card-qtd card-link-material">
-                <h6>Total Materiais Classe VII nas OM</h6>
-                <span>{totalMateriais}</span>
-              </div>
-            </Link>
-          )}
-          <div className="card-qtd">
-            <h6 style={{ position: "absolute", top: "50px" }}>
-              Porcentagem até 50.000 materiais
-            </h6>
-            <QtdMaterialTotalGauge />
-          </div>
-          {loadingContrato ? (
-            <div className="loader-div">
-              <Loader />
-            </div>
-          ) : (
-            <div className="card-qtd">
-              <h6>Total Contratos SAD/SISFRON</h6>
-              <span>{qtdContratos}</span>
-            </div>
-          )}
-          {loadingEtapa ? (
-            <div className="loader-div">
-              <Loader />
-            </div>
-          ) : (
-            <div className="card-qtd">
-              <h6>Total Etapas SAD/SISFRON</h6>
-              <span>{qtdEtapas}</span>
+            <div
+              className="card-qtd card-link-material"
+              onClick={() =>
+                navigate("/dashboard-sgl-sg7/materialom")
+              }
+            >
+              <h6>Materiais Classe VII nas OM</h6>
+              <span>{totalMateriais}</span>
             </div>
           )}
         </div>

@@ -40,7 +40,9 @@ const QtdMaterialCmdo = () => {
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as QtdMaterialCmdoType[]);
+        let data = res.data as QtdMaterialCmdoType[];
+        data = data.filter(item => item.cmdo !== "");
+        setData(data);
       })
       .catch(() => {
         toast.error(

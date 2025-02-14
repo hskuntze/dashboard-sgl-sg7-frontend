@@ -6,6 +6,7 @@ import Home from "pages/Home";
 import MaterialOM from "pages/MaterialOM";
 import NaoEncontrado from "pages/NaoEncontrado";
 import OMs from "pages/OM";
+import UniquePage from "pages/UniquePage";
 import PrivateRoute from "PrivateRoute";
 import {
   BrowserRouter,
@@ -42,8 +43,20 @@ const Routes = () => {
                 roles={[
                   { id: 1, autorizacao: "PERFIL_ADMIN" },
                   { id: 2, autorizacao: "PERFIL_USUARIO" },
-                  { id: 3, autorizacao: "PERFIL_OPERADOR_NOC" },
-                  { id: 4, autorizacao: "PERFIL_OPERADOR_OM" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <UniquePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/old"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
                   { id: 5, autorizacao: "PERFIL_SLI" },
                 ]}
               >

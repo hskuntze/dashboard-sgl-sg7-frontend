@@ -74,6 +74,11 @@
 .sair-topo {
   margin-right: 2%;
   margin-left: 15px;
+  transition: transform 0.22s ease-in-out;
+}
+
+.sair-topo:hover {
+  transform: scale(1.12);
 }
 
 @keyframes piscar {
@@ -130,7 +135,7 @@
   }
 
   .navbar-inner-top-element {
-    height: 90px;
+    height: 70px;
   }
 
   .navbar-bottom-element {

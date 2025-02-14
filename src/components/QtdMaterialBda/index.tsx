@@ -55,7 +55,7 @@ const QtdMaterialBda = () => {
   }, [loadData]);
 
   // Ordena os dados do maior para o menor para facilitar a visualização
-  const sortedData = [...data].sort((a, b) => b.quantidade - a.quantidade);
+  const sortedData = [...data].sort((a, b) => b.quantidade - a.quantidade).filter((item) => item.bda !== "");
 
   const options: ApexOptions = {
     chart: {

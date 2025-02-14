@@ -1,16 +1,21 @@
 export type MaterialOMType = {
-  id: number;
-  cmdo: string;
+  cmdoOds: string;
   rm: string;
   de: string;
   bda: string;
   om: string;
-  cidadeestado: string;
-  nomeeqp: string;
+  cidade: string;
+  estado: string;
+  equipamento: string;
   modelo: string;
   fabricante: string;
   pn: string;
   sn: string;
   disponibilidade: string;
   motivoindisp: string;
+  tipo_eqp: string;
+  subsistema: string;
+  grupo: string;
+  latitude: string;
+  longitude: string;
 };

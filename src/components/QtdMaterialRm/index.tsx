@@ -103,13 +103,15 @@ const QtdMaterialRm = () => {
     dataLabels: {
       enabled: true,
       style: {
-        fontSize: "16px",
+        fontSize: "13px",
         fontWeight: "bold",
         fontFamily: "Nunito, serif",
         colors: ["#FFF"],
       },
       formatter: function (val: number, opts) {
-        return opts.w.config.series[opts.seriesIndex].toLocaleString(); // Formata o valor real
+        const rmLabel = opts.w.config.labels[opts.seriesIndex]; // Obtém o nome da RM
+        const value = opts.w.config.series[opts.seriesIndex].toLocaleString(); // Obtém o valor formatado
+        return `${value}\t${rmLabel}`; // Exibe "xª RM" e o valor na fatia da pizza
       },
     },
     legend: {

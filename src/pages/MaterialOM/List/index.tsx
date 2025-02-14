@@ -8,13 +8,23 @@ import { FilterMaterialType } from "types/filtermaterialom";
 import { MaterialOMType } from "types/materialom";
 import { SpringPage } from "types/vendor/spring";
 import { requestBackend } from "utils/requests";
+import jsPDF from "jspdf";
+import * as XLSX from "xlsx";
+import QtdMaterialRmExtraSmall from "components/QtdMaterialRmExtraSmall";
+import { useParams } from "react-router-dom";
 
 type ControlComponentsData = {
   activePage: number;
   filterData: FilterMaterialType;
 };
 
+type UrlParams = {
+  cmdo: string;
+};
+
 const MaterialOMList = () => {
+  const urlParams = useParams<UrlParams>();
+
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState<SpringPage<MaterialOMType>>();
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -22,7 +32,12 @@ const MaterialOMList = () => {
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
-      filterData: { nomeeqp: null, pn: null, sn: null },
+      filterData: {
+        nomeeqp: null,
+        pn: null,
+        sn: null,
+        cmdo: urlParams.cmdo ? urlParams.cmdo : null,
+      },
     });
 
   const handlePageChange = (
@@ -56,13 +71,14 @@ const MaterialOMList = () => {
       const params: AxiosRequestConfig = {
         withCredentials: true,
         method: "GET",
-        url: "/materiaisom/paginado",
+        url: "/materiaisom/paginado/filter",
         params: {
           page: controlComponentsData.activePage,
           size: rowsPerPage,
           nomeeqp: controlComponentsData.filterData.nomeeqp,
           sn: controlComponentsData.filterData.sn,
           pn: controlComponentsData.filterData.pn,
+          cmdo: controlComponentsData.filterData.cmdo,
         },
       };
 
@@ -70,13 +86,130 @@ const MaterialOMList = () => {
       setPage(newPage);
       setLoading(false);
     })();
-  }, [controlComponentsData, rowsPerPage]);
+  }, [controlComponentsData, rowsPerPage, urlParams.cmdo]);
+
+  const handleExportToExcel = () => {
+    if (page && page.content.length > 0) {
+      const capacitadosProcessado = page.content.map((u) => ({
+        "Nome eqp.": u.equipamento,
+        Modelo: u.modelo,
+        Fabricante: u.fabricante,
+        PN: u.pn,
+        SN: u.sn,
+        Disponibilidade: u.disponibilidade,
+        "Motivo da indisponibilidade": u.motivoindisp,
+        RM: u.rm,
+        CMDO: u.cmdoOds,
+        BDA: u.bda,
+        OM: u.om,
+        DE: u.de,
+        "Cidade/UF": u.cidade + "/" + u.estado,
+        Subsistema: u.subsistema,
+        Grupo: u.grupo,
+        Longitude: u.longitude,
+        Latitude: u.latitude,
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(capacitadosProcessado);
+      const wb = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(wb, ws, "Materiais");
+      XLSX.writeFile(wb, "materiais.xlsx");
+    }
+  };
+
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Materiais disponíveis", 5, 20);
+
+    doc.setFontSize(12);
+    const yStart = 30;
+    let y = yStart;
+    const lineHeight = 10;
+    const marginLeft = 15;
+    const colWidth = 50;
+
+    if (page && page.content.length > 0) {
+      page.content?.forEach((u, i) => {
+        doc.setFont("helvetica", "bold");
+        doc.text(u.equipamento + ", " + u.sn, marginLeft, y);
+        y += lineHeight;
+
+        const data = [
+          ["Nome eqp.", u.equipamento ?? "-"],
+          ["Modelo", u.modelo ?? "-"],
+          ["Fabricante", u.fabricante ?? "-"],
+          ["PN", u.pn ?? "-"],
+          ["SN", u.sn ?? "-"],
+          ["Disponibilidade", u.disponibilidade ?? "-"],
+          ["Motivo da indisponibilidade", u.motivoindisp ?? "-"],
+          ["RM", u.rm ?? "-"],
+          ["CMDO", u.cmdoOds ?? "-"],
+          ["BDA", u.bda ?? "-"],
+          ["OM", u.om ?? "-"],
+          ["DE", u.de ?? "-"],
+          ["Cidade", u.cidade ?? "-"],
+          ["UF", u.estado ?? "-"],
+          ["Subsistema", u.subsistema ?? "-"],
+          ["Grupo", u.grupo ?? "-"],
+          ["Tipo Eqp.", u.tipo_eqp ?? "-"],
+          ["Longitude", String(u.longitude) ?? "-"],
+          ["Latitude", String(u.latitude) ?? "-"],
+        ];
+
+        data.forEach(([k, v]) => {
+          doc.setFont("helvetica", "bold");
+          doc.text(k, marginLeft, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(v, marginLeft + colWidth, y);
+          y += lineHeight;
+
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+          }
+        });
+
+        y += 10;
+      });
+    }
+
+    doc.save("materiais_disponiveis.pdf");
+  };
 
   return (
     <div className="list-container">
-      <h2 style={{marginLeft: "10px", marginTop: "20px"}}>Todos os materiais</h2>
+      <h2 style={{ marginLeft: "10px", marginTop: "20px" }}>
+        Todos os materiais
+      </h2>
       <div>
-        <FilterMaterialOM onSubmitFilter={handleSubmitFilter} />
+        <div className="top-list-buttons">
+          <button
+            onClick={handleExportPDF}
+            type="button"
+            className="act-button create-button"
+          >
+            <i className="bi bi-filetype-pdf" />
+          </button>
+          <button
+            onClick={handleExportToExcel}
+            type="button"
+            className="act-button create-button"
+          >
+            <i className="bi bi-file-earmark-excel" />
+          </button>
+        </div>
+        <div className="fixed-graph">
+          <QtdMaterialRmExtraSmall />
+        </div>
+      </div>
+      <div>
+        <FilterMaterialOM
+          cmdo={urlParams.cmdo !== null ? urlParams.cmdo : null}
+          onSubmitFilter={handleSubmitFilter}
+        />
       </div>
       {loading ? (
         <div className="loader-div">
@@ -101,7 +234,7 @@ const MaterialOMList = () => {
           </thead>
           <tbody className="table-body">
             {page?.content.map((el) => (
-              <MaterialOMCard element={el} key={el.id} />
+              <MaterialOMCard element={el} key={el.sn} />
             ))}
           </tbody>
           <tfoot>
