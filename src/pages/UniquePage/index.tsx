@@ -26,7 +26,7 @@ import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 // import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
 import Map from "components/Map";
-import { GeorefUnidade } from "types/georef";
+import { GeorefCmdo } from "types/georefcmdo";
 
 type DisponibilidadeMaterial = {
   disponibilidade: string;
@@ -70,7 +70,7 @@ const UniquePage = () => {
   const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>([]);
   // const [selectedCmdoIndisponivelBda, setSelectedCmdoIndisponivelBda] =
   //   useState<QtdIndisponivelPorBdaType[]>([]);
-  const [selectedCmdoMapa, setSelectedCmdoMapa] = useState<GeorefUnidade[]>([]);
+  const [selectedCmdoMapa, setSelectedCmdoMapa] = useState<GeorefCmdo[]>([]);
 
   const loadQtdTotal = useCallback(() => {
     setLoadingMateriais(true);
@@ -195,7 +195,7 @@ const UniquePage = () => {
       };
 
       const requestParamsMapa: AxiosRequestConfig = {
-        url: `/materiaisom/georef/unidades/${cmdo}`,
+        url: `/materiaisom/georef/cmdo/${cmdo}`,
         method: "GET",
         withCredentials: true,
       };
@@ -250,7 +250,7 @@ const UniquePage = () => {
 
       requestBackend(requestParamsMapa)
         .then((res) => {
-          setSelectedCmdoMapa(res.data as GeorefUnidade[]);
+          setSelectedCmdoMapa(res.data as GeorefCmdo[]);
         })
         .catch((err) => {
           toast.error(

@@ -25,7 +25,7 @@ const MaterialOMIndisponivel = () => {
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
-      filterData: { nomeeqp: null, pn: null, sn: null },
+      filterData: { nomeeqp: null, pn: null, sn: null, cmdo: null },
     });
 
   const handlePageChange = (
@@ -86,7 +86,7 @@ const MaterialOMIndisponivel = () => {
         Disponibilidade: u.disponibilidade,
         "Motivo da indisponibilidade": u.motivoindisp,
         RM: u.rm,
-        CMDO: u.cmdo_ods,
+        CMDO: u.cmdoOds,
         BDA: u.bda,
         OM: u.om,
         DE: u.de,
@@ -133,7 +133,7 @@ const MaterialOMIndisponivel = () => {
           ["Disponibilidade", u.disponibilidade ?? "-"],
           ["Motivo da indisponibilidade", u.motivoindisp ?? "-"],
           ["RM", u.rm ?? "-"],
-          ["CMDO", u.cmdo_ods ?? "-"],
+          ["CMDO", u.cmdoOds ?? "-"],
           ["BDA", u.bda ?? "-"],
           ["OM", u.om ?? "-"],
           ["DE", u.de ?? "-"],

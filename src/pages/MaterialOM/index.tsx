@@ -13,6 +13,7 @@ const MaterialOM = () => {
       <Route path="/disponivel" element={<MaterialOMDisponivel />} />
       <Route path="/indisponivel" element={<MaterialOMIndisponivel />} />
       <Route path="/visualizar/:id" element={<MaterialOMInspect />} />
+      <Route path="/filter/:cmdo" element={<MaterialOMList />} />
     </Routes>
   );
 };

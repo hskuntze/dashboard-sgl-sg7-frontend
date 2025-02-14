@@ -11,13 +11,20 @@ import { requestBackend } from "utils/requests";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import QtdMaterialRmExtraSmall from "components/QtdMaterialRmExtraSmall";
+import { useParams } from "react-router-dom";
 
 type ControlComponentsData = {
   activePage: number;
   filterData: FilterMaterialType;
 };
 
+type UrlParams = {
+  cmdo: string;
+};
+
 const MaterialOMList = () => {
+  const urlParams = useParams<UrlParams>();
+
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState<SpringPage<MaterialOMType>>();
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -25,7 +32,12 @@ const MaterialOMList = () => {
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
-      filterData: { nomeeqp: null, pn: null, sn: null },
+      filterData: {
+        nomeeqp: null,
+        pn: null,
+        sn: null,
+        cmdo: urlParams.cmdo ? urlParams.cmdo : null,
+      },
     });
 
   const handlePageChange = (
@@ -66,6 +78,7 @@ const MaterialOMList = () => {
           nomeeqp: controlComponentsData.filterData.nomeeqp,
           sn: controlComponentsData.filterData.sn,
           pn: controlComponentsData.filterData.pn,
+          cmdo: controlComponentsData.filterData.cmdo,
         },
       };
 
@@ -73,7 +86,7 @@ const MaterialOMList = () => {
       setPage(newPage);
       setLoading(false);
     })();
-  }, [controlComponentsData, rowsPerPage]);
+  }, [controlComponentsData, rowsPerPage, urlParams.cmdo]);
 
   const handleExportToExcel = () => {
     if (page && page.content.length > 0) {
@@ -86,7 +99,7 @@ const MaterialOMList = () => {
         Disponibilidade: u.disponibilidade,
         "Motivo da indisponibilidade": u.motivoindisp,
         RM: u.rm,
-        CMDO: u.cmdo_ods,
+        CMDO: u.cmdoOds,
         BDA: u.bda,
         OM: u.om,
         DE: u.de,
@@ -133,7 +146,7 @@ const MaterialOMList = () => {
           ["Disponibilidade", u.disponibilidade ?? "-"],
           ["Motivo da indisponibilidade", u.motivoindisp ?? "-"],
           ["RM", u.rm ?? "-"],
-          ["CMDO", u.cmdo_ods ?? "-"],
+          ["CMDO", u.cmdoOds ?? "-"],
           ["BDA", u.bda ?? "-"],
           ["OM", u.om ?? "-"],
           ["DE", u.de ?? "-"],
@@ -193,7 +206,10 @@ const MaterialOMList = () => {
         </div>
       </div>
       <div>
-        <FilterMaterialOM onSubmitFilter={handleSubmitFilter} />
+        <FilterMaterialOM
+          cmdo={urlParams.cmdo !== null ? urlParams.cmdo : null}
+          onSubmitFilter={handleSubmitFilter}
+        />
       </div>
       {loading ? (
         <div className="loader-div">

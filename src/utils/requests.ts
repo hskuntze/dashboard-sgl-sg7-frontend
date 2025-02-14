@@ -6,8 +6,8 @@ import { getAuthData } from "./storage";
 /**
  * LOCALHOST
  */
-export const BASE_URL =
-  process.env.REACT_APP_BACKEND_URL ?? "http://172.20.71.150:9989/dashboard-sgl-sg7/api";
+// export const BASE_URL =
+//   process.env.REACT_APP_BACKEND_URL ?? "http://172.20.71.150:9989/dashboard-sgl-sg7/api";
 
 /**
  * HOMOL
@@ -18,8 +18,8 @@ export const BASE_URL =
 /**
  * PROD
  */
-// export const BASE_URL =
-// process.env.REACT_APP_BACKEND_URL ?? "http://10.134.0.163:9989/dashboard-sgl-sg7/api";
+export const BASE_URL =
+process.env.REACT_APP_BACKEND_URL ?? "http://10.134.0.163:9989/dashboard-sgl-sg7/api";
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID ?? config.CLIENT_ID;
 const CLIENT_SECRET =

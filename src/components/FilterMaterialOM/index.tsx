@@ -5,9 +5,10 @@ import "./styles.css";
 
 type Props = {
   onSubmitFilter: (data: FilterMaterialType) => void;
+  cmdo?: string | null;
 };
 
-const FilterMaterialOM = ({ onSubmitFilter }: Props) => {
+const FilterMaterialOM = ({ onSubmitFilter, cmdo }: Props) => {
   const { register, handleSubmit } = useForm<FilterMaterialType>();
 
   const onSubmit = (filter: FilterMaterialType) => {
@@ -39,6 +40,17 @@ const FilterMaterialOM = ({ onSubmitFilter }: Props) => {
             placeholder="SN"
             className="form-control"
             {...register("sn")}
+          />
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="CMDO"
+            className={`form-control ${cmdo !== null ? "disabled" : ""}`}
+            {...register("cmdo", {
+              value: cmdo !== null ? cmdo : "",
+            })}
+            disabled={cmdo !== null ? true : false}
           />
         </div>
         <button type="submit" className="filter-icon">

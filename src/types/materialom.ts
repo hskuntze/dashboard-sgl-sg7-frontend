@@ -1,5 +1,5 @@
 export type MaterialOMType = {
-  cmdo_ods: string;
+  cmdoOds: string;
   rm: string;
   de: string;
   bda: string;

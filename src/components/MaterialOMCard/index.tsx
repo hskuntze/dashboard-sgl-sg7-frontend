@@ -34,7 +34,7 @@ const MaterialOMCard = ({ element }: Props) => {
         <div className="card-content">{element.de}</div>
       </td>
       <td>
-        <div className="card-content">{element.cmdo_ods}</div>
+        <div className="card-content">{element.cmdoOds}</div>
       </td>
       <td>
         <div className="card-content">{element.bda}</div>

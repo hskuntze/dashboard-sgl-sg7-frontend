@@ -78,7 +78,7 @@ const MaterialOMInspect = () => {
                 <b>DE: </b> {material?.de}
               </span>
               <span>
-                <b>CMDO: </b> {material?.cmdo_ods}
+                <b>CMDO: </b> {material?.cmdoOds}
               </span>
               <span>
                 <b>Brigada: </b> {material?.bda}

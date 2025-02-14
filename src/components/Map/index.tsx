@@ -1,10 +1,4 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  ImageOverlay,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, ImageOverlay } from "react-leaflet";
 import L from "leaflet";
 
 // Corrigir ícones padrão do Leaflet (problema comum com Webpack)
@@ -13,12 +7,21 @@ import { requestBackend } from "utils/requests";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Loader from "components/Loader";
-import { GeorefUnidade } from "types/georef";
-import { saveGeoRefData } from "utils/storage";
+import { saveGeoRefCmdoData } from "utils/storage";
 
 import MapaBrasil from "assets/images/mapa-brasil-cmdo.svg";
+import CMS from "assets/images/CMS.png";
+import CMSE from "assets/images/CMSE.png";
+import CMP from "assets/images/CMP.png";
+import CMO from "assets/images/CMO.png";
+import CMN from "assets/images/CMN.png";
+import CMNE from "assets/images/CMNE.png";
+import CML from "assets/images/CML.png";
+import CMA from "assets/images/CMA.png";
 
 import markerIcon from "assets/images/marker-icon-3.png";
+import { GeorefCmdo } from "types/georefcmdo";
+import { useNavigate } from "react-router-dom";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -30,28 +33,38 @@ L.Marker.prototype.options.icon = DefaultIcon;
 // L.imageOverlay(MapaBrasil, [[-33.70, -53.43601], [5.24591, -60.18398]]);
 
 interface Props {
-  selectedData?: GeorefUnidade[];
+  selectedData?: GeorefCmdo[];
 }
 
 const Map = ({ selectedData }: Props) => {
-  const [points, setPoints] = useState<GeorefUnidade[]>([]);
+  const [points, setPoints] = useState<GeorefCmdo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
-  const [filteredPoints, setFilteredPoints] = useState<GeorefUnidade[]>([]);
+
+  const navigate = useNavigate();
 
   const bounds: L.LatLngBoundsExpression = [
     [-34.15, -74.25],
-    [5.69, -28.69] 
+    [5.69, -28.69],
   ];
 
   const mapRef = useRef<L.Map | null>(null);
+
+  const logos: Record<string, string> = {
+    CMS,
+    CMSE,
+    CMP,
+    CMO,
+    CMN,
+    CMNE,
+    CML,
+    CMA,
+  };
 
   const loadPoints = useCallback(() => {
     setLoading(true);
 
     if (selectedData && selectedData.length > 0) {
       setPoints(selectedData);
-      setFilteredPoints(selectedData);
       setLoading(false);
 
       //mapRef.current?.setZoom(3);
@@ -59,27 +72,25 @@ const Map = ({ selectedData }: Props) => {
       const savedGeoRef = localStorage.getItem("geoRef");
       if (savedGeoRef) {
         // Se houver dados salvos no localStorage, usa diretamente
-        const parsedGeoRef = JSON.parse(savedGeoRef) as GeorefUnidade[];
+        const parsedGeoRef = JSON.parse(savedGeoRef) as GeorefCmdo[];
 
         setPoints(parsedGeoRef);
-        setFilteredPoints(parsedGeoRef);
         setLoading(false);
         //mapRef.current?.setZoom(3);
         return; // Não faz a requisição, já temos os dados
       }
 
       const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/georef/unidades",
+        url: "/materiaisom/georef/cmdo",
         method: "GET",
         withCredentials: true,
       };
 
       requestBackend(requestParams)
         .then((res) => {
-          const geoRefData = res.data as GeorefUnidade[];
+          const geoRefData = res.data as GeorefCmdo[];
           setPoints(geoRefData);
-          setFilteredPoints(geoRefData);
-          saveGeoRefData(geoRefData); // Armazena no localStorage
+          saveGeoRefCmdoData(geoRefData); // Armazena no localStorage
           //mapRef.current?.setZoom(3);
         })
         .catch((err) => {
@@ -97,17 +108,16 @@ const Map = ({ selectedData }: Props) => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/georef/unidades",
+      url: "/materiaisom/georef/cmdo",
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        const geoRefData = res.data as GeorefUnidade[];
+        const geoRefData = res.data as GeorefCmdo[];
         setPoints(geoRefData);
-        setFilteredPoints(geoRefData);
-        saveGeoRefData(geoRefData); // Armazena no localStorage
+        saveGeoRefCmdoData(geoRefData); // Armazena no localStorage
       })
       .catch((err) => {
         toast.error("Erro ao tentar carregar os dados de georeferenciamento.");
@@ -121,19 +131,6 @@ const Map = ({ selectedData }: Props) => {
     loadPoints();
   }, [loadPoints]);
 
-  const goToLocation = (lat: number, lng: number) => {
-    if (mapRef.current) {
-      mapRef.current.setView([lat, lng], 15);
-    }
-  };
-
-  const handleFilter = () => {
-    const filtered = points.filter((point) =>
-      point.equipamento.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredPoints(filtered);
-  };
-
   return (
     <>
       {loading ? (
@@ -146,7 +143,7 @@ const Map = ({ selectedData }: Props) => {
             center={[-15, -50]}
             zoom={3}
             className="map-container"
-            style={{ width: "100%", height: "70%" }}
+            style={{ width: "100%", height: "100%" }}
             ref={mapRef}
           >
             <button onClick={forceRefresh} className="refresh-map-button">
@@ -159,22 +156,39 @@ const Map = ({ selectedData }: Props) => {
             <ImageOverlay
               url={MapaBrasil} // Estilos opcionais para o SVG
               bounds={bounds}
-              opacity={0.43}
+              opacity={1}
             />
-            {filteredPoints.map((point) => (
-              <Marker
-                position={[Number(point.latitude), Number(point.longitude)]}
-              >
-                <Popup>
-                  <div>
-                    <p>{point.om}</p>
-                    <p>{point.equipamento}</p>
+            {points.map((point) => {
+              const logoUrl = logos[point.cmdoOds]; // Usa um logo padrão caso não tenha mapeado
+
+              const customLabel = L.divIcon({
+                className: "custom-label",
+                html: `
+                  <div class="map-icon">
+                    <div class="label" style="background-image: url(${logoUrl});">
+                    </div>
+                    <div class="label-content">
+                      <span>${point.cmdoOds}</span>
+                      <span>${point.quantidade}</span>
+                    </div>
                   </div>
-                </Popup>
-              </Marker>
-            ))}
+                  `,
+                iconSize: [0, 0],
+              });
+
+              return (
+                <Marker
+                  key={point.cmdoOds}
+                  position={[Number(point.latitude), Number(point.longitude)]}
+                  icon={customLabel}
+                  eventHandlers={{
+                    click: () => navigate(`/dashboard-sgl-sg7/materialom/filter/${point.cmdoOds}`),
+                  }}
+                />
+              );
+            })}
           </MapContainer>
-          <div className="map-listing">
+          {/* <div className="map-listing">
             <div className="filter-container">
               <input
                 type="text"
@@ -199,7 +213,7 @@ const Map = ({ selectedData }: Props) => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
         </div>
       )}
     </>
