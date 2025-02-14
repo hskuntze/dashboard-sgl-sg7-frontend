@@ -4,7 +4,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-bottom: 1px solid #cbd0dd; 
+  border-bottom: 1px solid #cbd0dd;
+  width: 100vw;
+}
+
+.navbar-top-element {
+  width: 100vw;
 }
 
 .navbar-inner-top-element {
@@ -20,16 +25,20 @@
 }
 
 .navbar-logo {
-  height: 50px;
-  width: 140px;
+  height: 30px;
+  width: 80px;
 }
 
 .navbar-title {
   font-weight: 600;
-  font-size: 25px;
+  font-size: 15px;
   letter-spacing: -0.025em;
-  width: 200px;
+  width: 100px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .navbar-menu {
@@ -64,21 +73,30 @@
 
 .real-time-label {
   width: auto;
-  height: 25px;
-  margin-left: 9px;
-  font-size: 18px;
+  height: auto;
+  font-size: 9px;
   color: #F51500;
+  text-align: center;
   animation: piscar 2.5s ease-in-out infinite;
 }
 
 .sair-topo {
-  margin-right: 2%;
-  margin-left: 15px;
+  margin: 0 5px 0 5px;
   transition: transform 0.22s ease-in-out;
+  height: 100%;
+}
+
+.sair-topo button {
+  height: 100%;
 }
 
 .sair-topo:hover {
   transform: scale(1.12);
+}
+
+.ctcea-logo {
+  width: 80px;
+  height: auto;
 }
 
 @keyframes piscar {
@@ -132,6 +150,9 @@
 @media (min-width: 992px) {
   .navbar-container {
     min-height: 70px;
+    display: flex;
+    flex-direction: row;
+    justify-content: unset;
   }
 
   .navbar-inner-top-element {
@@ -163,6 +184,7 @@
     width: auto;
     margin: 0 auto;
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
   }
@@ -171,5 +193,24 @@
     margin-right: 20px;
     width: 180px;
     height: auto;
+  }
+
+  .real-time-label {
+    width: auto;
+    height: 25px;
+    margin-left: 9px;
+    font-size: 18px;
+    color: #F51500;
+    animation: piscar 2.5s ease-in-out infinite;
+  }
+  
+  .sair-topo {
+    margin-right: 2%;
+    margin-left: 15px;
+    transition: transform 0.22s ease-in-out;
+  }
+  
+  .sair-topo:hover {
+    transform: scale(1.12);
   }
 }
