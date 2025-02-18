@@ -17,11 +17,51 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
   const [data, setData] = useState<CategoriaMaterialIndisponivelType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [elementSize, setElementSize] = useState({
+    width: 0,
+    height: 0,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+
+      if (newWidth < 768) {
+        setElementSize({
+          height: 300,
+          width: 300,
+        });
+      } else if (newWidth >= 768 && newWidth < 1600) {
+        setElementSize({
+          height: 300,
+          width: 400,
+        });
+      } else if (newWidth >= 1600 && newWidth < 1800) {
+        setElementSize({
+          height: 300,
+          width: 420,
+        });
+      } else {
+        setElementSize({
+          height: 300,
+          width: 450,
+        });
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Chama a função uma vez para definir o estado inicial
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const loadData = useCallback(() => {
     setLoading(true);
 
     if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
+      setTimeout(() => {
+        setData(selectedData);
+      }, 300);
       setLoading(false);
     } else {
       const requestParams: AxiosRequestConfig = {
@@ -32,7 +72,9 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
 
       requestBackend(requestParams)
         .then((res) => {
-          setData(res.data as CategoriaMaterialIndisponivelType[]);
+          setTimeout(() => {
+            setData(res.data as CategoriaMaterialIndisponivelType[]);
+          }, 300);
         })
         .catch(() => {
           toast.error(
@@ -51,9 +93,7 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
 
   const top10Data =
     selectedData && selectedData.length > 0
-      ? [...data]
-          .sort((a, b) => b.quantidade - a.quantidade)
-          .slice(0, 10)
+      ? [...data].sort((a, b) => b.quantidade - a.quantidade).slice(0, 10)
       : [...data]
           .sort((a, b) => b.quantidade - a.quantidade)
           .slice(0, 10)
@@ -65,6 +105,14 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
       background: "transparent",
       toolbar: {
         show: false,
+      },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
       },
     },
     title: {
@@ -86,7 +134,7 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
             {
               from: 0,
               to: 100000,
-              color: "#2A6DFA",
+              color: "#D01B11",
             },
           ],
         },
@@ -171,8 +219,8 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
             options={options}
             series={series}
             type="bar"
-            height={300}
-            width={450}
+            height={elementSize.height}
+            width={elementSize.width}
           />
         </div>
       )}

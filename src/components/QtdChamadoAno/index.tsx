@@ -40,7 +40,9 @@ const QtdChamadoAno = () => {
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as QtdChamadoAnoType[]);
+        setTimeout(() => {
+          setData(res.data as QtdChamadoAnoType[]);
+        }, 300);
       })
       .catch(() => {
         toast.error(
@@ -67,11 +69,17 @@ const QtdChamadoAno = () => {
     chart: {
       type: "line", // Mudado para gráfico de linha
       background: "transparent",
-      height: 500,
-      width: "100%",
       toolbar: {
         show: false,
-      }
+      },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
     },
     title: {
       text: "Chamados por Ano - SGL (Garantia)",
@@ -120,7 +128,7 @@ const QtdChamadoAno = () => {
       style: {
         fontSize: "20px",
         fontFamily: "Nunito, serif",
-      }
+      },
     },
     markers: {
       size: 6, // Tamanho dos marcadores nos pontos da linha

@@ -17,11 +17,51 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
   const [data, setData] = useState<QtdMaterialCidadeEstadoType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [elementSize, setElementSize] = useState({
+    width: 0,
+    height: 0
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+
+      if (newWidth < 768) {
+        setElementSize({
+          height: 300,
+          width: 300,
+        });
+      } else if (newWidth >= 768 && newWidth < 1600) {
+        setElementSize({
+          height: 300,
+          width: 400,
+        });
+      } else if (newWidth >= 1600 && newWidth < 1800) { 
+        setElementSize({
+          height: 300,
+          width: 420,
+        });
+      } else {
+        setElementSize({
+          height: 300,
+          width: 450,
+        });
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Chama a função uma vez para definir o estado inicial
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const loadData = useCallback(() => {
     setLoading(true);
 
     if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
+      setTimeout(() => {
+        setData(selectedData);
+      }, 300);
       setLoading(false);
     } else {
       const requestParams: AxiosRequestConfig = {
@@ -32,7 +72,9 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
 
       requestBackend(requestParams)
         .then((res) => {
-          setData(res.data as QtdMaterialCidadeEstadoType[]);
+          setTimeout(() => {
+            setData(res.data as QtdMaterialCidadeEstadoType[]);
+          }, 300);
         })
         .catch(() => {
           toast.error(
@@ -60,6 +102,14 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
       toolbar: {
         show: false,
       },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
     },
     title: {
       text: "",
@@ -75,14 +125,14 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
       bar: {
         horizontal: false,
         borderRadius: 0,
-        barHeight: "70%",
+        barHeight: "100%",
         colors: {
           ranges: [
             {
               from: 0,
               to: 100000,
               color:
-                selectedData && selectedData.length > 0 ? "#7AACBF" : "#0E1A33",
+                selectedData && selectedData.length > 0 ? "#5D29A6" : "#51337B",
             },
           ],
         },
@@ -117,10 +167,10 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
     },
     dataLabels: {
       style: {
-        colors: selectedData && selectedData.length > 0 ? ["#333"] : ["#fff"],
+        colors: selectedData && selectedData.length > 0 ? ["#020202"] : ["#fff"],
         fontWeight: 700,
         fontFamily: "Nunito, serif",
-        fontSize: "11px",
+        fontSize: elementSize.width > 400 ? "12px" : "6px",
       },
       enabled: true,
       offsetY: 10,
@@ -160,8 +210,8 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
             options={options}
             series={series}
             type="bar"
-            height={300}
-            width={450}
+            height={elementSize.height}
+            width={elementSize.width}
           />
         </div>
       )}

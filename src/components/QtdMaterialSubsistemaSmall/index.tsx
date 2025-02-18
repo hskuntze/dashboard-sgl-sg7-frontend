@@ -5,16 +5,16 @@ import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 
 import "./styles.css";
+import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
 
 interface Props {
-  selectedData?: QtdMaterialRmType[];
+  selectedData?: QtdMaterialSubsistemaType[];
 }
 
-const QtdMaterialRmSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<QtdMaterialRmType[]>([]);
+const QtdMaterialSubsistemaSmall = ({ selectedData }: Props) => {
+  const [data, setData] = useState<QtdMaterialSubsistemaType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [elementSize, setElementSize] = useState({
@@ -29,22 +29,17 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
       if (newWidth < 768) {
         setElementSize({
           height: 300,
-          width: 300,
+          width: 260,
         });
       } else if (newWidth >= 768 && newWidth < 1600) {
         setElementSize({
           height: 300,
-          width: 400,
-        });
-      } else if (newWidth >= 1600 && newWidth < 1800) {
-        setElementSize({
-          height: 300,
-          width: 420,
+          width: 300,
         });
       } else {
         setElementSize({
           height: 300,
-          width: 450,
+          width: 320,
         });
       }
     };
@@ -65,7 +60,7 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
       setLoading(false);
     } else {
       const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/rm",
+        url: "/materiaisom/qtd/subsistema",
         method: "GET",
         withCredentials: true,
       };
@@ -73,7 +68,7 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
       requestBackend(requestParams)
         .then((res) => {
           setTimeout(() => {
-            setData(res.data as QtdMaterialRmType[]);
+            setData(res.data as QtdMaterialSubsistemaType[]);
           }, 300);
         })
         .catch(() => {
@@ -91,25 +86,24 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
     loadData();
   }, [loadData]);
 
-  // Função para extrair o número da RM (ex: "3ª RM" -> 3)
-  const extractNumber = (rm: string) => {
-    const match = rm.match(/^(\d+)ª RM$/);
-    return match ? parseInt(match[1], 10) : 999; // Se não encontrar, coloca no final
+  const labels = data.map((item) => item.subsistema);
+  const values = data.map((item) => item.quantidade);
+
+  const colorMap: Record<string, string> = {
+    "CTC": "#64E324",
+    "SAT": "#E3DA24",
+    "TAT": "#E37D24",
+    // Adicione mais subsistemas conforme necessário
   };
 
-  // Ordena os dados corretamente de 1 a 12
-  const sortedData = [...data].sort(
-    (a, b) => extractNumber(a.rm) - extractNumber(b.rm)
-  );
-
-  // Define os rótulos e valores para o gráfico de pizza
-  const labels = sortedData.map((item) => item.rm);
-  const values = sortedData.map((item) => item.quantidade);
+  const colors = labels.map((label) => colorMap[label] || "#000");
 
   const options: ApexOptions = {
     chart: {
-      type: "pie",
+      type: "donut",
       background: "transparent",
+      fontFamily: "Nunito, serif",
+      offsetX: elementSize.width < 320 ? 0 : -40,
       animations: {
         enabled: true,
         speed: 800,
@@ -119,7 +113,6 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
         },
       },
     },
-    labels: labels,
     tooltip: {
       enabled: true,
       y: {
@@ -134,63 +127,55 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
     dataLabels: {
       enabled: true,
       style: {
-        fontSize: "13px",
+        fontSize: "12px",
         fontWeight: "bold",
         fontFamily: "Nunito, serif",
         colors: ["#FFF"],
       },
       formatter: function (val: number, opts) {
-        const rmLabel = opts.w.config.labels[opts.seriesIndex]; // Obtém o nome da RM
-        const value = val; // Obtém o valor formatado
-        return [`${value.toFixed(2)}%`, rmLabel]; // Exibe "xª RM" e o valor na fatia da pizza
+        return opts.w.config.labels[opts.seriesIndex];
       },
     },
     legend: {
-      position: "bottom",
+      position: "left",
       fontSize: "14px",
       fontFamily: "Nunito, serif",
       fontWeight: 800,
       formatter: (val) => `${val}`,
-      width: 400,
-      offsetX: 80,
-      show: false,
+      show: true,
+      offsetY: elementSize.width < 320 ? 25 : 60,
     },
-    // colors: [
-    //   "#A7C0F2",
-    //   "#ABBCDD",
-    //   "#ABB5C8",
-    //   "#9AA2B3",
-    //   "#7A869D",
-    //   "#5E6C88",
-    //   "#465573",
-    //   "#31405E",
-    //   "#202D48",
-    //   "#121D33",
-    //   "#0E1A33",
-    //   "#0A1833",
-    // ],
-    colors: [
-      "#018AE6",
-      "#1184D0",
-      "#1F7DBB",
-      "#2974A6",
-      "#306A91",
-      "#335E7B",
-      "#335266",
-      "#2F4351",
-      "#28343C",
-      "#262E33",
-      "#2B3033",
-      "#2D3133",
-    ],
+    labels: labels,
+    colors: colors,
     stroke: {
       show: false,
     },
     plotOptions: {
       pie: {
-        dataLabels: {
-          minAngleToShowLabel: 20,
-          offset: -10,
+        donut: {
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: "Total",
+              fontSize: "14px",
+              fontWeight: "bold",
+              fontFamily: "Nunito, serif",
+              color: "#333",
+              formatter: function (w) {
+                return w.globals.seriesTotals.reduce(
+                  (a: number, b: number) => a + b,
+                  0
+                );
+              },
+            },
+            value: {
+              fontSize: "22px",
+              fontWeight: "bold",
+              fontFamily: "Nunito, serif",
+              color: "#333",
+            },
+          },
         },
       },
     },
@@ -207,14 +192,24 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
           <ReactApexChart
             options={options}
             series={values}
-            type="pie"
+            type="donut"
+            // height={350}
+            // width={350}
             height={elementSize.height}
             width={elementSize.width}
           />
+          <div className="quantidade-container">
+            {data.map((x) => (
+              <div className="quantidade">
+                <span className="quantidade-value">{new Intl.NumberFormat("pt-BR").format(x.quantidade)}</span>
+                <span className="quantidade-title">{x.subsistema}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default QtdMaterialRmSmall;
+export default QtdMaterialSubsistemaSmall;

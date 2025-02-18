@@ -5,12 +5,12 @@ import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { QtdChamadoAnoType } from "types/relatorio/qtdchamadosano";
 
 import "./styles.css";
+import { ValorTotalCodaoDiariaPassagem } from "types/relatorio/totalcodaodiariapassagem";
 
-const QtdChamadoAnoSmall = () => {
-  const [data, setData] = useState<QtdChamadoAnoType[]>([]);
+const ValorTotalCodAoDiariaPassagemSmall = () => {
+  const [data, setData] = useState<ValorTotalCodaoDiariaPassagem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [elementSize, setElementSize] = useState({
@@ -32,7 +32,7 @@ const QtdChamadoAnoSmall = () => {
           height: 300,
           width: 400,
         });
-      } else if (newWidth >= 1600 && newWidth < 1800) { 
+      } else if (newWidth >= 1600 && newWidth < 1800) {
         setElementSize({
           height: 300,
           width: 420,
@@ -55,18 +55,18 @@ const QtdChamadoAnoSmall = () => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/chamados/ano",
+      url: "/materiaisom/diariaspassagens/codao",
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as QtdChamadoAnoType[]);
+        setData(res.data as ValorTotalCodaoDiariaPassagem[]);
       })
       .catch(() => {
         toast.error(
-          "Erro ao carregar dados de quantidade de chamados por ano."
+          "Erro ao carregar dados de valor total de diárias e passagens por classificação."
         );
       })
       .finally(() => {
@@ -78,47 +78,57 @@ const QtdChamadoAnoSmall = () => {
     loadData();
   }, [loadData]);
 
-  // Ordena os dados por ano de forma crescente
-  const sortedData = [...data].sort((a, b) => a.ano - b.ano);
+  const anos = Array.from(new Set(data.map((item) => item.ano)));
+  const codAos = Array.from(new Set(data.map((item) => item.codAo)));
 
-  // Define os rótulos (anos) e valores (quantidade) para o gráfico de linha
-  const labels = sortedData.map((item) => item.ano);
-  const values = sortedData.map((item) => item.quantidade);
+  const series = codAos.map((codAo) => {
+    const dataForCodAo = anos.map((ano) => {
+      const item = data.find((d) => d.ano === ano && d.codAo === codAo);
+      return item ? item.total : 0;
+    });
+    return {
+      name: codAo,
+      data: dataForCodAo,
+    };
+  });
 
   const options: ApexOptions = {
     chart: {
-      type: "line", // Mudado para gráfico de linha
+      type: "bar",
       background: "transparent",
-      width: "100%",
       toolbar: {
         show: false,
       },
+      stacked: true,
       fontFamily: "Nunito, serif",
-      animations: {
-        enabled: true,
-        speed: 800,
-        dynamicAnimation: {
-          enabled: true,
-          speed: 1000,
-        },
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
       },
-      offsetX: 6,
     },
     xaxis: {
-      categories: labels, // Anos como categorias no eixo X
+      min: 10000,
+      max: 1230000,
+      categories: anos, // Definindo os anos no eixo X
       labels: {
         style: {
           fontSize: "12px",
           fontFamily: "Nunito, serif",
-          fontWeight: 600
+          fontWeight: 600,
         },
-        offsetX: 0.5,
-      }
+        formatter: (value) =>
+          `${new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(Number(value))}`,
+        show: false,
+      },
     },
     yaxis: {
-      show: false, //REMOVER DEPOIS
+      show: true,
       title: {
-        text: "Quantidade",
+        text: "Total",
         style: {
           fontSize: "14px",
           fontWeight: "bold",
@@ -129,43 +139,41 @@ const QtdChamadoAnoSmall = () => {
     tooltip: {
       enabled: true,
       theme: "dark",
+      onDatasetHover: {
+        highlightDataSeries: true
+      },
       y: {
-        formatter: (val: number) => `${val}`,
-      },
-      style: {
-        fontSize: "15px",
-        fontFamily: "Nunito, serif",
-      },
+        formatter: (value: number) => {
+          return new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(value);
+        }
+      }
     },
+    colors: ["#001EDB", "#0088DC", "#DBA800", "#008A7D", "#521389"],
     dataLabels: {
-      enabled: true, // Desabilitado para gráficos de linha
+      enabled: true, // Remove os valores escritos dentro das barras
       style: {
-        fontSize: "13px",
-        fontFamily: "Nunito, serif",
-        fontWeight: "700",
+        fontSize: "10px",
+        fontWeight: 700,
+        colors: ["#000"],
       },
       background: {
-        opacity: 0,
-        foreColor: "#333",
+        opacity: 0.7,
+        foreColor: "#f3f3f3",
       },
-      offsetY: -7,
-    },
-    markers: {
-      size: 6, // Tamanho dos marcadores nos pontos da linha
-      colors: ["#0077F5"], // Cor dos marcadores
-      strokeColors: "#ffffff", // Cor de borda dos marcadores
-      strokeWidth: 2, // Largura da borda dos marcadores
-    },
-    stroke: {
-      width: 3, // Largura da linha
-      curve: "smooth", // Linha suave
-    },
-    colors: ["#0077F5"], // Cor da linha
-    grid: {
-      show: false,
+      formatter: (value: number) => {
+        return value < 200000 // Defina o limite mínimo aqui
+          ? ""
+          : new Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }).format(value);
+      },
     },
     legend: {
-      show: false, // Não exibe legenda para o gráfico de linha
+      position: "bottom",
     },
   };
 
@@ -178,8 +186,8 @@ const QtdChamadoAnoSmall = () => {
       ) : (
         <ReactApexChart
           options={options}
-          series={[{ name: "Quantidade", data: values }]}
-          type="line"
+          series={series}
+          type="bar"
           height={elementSize.height}
           width={elementSize.width}
         />
@@ -188,4 +196,4 @@ const QtdChamadoAnoSmall = () => {
   );
 };
 
-export default QtdChamadoAnoSmall;
+export default ValorTotalCodAoDiariaPassagemSmall;
