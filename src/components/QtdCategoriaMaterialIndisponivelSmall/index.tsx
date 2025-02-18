@@ -36,7 +36,7 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
           height: 300,
           width: 400,
         });
-      } else if (newWidth >= 1600 && newWidth < 1800) { 
+      } else if (newWidth >= 1600 && newWidth < 1800) {
         setElementSize({
           height: 300,
           width: 420,
@@ -59,7 +59,9 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
     setLoading(true);
 
     if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
+      setTimeout(() => {
+        setData(selectedData);
+      }, 300);
       setLoading(false);
     } else {
       const requestParams: AxiosRequestConfig = {
@@ -70,7 +72,9 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
 
       requestBackend(requestParams)
         .then((res) => {
-          setData(res.data as CategoriaMaterialIndisponivelType[]);
+          setTimeout(() => {
+            setData(res.data as CategoriaMaterialIndisponivelType[]);
+          }, 300);
         })
         .catch(() => {
           toast.error(
@@ -102,6 +106,14 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
       toolbar: {
         show: false,
       },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
     },
     title: {
       text: "",
@@ -122,7 +134,7 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
             {
               from: 0,
               to: 100000,
-              color: "#2A6DFA",
+              color: "#D01B11",
             },
           ],
         },

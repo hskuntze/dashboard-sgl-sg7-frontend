@@ -59,7 +59,9 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
     setLoading(true);
 
     if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
+      setTimeout(() => {
+        setData(selectedData);
+      }, 300);
       setLoading(false);
     } else {
       const requestParams: AxiosRequestConfig = {
@@ -70,7 +72,9 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
 
       requestBackend(requestParams)
         .then((res) => {
-          setData(res.data as QtdMaterialCidadeEstadoType[]);
+          setTimeout(() => {
+            setData(res.data as QtdMaterialCidadeEstadoType[]);
+          }, 300);
         })
         .catch(() => {
           toast.error(
@@ -98,6 +102,14 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
       toolbar: {
         show: false,
       },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
     },
     title: {
       text: "",
@@ -120,7 +132,7 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
               from: 0,
               to: 100000,
               color:
-                selectedData && selectedData.length > 0 ? "#7AACBF" : "#0E1A33",
+                selectedData && selectedData.length > 0 ? "#5D29A6" : "#51337B",
             },
           ],
         },
@@ -155,7 +167,7 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
     },
     dataLabels: {
       style: {
-        colors: selectedData && selectedData.length > 0 ? ["#333"] : ["#fff"],
+        colors: selectedData && selectedData.length > 0 ? ["#020202"] : ["#fff"],
         fontWeight: 700,
         fontFamily: "Nunito, serif",
         fontSize: elementSize.width > 400 ? "12px" : "6px",

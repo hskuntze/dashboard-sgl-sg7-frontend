@@ -122,7 +122,7 @@ const QtdMaterialCmdoSmall = ({ onSelectedItem }: Props) => {
             {
               from: 0,
               to: 100000,
-              color: "#006CFA",
+              color: "#E6B301",
             },
           ],
         },

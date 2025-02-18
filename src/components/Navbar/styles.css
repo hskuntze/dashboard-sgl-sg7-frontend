@@ -5,11 +5,11 @@
   flex-direction: column;
   justify-content: center;
   border-bottom: 1px solid #cbd0dd;
-  width: 100vw;
+  width: 100%;
 }
 
 .navbar-top-element {
-  width: 100vw;
+  width: 100%;
 }
 
 .navbar-inner-top-element {

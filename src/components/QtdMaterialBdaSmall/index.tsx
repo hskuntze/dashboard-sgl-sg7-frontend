@@ -17,7 +17,7 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
 
   const [elementSize, setElementSize] = useState({
     width: 0,
-    height: 0
+    height: 0,
   });
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
           height: 300,
           width: 400,
         });
-      } else if (newWidth >= 1600 && newWidth < 1800) { 
+      } else if (newWidth >= 1600 && newWidth < 1800) {
         setElementSize({
           height: 300,
           width: 420,
@@ -57,7 +57,9 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
     setLoading(true);
 
     if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
+      setTimeout(() => {
+        setData(selectedData);
+      }, 300);
       setLoading(false);
     } else {
       const requestParams: AxiosRequestConfig = {
@@ -68,7 +70,9 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
 
       requestBackend(requestParams)
         .then((res) => {
-          setData(res.data as QtdMaterialBdaType[]);
+          setTimeout(() => {
+            setData(res.data as QtdMaterialBdaType[]);
+          }, 300);
         })
         .catch(() => {
           toast.error(
@@ -96,6 +100,14 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
       background: "transparent",
       toolbar: {
         show: false,
+      },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
       },
     },
     title: {

@@ -11,6 +11,7 @@ import { requestBackend } from "utils/requests";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 import QtdMaterialRmExtraSmall from "components/QtdMaterialRmExtraSmall";
+import { Link } from "react-router-dom";
 
 type ControlComponentsData = {
   activePage: number;
@@ -248,6 +249,13 @@ const MaterialOMIndisponivel = () => {
           </tfoot>
         </table>
       )}
+      <div style={{ marginLeft: "20px" }}>
+        <Link to="/dashboard-sgl-sg7">
+          <button type="button" className="button delete-button">
+            Voltar
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };

@@ -27,6 +27,12 @@ import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
 import Map from "components/Map";
 import { GeorefCmdo } from "types/georefcmdo";
+import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
+import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
+import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
+import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
+import ValorTotalClassificacaoDiariaPassagemSmall from "components/ValorTotalClassificacaoDiariaPassagemSmall";
+import ValorTotalCodAoDiariaPassagemSmall from "components/ValorTotalCodAoDiariaPassagemSmall";
 
 type DisponibilidadeMaterial = {
   disponibilidade: string;
@@ -64,13 +70,25 @@ const UniquePage = () => {
 
   const navigate = useNavigate();
 
-  const [selectedCmdoUf, setSelectedCmdoUf] = useState<QtdMaterialCidadeEstadoType[]>([]);
+  const [selectedCmdoUf, setSelectedCmdoUf] = useState<
+    QtdMaterialCidadeEstadoType[]
+  >([]);
   const [selectedCmdoRm, setSelectedCmdoRm] = useState<QtdMaterialRmType[]>([]);
-  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<CategoriaMaterialIndisponivelType[]>([]);
-  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>([]);
+  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<
+    CategoriaMaterialIndisponivelType[]
+  >([]);
+  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>(
+    []
+  );
   // const [selectedCmdoIndisponivelBda, setSelectedCmdoIndisponivelBda] =
   //   useState<QtdIndisponivelPorBdaType[]>([]);
   const [selectedCmdoMapa, setSelectedCmdoMapa] = useState<GeorefCmdo[]>([]);
+  const [selectedCmdoSubsistema, setSelectedCmdoSubsistema] = useState<
+    QtdMaterialSubsistemaType[]
+  >([]);
+  const [selectedCmdoTipoEqp, setSelectedCmdoTipoEqp] = useState<
+    QtdMaterialTipoEqpExistentePrevisto[]
+  >([]);
 
   const loadQtdTotal = useCallback(() => {
     setLoadingMateriais(true);
@@ -200,6 +218,18 @@ const UniquePage = () => {
         withCredentials: true,
       };
 
+      const requestParamsSubsistema: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/subsistema/${cmdo}`,
+        method: "GET",
+        withCredentials: true,
+      };
+
+      const requestParamsTipoEqp: AxiosRequestConfig = {
+        url: `/materiaisom/qtd/tipoeqp/${cmdo}`,
+        method: "GET",
+        withCredentials: true,
+      };
+
       requestBackend(requestParamsUf)
         .then((res) => {
           setSelectedCmdoUf(res.data as QtdMaterialCidadeEstadoType[]);
@@ -257,6 +287,26 @@ const UniquePage = () => {
             "Erro ao tentar carregar dados de georeferenciamento por CMDO."
           );
         });
+
+      requestBackend(requestParamsSubsistema)
+        .then((res) => {
+          setSelectedCmdoSubsistema(res.data as QtdMaterialSubsistemaType[]);
+        })
+        .catch((err) => {
+          toast.error(
+            "Erro ao tentar carregar dados de subsistema por CMDO."
+          );
+        });
+
+        requestBackend(requestParamsTipoEqp)
+        .then((res) => {
+          setSelectedCmdoTipoEqp(res.data as QtdMaterialTipoEqpExistentePrevisto[]);
+        })
+        .catch((err) => {
+          toast.error(
+            "Erro ao tentar carregar dados de tipo de equipamento existente/previso por CMDO."
+          );
+        });
     } else {
       setSelectedCmdoUf([]);
       setSelectedCmdoRm([]);
@@ -264,6 +314,8 @@ const UniquePage = () => {
       // setSelectedCmdoIndisponivelBda([]);
       setSelectedCmdoCategoria([]);
       setSelectedCmdoMapa([]);
+      setSelectedCmdoSubsistema([]);
+      setSelectedCmdoTipoEqp([]);
     }
   };
 
@@ -431,6 +483,26 @@ const UniquePage = () => {
             <span className="span-subtitle">indisponíveis por BDA</span>
             <QtdIndisponivelPorBda selectedData={selectedCmdoIndisponivelBda} /> */}
             <Map selectedData={selectedCmdoMapa} />
+          </div>
+          <div className="grid-object">
+            <span className="span-title">Materiais Classe VII</span>
+            <span className="span-subtitle">por subsistema</span>
+            <QtdMaterialSubsistemaSmall selectedData={selectedCmdoSubsistema} />
+          </div>
+          <div className="grid-object">
+            <span className="span-title">Materiais Classe VII</span>
+            <span className="span-subtitle">existentes e previstos</span>
+            <QtdMaterialTipoEqpSmall selectedData={selectedCmdoTipoEqp} />
+          </div>
+          <div className="grid-object">
+            <span className="span-title">Diárias e Passagens</span>
+            <span className="span-subtitle">por classificação</span>
+            <ValorTotalClassificacaoDiariaPassagemSmall />
+          </div>
+          <div className="grid-object">
+            <span className="span-title">Diárias e Passagens</span>
+            <span className="span-subtitle">por código</span>
+            <ValorTotalCodAoDiariaPassagemSmall />
           </div>
         </div>
       </div>
