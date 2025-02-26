@@ -1,21 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
+import { useState, useEffect } from "react";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
 import "./styles.css";
 import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
+import { useFetchData } from "utils/hooks/usefetchdata";
 
 interface Props {
   selectedData?: QtdMaterialSubsistemaType[];
 }
 
 const QtdMaterialSubsistemaSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<QtdMaterialSubsistemaType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const { data, loading } = useFetchData<QtdMaterialSubsistemaType>({
+    url: "/materiaisom/qtd/subsistema",
+    initialData: selectedData,
+  });
 
   const [elementSize, setElementSize] = useState({
     width: 0,
@@ -50,49 +50,13 @@ const QtdMaterialSubsistemaSmall = ({ selectedData }: Props) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const loadData = useCallback(() => {
-    setLoading(true);
-
-    if (selectedData && selectedData.length > 0) {
-      setTimeout(() => {
-        setData(selectedData);
-      }, 300);
-      setLoading(false);
-    } else {
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/subsistema",
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParams)
-        .then((res) => {
-          setTimeout(() => {
-            setData(res.data as QtdMaterialSubsistemaType[]);
-          }, 300);
-        })
-        .catch(() => {
-          toast.error(
-            "Erro ao carregar dados de quantidade de materiais por comando."
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [selectedData]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   const labels = data.map((item) => item.subsistema);
   const values = data.map((item) => item.quantidade);
 
   const colorMap: Record<string, string> = {
-    "CTC": "#64E324",
-    "SAT": "#E3DA24",
-    "TAT": "#E37D24",
+    CTC: "#64E324",
+    SAT: "#E3DA24",
+    TAT: "#E37D24",
     // Adicione mais subsistemas conforme necessário
   };
 
@@ -163,10 +127,7 @@ const QtdMaterialSubsistemaSmall = ({ selectedData }: Props) => {
               fontFamily: "Nunito, serif",
               color: "#333",
               formatter: function (w) {
-                return w.globals.seriesTotals.reduce(
-                  (a: number, b: number) => a + b,
-                  0
-                );
+                return w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
               },
             },
             value: {

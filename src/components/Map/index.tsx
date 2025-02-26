@@ -71,7 +71,7 @@ const Map = ({ selectedData }: Props) => {
       setPoints(selectedData);
       setLoading(false);
 
-      mapRef.current?.setZoom(3);
+      // mapRef.current?.setZoom(3);
     } else {
       const savedGeoRef = localStorage.getItem("geoRef");
       if (savedGeoRef) {
@@ -80,7 +80,7 @@ const Map = ({ selectedData }: Props) => {
 
         setPoints(parsedGeoRef);
         setLoading(false);
-        mapRef.current?.setZoom(3);
+        // mapRef.current?.setZoom(3);
         return; // Não faz a requisição, já temos os dados
       }
 
@@ -95,12 +95,10 @@ const Map = ({ selectedData }: Props) => {
           const geoRefData = res.data as GeorefCmdo[];
           setPoints(geoRefData);
           saveGeoRefCmdoData(geoRefData); // Armazena no localStorage
-          mapRef.current?.setZoom(3);
+          // mapRef.current?.setZoom(3);
         })
         .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar os dados de georeferenciamento."
-          );
+          toast.error("Erro ao tentar carregar os dados de georeferenciamento.");
         })
         .finally(() => {
           setLoading(false);
@@ -143,25 +141,16 @@ const Map = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="map-wrapper">
-          <MapContainer
-            center={[-15.78, -47.93]}
-            zoom={3}
-            className="map-container"
-            style={{ width: "100%", height: "100%" }}
-            ref={mapRef}
-          >
+          <MapContainer center={[-15.78, -47.93]} zoom={3} className="map-container" style={{ width: "100%", height: "100%" }} ref={mapRef}>
             <FullscreenControl position="topleft" />
             <button onClick={forceRefresh} className="refresh-map-button">
               <i className="bi bi-arrow-clockwise" />
             </button>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution=""
-            />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="" />
             <ImageOverlay
               url={MapaBrasil} // Estilos opcionais para o SVG
               bounds={bounds}
-              opacity={1}
+              opacity={0.5}
             />
             {points.map((point) => {
               const logoUrl = logos[point.cmdoOds]; // Usa um logo padrão caso não tenha mapeado
@@ -178,7 +167,7 @@ const Map = ({ selectedData }: Props) => {
                     </div>
                   </div>
                   `,
-                iconSize: [0, 0],
+                iconSize: [4, 4],
               });
 
               return (

@@ -1,99 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialCidadeEstadoType } from "types/relatorio/qtdmaterialcidadeestado";
 
 import "./styles.css";
+import { useElementSize } from "utils/hooks/useelementsize";
+import { useFetchData } from "utils/hooks/usefetchdata";
 
 interface Props {
   selectedData?: QtdMaterialCidadeEstadoType[];
 }
 
 const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<QtdMaterialCidadeEstadoType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const [elementSize, setElementSize] = useState({
-    width: 0,
-    height: 0
+  const { data, loading } = useFetchData<QtdMaterialCidadeEstadoType>({
+    url: "/materiaisom/qtd/cidadeestado",
+    initialData: selectedData,
   });
 
-  useEffect(() => {
-    const handleResize = () => {
-      const newWidth = window.innerWidth;
+  const elementSize = useElementSize();
 
-      if (newWidth < 768) {
-        setElementSize({
-          height: 300,
-          width: 300,
-        });
-      } else if (newWidth >= 768 && newWidth < 1600) {
-        setElementSize({
-          height: 300,
-          width: 400,
-        });
-      } else if (newWidth >= 1600 && newWidth < 1800) { 
-        setElementSize({
-          height: 300,
-          width: 420,
-        });
-      } else {
-        setElementSize({
-          height: 300,
-          width: 450,
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Chama a função uma vez para definir o estado inicial
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const loadData = useCallback(() => {
-    setLoading(true);
-
-    if (selectedData && selectedData.length > 0) {
-      setTimeout(() => {
-        setData(selectedData);
-      }, 300);
-      setLoading(false);
-    } else {
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/cidadeestado",
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParams)
-        .then((res) => {
-          setTimeout(() => {
-            setData(res.data as QtdMaterialCidadeEstadoType[]);
-          }, 300);
-        })
-        .catch(() => {
-          toast.error(
-            "Erro ao carregar dados de quantidade de materiais por cidade e estado."
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [selectedData]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const top10Data = [...data]
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .slice(0, 10);
+  const top10Data = [...data].sort((a, b) => b.quantidade - a.quantidade).slice(0, 10);
 
   const options: ApexOptions = {
     chart: {
@@ -131,8 +57,7 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
             {
               from: 0,
               to: 100000,
-              color:
-                selectedData && selectedData.length > 0 ? "#5D29A6" : "#51337B",
+              color: selectedData && selectedData.length > 0 ? "#5D29A6" : "#51337B",
             },
           ],
         },
@@ -206,13 +131,7 @@ const QtdMaterialCidadeEstadoSmall = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={elementSize.height}
-            width={elementSize.width}
-          />
+          <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>

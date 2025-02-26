@@ -16,9 +16,7 @@ interface Props {
  */
 const UsuarioCard = ({ element, onLoad }: Props) => {
   const deleteElement = (id: number) => {
-    let confirm = window.confirm(
-      "Você tem certeza que deseja deletar esse elemento?"
-    );
+    let confirm = window.confirm("Você tem certeza que deseja deletar esse elemento?");
 
     if (confirm) {
       const requestParams: AxiosRequestConfig = {

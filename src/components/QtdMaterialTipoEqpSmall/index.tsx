@@ -1,70 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
+import { useFetchData } from "utils/hooks/usefetchdata";
+import { useElementSize } from "utils/hooks/useelementsize";
 
 interface Props {
   selectedData?: QtdMaterialTipoEqpExistentePrevisto[];
 }
 
 const QtdMaterialTipoEqpSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<QtdMaterialTipoEqpExistentePrevisto[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [elementSize, setElementSize] = useState({ width: 0, height: 0 });
+  const { data, loading } = useFetchData<QtdMaterialTipoEqpExistentePrevisto>({
+    url: "/materiaisom/qtd/tipoeqp",
+    initialData: selectedData,
+  });
 
-  useEffect(() => {
-    const handleResize = () => {
-      const newWidth = window.innerWidth;
-      setElementSize({
-        height: 300,
-        width:
-          newWidth < 768
-            ? 300
-            : newWidth < 1600
-            ? 400
-            : newWidth < 1800
-            ? 420
-            : 450,
-      });
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const loadData = useCallback(() => {
-    setLoading(true);
-    if (selectedData && selectedData.length > 0) {
-      setTimeout(() => {
-        setData(selectedData);
-      }, 300);
-      setLoading(false);
-    } else {
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/tipoeqp",
-        method: "GET",
-        withCredentials: true,
-      };
-      requestBackend(requestParams)
-        .then((res) =>
-          setTimeout(() => {
-            setData(res.data as QtdMaterialTipoEqpExistentePrevisto[])
-          }, 300)
-        )
-        .catch(() =>
-          toast.error("Erro ao carregar dados de quantidade de materiais.")
-        )
-        .finally(() => setLoading(false));
-    }
-  }, [selectedData]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const elementSize  = useElementSize();
 
   const options: ApexOptions = {
     chart: {
@@ -143,13 +94,7 @@ const QtdMaterialTipoEqpSmall = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="column-chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={elementSize.height}
-            width={elementSize.width}
-          />
+          <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>

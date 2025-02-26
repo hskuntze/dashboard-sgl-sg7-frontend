@@ -1,90 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
+import { useState } from "react";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialCmdoType } from "types/relatorio/qtdmaterialcmdo";
 
 import "./styles.css";
+import { useElementSize } from "utils/hooks/useelementsize";
+import { useFetchData } from "utils/hooks/usefetchdata";
 
 interface Props {
   onSelectedItem: (cmdo: string | null) => void;
 }
 
 const QtdMaterialCmdoSmall = ({ onSelectedItem }: Props) => {
-  const [data, setData] = useState<QtdMaterialCmdoType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const [elementSize, setElementSize] = useState({
-    width: 0,
-    height: 0
+  const { data, loading } = useFetchData<QtdMaterialCmdoType>({
+    url: "/materiaisom/qtd/cmdo",
+    initialData: null
   });
 
-  useEffect(() => {
-    const handleResize = () => {
-      const newWidth = window.innerWidth;
+  const elementSize = useElementSize();
 
-      if (newWidth < 768) {
-        setElementSize({
-          height: 300,
-          width: 300,
-        });
-      } else if (newWidth >= 768 && newWidth < 1600) {
-        setElementSize({
-          height: 300,
-          width: 400,
-        });
-      } else if (newWidth >= 1600 && newWidth < 1800) { 
-        setElementSize({
-          height: 300,
-          width: 420,
-        });
-      } else {
-        setElementSize({
-          height: 300,
-          width: 450,
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Chama a função uma vez para definir o estado inicial
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const loadData = useCallback(() => {
-    setLoading(true);
-
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/cmdo",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        setData(res.data as QtdMaterialCmdoType[]);
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por comando."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const sortedData = data
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .filter((a, b) => a.cmdo !== "");
+  const sortedData = data.sort((a, b) => b.quantidade - a.quantidade).filter((a, b) => a.cmdo !== "");
 
   const [selectedItem, setSelectedItem] = useState<QtdMaterialCmdoType | null>(null);
 
@@ -194,13 +130,7 @@ const QtdMaterialCmdoSmall = ({ onSelectedItem }: Props) => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={elementSize.height}
-            width={elementSize.width}
-          />
+          <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>

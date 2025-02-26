@@ -8,12 +8,7 @@ import NaoEncontrado from "pages/NaoEncontrado";
 import OMs from "pages/OM";
 import UniquePage from "pages/UniquePage";
 import PrivateRoute from "PrivateRoute";
-import {
-  BrowserRouter,
-  Navigate,
-  Route,
-  Routes as Switch,
-} from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes as Switch } from "react-router-dom";
 import { isAuthenticated } from "utils/auth";
 
 /**
@@ -32,10 +27,7 @@ const Routes = () => {
           <Route path="/" element={<Navigate to="/dashboard-sgl-sg7" />} />
           <Route path="/dashboard-sgl-sg7/*" element={<Auth />} />
           <Route path="/dashboard-sgl-sg7/confirmado" element={<Confirmar />} />
-          <Route
-            path="/dashboard-sgl-sg7/nao-encontrado"
-            element={<NaoEncontrado />}
-          />
+          <Route path="/dashboard-sgl-sg7/nao-encontrado" element={<NaoEncontrado />} />
           <Route
             path="/dashboard-sgl-sg7"
             element={

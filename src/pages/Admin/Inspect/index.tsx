@@ -49,28 +49,28 @@ const UsuarioInspect = () => {
           <div className="inspect-content">
             <h5>{usuario?.nomecompleto}</h5>
             <span>
-              <b>Nome: </b>{" "}{usuario?.nomecompleto}
+              <b>Nome: </b> {usuario?.nomecompleto}
             </span>
             <span>
-              <b>CPF: </b>{" "}{usuario?.cpf}
+              <b>CPF: </b> {usuario?.cpf}
             </span>
             <span>
-              <b>Organização: </b>{" "}{usuario?.organizacao}
+              <b>Organização: </b> {usuario?.organizacao}
             </span>
             <span>
-              <b>Nome de guerra: </b>{" "}{usuario?.nomeguerra}
+              <b>Nome de guerra: </b> {usuario?.nomeguerra}
             </span>
             <span>
-              <b>Posto/graduação: </b>{" "}{usuario?.posto ? usuario.posto.titulo : ""}
+              <b>Posto/graduação: </b> {usuario?.posto ? usuario.posto.titulo : ""}
             </span>
             <span>
-              <b>E-mail: </b>{" "}{usuario?.email}
+              <b>E-mail: </b> {usuario?.email}
             </span>
             <span>
-              <b>Telefone: </b>{" "}{usuario?.telefone}
+              <b>Telefone: </b> {usuario?.telefone}
             </span>
             <span>
-              <b>Perfis: </b>{" "}{usuario?.perfis.map((p) => `${p.autorizacao}`).join("; ")}
+              <b>Perfis: </b> {usuario?.perfis.map((p) => `${p.autorizacao}`).join("; ")}
             </span>
           </div>
         )}
