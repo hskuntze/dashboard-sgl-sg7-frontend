@@ -17,7 +17,7 @@ export const BASE_URL =
 
 /**
  * PROD
-//  */
+ */
 // export const BASE_URL =
 // process.env.REACT_APP_BACKEND_URL ?? "http://10.134.0.163:9989/dashboard-sgl-sg7/api";
 

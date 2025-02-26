@@ -26,9 +26,7 @@ const QtdMaterialTotalGauge = () => {
         setData(res.data);
       })
       .catch(() => {
-        toast.error(
-          "Erro ao carregar total de materiais para formar a porcentagem."
-        );
+        toast.error("Erro ao carregar total de materiais para formar a porcentagem.");
       })
       .finally(() => {
         setLoading(false);
@@ -91,13 +89,7 @@ const QtdMaterialTotalGauge = () => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={[percentage]}
-            type="radialBar"
-            height={250}
-            width={300}
-          />
+          <ReactApexChart options={options} series={[percentage]} type="radialBar" height={250} width={300} />
         </div>
       )}
     </div>

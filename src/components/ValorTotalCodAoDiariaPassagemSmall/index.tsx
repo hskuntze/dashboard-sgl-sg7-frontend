@@ -65,9 +65,7 @@ const ValorTotalCodAoDiariaPassagemSmall = () => {
         setData(res.data as ValorTotalCodaoDiariaPassagem[]);
       })
       .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de valor total de diárias e passagens por classificação."
-        );
+        toast.error("Erro ao carregar dados de valor total de diárias e passagens por classificação.");
       })
       .finally(() => {
         setLoading(false);
@@ -140,7 +138,7 @@ const ValorTotalCodAoDiariaPassagemSmall = () => {
       enabled: true,
       theme: "dark",
       onDatasetHover: {
-        highlightDataSeries: true
+        highlightDataSeries: true,
       },
       y: {
         formatter: (value: number) => {
@@ -148,8 +146,8 @@ const ValorTotalCodAoDiariaPassagemSmall = () => {
             style: "currency",
             currency: "BRL",
           }).format(value);
-        }
-      }
+        },
+      },
     },
     colors: ["#001EDB", "#0088DC", "#DBA800", "#008A7D", "#521389"],
     dataLabels: {
@@ -184,13 +182,7 @@ const ValorTotalCodAoDiariaPassagemSmall = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart
-          options={options}
-          series={series}
-          type="bar"
-          height={elementSize.height}
-          width={elementSize.width}
-        />
+        <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
       )}
     </div>
   );

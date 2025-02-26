@@ -82,9 +82,7 @@ const Home = () => {
         setQtdChamadosAbertos(res.data);
       })
       .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de chamados abertos."
-        );
+        toast.error("Não foi possível carregar a quantidade de chamados abertos.");
       });
   }, []);
 
@@ -102,9 +100,7 @@ const Home = () => {
         setDisponibilidadeMaterial(res.data);
       })
       .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de chamados abertos."
-        );
+        toast.error("Não foi possível carregar a quantidade de chamados abertos.");
       })
       .finally(() => {
         setLoadingDisponibilidade(false);
@@ -116,12 +112,7 @@ const Home = () => {
     loadQtdChamados();
     loadQtdChamadosAbertos();
     loadDisponibilidadeMaterial();
-  }, [
-    loadQtdTotal,
-    loadQtdChamados,
-    loadQtdChamadosAbertos,
-    loadDisponibilidadeMaterial,
-  ]);
+  }, [loadQtdTotal, loadQtdChamados, loadQtdChamadosAbertos, loadDisponibilidadeMaterial]);
 
   return (
     <div className="home-container">
@@ -142,22 +133,12 @@ const Home = () => {
           ) : (
             disponibilidadeMaterial?.map((d) =>
               d.disponibilidade === "Disponível" ? (
-                <div
-                  className="card-qtd card-link-material"
-                  onClick={() =>
-                    navigate("/dashboard-sgl-sg7/materialom/disponivel")
-                  }
-                >
+                <div className="card-qtd card-link-material" onClick={() => navigate("/dashboard-sgl-sg7/materialom/disponivel")}>
                   <h6>Materiais Disponíveis Classe VII nas OM</h6>
                   <span>{d.quantidade}</span>
                 </div>
               ) : (
-                <div
-                  className="card-qtd card-link-material"
-                  onClick={() =>
-                    navigate("/dashboard-sgl-sg7/materialom/indisponivel")
-                  }
-                >
+                <div className="card-qtd card-link-material" onClick={() => navigate("/dashboard-sgl-sg7/materialom/indisponivel")}>
                   <h6>Materiais Indisponíveis Classe VII nas OM</h6>
                   <span>{d.quantidade}</span>
                 </div>
@@ -169,12 +150,7 @@ const Home = () => {
               <Loader />
             </div>
           ) : (
-            <div
-              className="card-qtd card-link-material"
-              onClick={() =>
-                navigate("/dashboard-sgl-sg7/materialom")
-              }
-            >
+            <div className="card-qtd card-link-material" onClick={() => navigate("/dashboard-sgl-sg7/materialom")}>
               <h6>Materiais Classe VII nas OM</h6>
               <span>{totalMateriais}</span>
             </div>

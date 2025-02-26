@@ -39,22 +39,13 @@ const Navbar = () => {
       <div className="navbar-top-element">
         <div className="navbar-inner-top-element">
           <Link to="/dashboard-sgl-sg7">
-            <img
-              className="navbar-logo"
-              src={LogotipoSISFRON}
-              alt="Logotipo sisfron"
-            />
+            <img className="navbar-logo" src={LogotipoSISFRON} alt="Logotipo sisfron" />
           </Link>
           <span className="navbar-title">
-            Consciência Situacional{" "}
-            <span className="real-time-label"> Em tempo real</span>
+            Consciência Situacional <span className="real-time-label"> Em tempo real</span>
           </span>
           <div>
-            <img
-              className="ctcea-logo"
-              src={LogotipoCTCEA}
-              alt="Logotipo CTCEA"
-            />
+            <img className="ctcea-logo" src={LogotipoCTCEA} alt="Logotipo CTCEA" />
           </div>
           {!isAdmin && (
             <div className="sair-topo">
@@ -90,19 +81,12 @@ const Navbar = () => {
                 <>
                   {isAdmin && (
                     <li className="nav-item dropdown">
-                      <button
-                        className="nav-link dropdown-toggle"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                      >
+                      <button className="nav-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         Administrador
                       </button>
                       <ul className="dropdown-menu bigger-dropdown">
                         <li>
-                          <Link
-                            className="nav-link"
-                            to="/dashboard-sgl-sg7/usuario"
-                          >
+                          <Link className="nav-link" to="/dashboard-sgl-sg7/usuario">
                             Controle de usuário
                           </Link>
                         </li>
@@ -115,10 +99,7 @@ const Navbar = () => {
                     </li>
                   )}
                   <li className="nav-item">
-                    <Link
-                      className="nav-link"
-                      to="/dashboard-sgl-sg7/trocarsenha"
-                    >
+                    <Link className="nav-link" to="/dashboard-sgl-sg7/trocarsenha">
                       Trocar senha
                     </Link>
                   </li>

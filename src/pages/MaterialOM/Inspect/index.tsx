@@ -71,8 +71,7 @@ const MaterialOMInspect = () => {
                 <b>Disponibilidade: </b> {material?.disponibilidade}
               </span>
               <span>
-                <b>Motivo da indisponibilidade: </b>{" "}
-                {material?.motivoindisp ?? "-"}
+                <b>Motivo da indisponibilidade: </b> {material?.motivoindisp ?? "-"}
               </span>
               <span>
                 <b>DE: </b> {material?.de}
@@ -108,7 +107,7 @@ const MaterialOMInspect = () => {
           )}
         </div>
       </div>
-      <div style={{marginLeft: "20px"}}>
+      <div style={{ marginLeft: "20px" }}>
         <Link to="/dashboard-sgl-sg7/materialom">
           <button type="button" className="button delete-button">
             Voltar

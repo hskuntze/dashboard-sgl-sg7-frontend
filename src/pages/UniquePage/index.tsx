@@ -11,28 +11,27 @@ import QtdMaterialCmdoSmall from "components/QtdMaterialCmdoSmall";
 import QtdMaterialRmSmall from "components/QtdMaterialRmSmall";
 import QtdChamadoAnoSmall from "components/QtdChamadoAnoSmall";
 import QtdMaterialBdaSmall from "components/QtdMaterialBdaSmall";
+import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
+import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
+import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
+import ValorTotalClassificacaoDiariaPassagemSmall from "components/ValorTotalClassificacaoDiariaPassagemSmall";
+import ValorTotalCodAoDiariaPassagemSmall from "components/ValorTotalCodAoDiariaPassagemSmall";
+import TextLoader from "components/TextLoader";
+import Map from "components/Map";
 
 import { useCallback, useEffect, useState } from "react";
 import { AxiosRequestConfig } from "axios";
 import { requestBackend } from "utils/requests";
 import { toast } from "react-toastify";
-import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
-// import QtdIndisponivelPorBda from "components/QtdIndisponivelPorBda";
 import { useNavigate } from "react-router-dom";
-import TextLoader from "components/TextLoader";
+
+import { GeorefCmdo } from "types/georefcmdo";
 import { QtdMaterialCidadeEstadoType } from "types/relatorio/qtdmaterialcidadeestado";
 import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
-// import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
-import Map from "components/Map";
-import { GeorefCmdo } from "types/georefcmdo";
-import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
 import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
-import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
 import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
-import ValorTotalClassificacaoDiariaPassagemSmall from "components/ValorTotalClassificacaoDiariaPassagemSmall";
-import ValorTotalCodAoDiariaPassagemSmall from "components/ValorTotalCodAoDiariaPassagemSmall";
 
 type DisponibilidadeMaterial = {
   disponibilidade: string;
@@ -43,52 +42,30 @@ const UniquePage = () => {
   const [totalMateriais, setTotalMateriais] = useState<string>();
   const [qtdChamados, setQtdChamados] = useState<string>();
   const [qtdChamadosAbertos, setQtdChamadosAbertos] = useState<string>();
-  const [disponibilidadeMaterial, setDisponibilidadeMaterial] =
-    useState<DisponibilidadeMaterial[]>();
+  const [disponibilidadeMaterial, setDisponibilidadeMaterial] = useState<DisponibilidadeMaterial[]>();
 
   const [loadingChamados, setLoadingChamados] = useState<boolean>(false);
-  const [loadingChamadosAbertos, setLoadingChamadosAbertos] =
-    useState<boolean>(false);
+  const [loadingChamadosAbertos, setLoadingChamadosAbertos] = useState<boolean>(false);
   const [loadingMateriais, setLoadingMateriais] = useState<boolean>(false);
-  const [loadingDisponibilidade, setLoadingDisponibilidade] =
-    useState<boolean>(false);
+  const [loadingDisponibilidade, setLoadingDisponibilidade] = useState<boolean>(false);
 
   // Função para garantir a ordem correta dos dados
   const organizeDisponibilidadeMaterial = (data: DisponibilidadeMaterial[]) => {
-    const disponiveis = data.find(
-      (item) => item.disponibilidade === "Disponível"
-    );
-    const indisponiveis = data.find(
-      (item) => item.disponibilidade === "Indisponível"
-    );
+    const disponiveis = data.find((item) => item.disponibilidade === "Disponível");
+    const indisponiveis = data.find((item) => item.disponibilidade === "Indisponível");
 
-    return [
-      disponiveis || { quantidade: 0, disponibilidade: "Disponível" },
-      indisponiveis || { quantidade: 0, disponibilidade: "Indisponível" },
-    ];
+    return [disponiveis || { quantidade: 0, disponibilidade: "Disponível" }, indisponiveis || { quantidade: 0, disponibilidade: "Indisponível" }];
   };
 
   const navigate = useNavigate();
 
-  const [selectedCmdoUf, setSelectedCmdoUf] = useState<
-    QtdMaterialCidadeEstadoType[]
-  >([]);
+  const [selectedCmdoUf, setSelectedCmdoUf] = useState<QtdMaterialCidadeEstadoType[]>([]);
   const [selectedCmdoRm, setSelectedCmdoRm] = useState<QtdMaterialRmType[]>([]);
-  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<
-    CategoriaMaterialIndisponivelType[]
-  >([]);
-  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>(
-    []
-  );
-  // const [selectedCmdoIndisponivelBda, setSelectedCmdoIndisponivelBda] =
-  //   useState<QtdIndisponivelPorBdaType[]>([]);
+  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<CategoriaMaterialIndisponivelType[]>([]);
+  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>([]);
   const [selectedCmdoMapa, setSelectedCmdoMapa] = useState<GeorefCmdo[]>([]);
-  const [selectedCmdoSubsistema, setSelectedCmdoSubsistema] = useState<
-    QtdMaterialSubsistemaType[]
-  >([]);
-  const [selectedCmdoTipoEqp, setSelectedCmdoTipoEqp] = useState<
-    QtdMaterialTipoEqpExistentePrevisto[]
-  >([]);
+  const [selectedCmdoSubsistema, setSelectedCmdoSubsistema] = useState<QtdMaterialSubsistemaType[]>([]);
+  const [selectedCmdoTipoEqp, setSelectedCmdoTipoEqp] = useState<QtdMaterialTipoEqpExistentePrevisto[]>([]);
 
   const loadQtdTotal = useCallback(() => {
     setLoadingMateriais(true);
@@ -146,9 +123,7 @@ const UniquePage = () => {
         setQtdChamadosAbertos(res.data);
       })
       .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de chamados abertos."
-        );
+        toast.error("Não foi possível carregar a quantidade de chamados abertos.");
       })
       .finally(() => {
         setLoadingChamadosAbertos(false);
@@ -171,147 +146,51 @@ const UniquePage = () => {
         setDisponibilidadeMaterial(organizedData);
       })
       .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de materiais disponíveis."
-        );
+        toast.error("Não foi possível carregar a quantidade de materiais disponíveis.");
       })
       .finally(() => {
         setLoadingDisponibilidade(false);
       });
   }, []);
 
-  const handleSelectCmdo = (cmdo: string | null) => {
+  const handleSelectCmdo = async (cmdo: string | null) => {
     if (cmdo !== null) {
-      const requestParamsUf: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/ufcmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
+      // Mapeando os endpoints para facilitar a manutenção
+      const endpoints = [
+        { key: "uf", url: `/materiaisom/qtd/ufcmdo/${cmdo}`, stateSetter: setSelectedCmdoUf },
+        { key: "rm", url: `/materiaisom/qtd/rmcmdo/${cmdo}`, stateSetter: setSelectedCmdoRm },
+        { key: "bda", url: `/materiaisom/qtd/bdacmdo/${cmdo}`, stateSetter: setSelectedCmdoBda },
+        { key: "catIndisponivel", url: `/materiaisom/qtd/ctgmtindisponivelcmdo/${cmdo}`, stateSetter: setSelectedCmdoCategoria },
+        { key: "mapa", url: `/materiaisom/georef/cmdo/${cmdo}`, stateSetter: setSelectedCmdoMapa },
+        { key: "subsistema", url: `/materiaisom/qtd/subsistema/${cmdo}`, stateSetter: setSelectedCmdoSubsistema },
+        { key: "tipoEqp", url: `/materiaisom/qtd/tipoeqp/${cmdo}`, stateSetter: setSelectedCmdoTipoEqp },
+      ];
 
-      const requestParamsRm: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/rmcmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
+      try {
+        // Criando as requisições em paralelo
+        const responses = await Promise.all(
+          endpoints.map(({ url }) =>
+            requestBackend({ url, method: "GET", withCredentials: true }).catch((err) => {
+              toast.error(`Erro ao carregar dados de ${url}`);
+              return null;
+            })
+          )
+        );
 
-      const requestParamsBda: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/bdacmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      // const requestParamsIndisponivelBda: AxiosRequestConfig = {
-      //   url: `/materiaisom/qtd/indisponivelbdacmdo/${cmdo}`,
-      //   method: "GET",
-      //   withCredentials: true,
-      // };
-
-      const requestParamsCatIndisponivel: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/ctgmtindisponivelcmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      const requestParamsMapa: AxiosRequestConfig = {
-        url: `/materiaisom/georef/cmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      const requestParamsSubsistema: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/subsistema/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      const requestParamsTipoEqp: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/tipoeqp/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParamsUf)
-        .then((res) => {
-          setSelectedCmdoUf(res.data as QtdMaterialCidadeEstadoType[]);
-        })
-        .catch((err) => {
-          toast.error("Erro ao tentar carregar dados de UF por CMDO.");
+        // Atualizando os estados com os dados das respostas
+        responses.forEach((res, index) => {
+          if (res !== null) {
+            endpoints[index].stateSetter(res.data);
+          }
         });
-
-      requestBackend(requestParamsRm)
-        .then((res) => {
-          setSelectedCmdoRm(res.data as QtdMaterialRmType[]);
-        })
-        .catch((err) => {
-          toast.error("Erro ao tentar carregar dados de RM por CMDO.");
-        });
-
-      requestBackend(requestParamsBda)
-        .then((res) => {
-          setSelectedCmdoBda(res.data as QtdMaterialBdaType[]);
-        })
-        .catch((err) => {
-          toast.error("Erro ao tentar carregar dados de BDA por CMDO.");
-        });
-
-      // requestBackend(requestParamsIndisponivelBda)
-      //   .then((res) => {
-      //     setSelectedCmdoIndisponivelBda(
-      //       res.data as QtdIndisponivelPorBdaType[]
-      //     );
-      //   })
-      //   .catch((err) => {
-      //     toast.error(
-      //       "Erro ao tentar carregar dados de indisponível por BDA por CMDO."
-      //     );
-      //   });
-
-      requestBackend(requestParamsCatIndisponivel)
-        .then((res) => {
-          setSelectedCmdoCategoria(
-            res.data as CategoriaMaterialIndisponivelType[]
-          );
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar dados de categoria indisponível por CMDO."
-          );
-        });
-
-      requestBackend(requestParamsMapa)
-        .then((res) => {
-          setSelectedCmdoMapa(res.data as GeorefCmdo[]);
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar dados de georeferenciamento por CMDO."
-          );
-        });
-
-      requestBackend(requestParamsSubsistema)
-        .then((res) => {
-          setSelectedCmdoSubsistema(res.data as QtdMaterialSubsistemaType[]);
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar dados de subsistema por CMDO."
-          );
-        });
-
-        requestBackend(requestParamsTipoEqp)
-        .then((res) => {
-          setSelectedCmdoTipoEqp(res.data as QtdMaterialTipoEqpExistentePrevisto[]);
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar dados de tipo de equipamento existente/previso por CMDO."
-          );
-        });
+      } catch (error) {
+        toast.error("Erro ao carregar os dados do CMDO.");
+      }
     } else {
+      // Resetando os estados de uma vez só
       setSelectedCmdoUf([]);
       setSelectedCmdoRm([]);
       setSelectedCmdoBda([]);
-      // setSelectedCmdoIndisponivelBda([]);
       setSelectedCmdoCategoria([]);
       setSelectedCmdoMapa([]);
       setSelectedCmdoSubsistema([]);
@@ -324,12 +203,7 @@ const UniquePage = () => {
     loadQtdChamados();
     loadQtdChamadosAbertos();
     loadDisponibilidadeMaterial();
-  }, [
-    loadQtdTotal,
-    loadQtdChamados,
-    loadQtdChamadosAbertos,
-    loadDisponibilidadeMaterial,
-  ]);
+  }, [loadQtdTotal, loadQtdChamados, loadQtdChamadosAbertos, loadDisponibilidadeMaterial]);
 
   return (
     <>
@@ -339,99 +213,44 @@ const UniquePage = () => {
           <div className="grid-object grid-row">
             <span className="span-title">Visão Geral</span>
             <div className="object-row">
-              <img
-                className="small-icon"
-                src={AllTicketsSVG}
-                alt="all-tickets"
-              />
+              <img className="small-icon" src={AllTicketsSVG} alt="all-tickets" />
               <div>
-                {loadingChamados ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{qtdChamados} chamados</h6>
-                )}
+                {loadingChamados ? <TextLoader /> : <h6>{qtdChamados} chamados</h6>}
                 <span>SGL - Garantia</span>
               </div>
             </div>
             <div className="object-row">
-              <img
-                className="small-icon"
-                src={OpenTicketsSVG}
-                alt="all-tickets"
-              />
+              <img className="small-icon" src={OpenTicketsSVG} alt="all-tickets" />
               <div>
-                {loadingChamadosAbertos ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{qtdChamadosAbertos} chamados abertos</h6>
-                )}
+                {loadingChamadosAbertos ? <TextLoader /> : <h6>{qtdChamadosAbertos} chamados abertos</h6>}
                 <span>SGL - Garantia</span>
               </div>
             </div>
-            <div
-              className="object-row clickable-div material-om"
-              onClick={() => navigate("/dashboard-sgl-sg7/materialom")}
-            >
-              <img
-                className="small-icon"
-                src={MaterialsSVG}
-                alt="all-tickets"
-              />
+            <div className="object-row clickable-div material-om" onClick={() => navigate("/dashboard-sgl-sg7/materialom")}>
+              <img className="small-icon" src={MaterialsSVG} alt="all-tickets" />
               <div>
-                {loadingMateriais ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{totalMateriais} materiais</h6>
-                )}
+                {loadingMateriais ? <TextLoader /> : <h6>{totalMateriais} materiais</h6>}
                 <span>Classe VII | OM</span>
               </div>
             </div>
-            <div
-              className="object-row clickable-div material-om-disponivel"
-              onClick={() =>
-                navigate("/dashboard-sgl-sg7/materialom/disponivel")
-              }
-            >
-              <img
-                className="small-icon"
-                src={AvailableSVG}
-                alt="all-tickets"
-              />
+            <div className="object-row clickable-div material-om-disponivel" onClick={() => navigate("/dashboard-sgl-sg7/materialom/disponivel")}>
+              <img className="small-icon" src={AvailableSVG} alt="all-tickets" />
               <div>
                 {loadingDisponibilidade ? (
                   <TextLoader />
                 ) : (
-                  <h6>
-                    {(disponibilidadeMaterial &&
-                      disponibilidadeMaterial.at(0)?.quantidade) ||
-                      0}{" "}
-                    materiais disponíveis
-                  </h6>
+                  <h6>{(disponibilidadeMaterial && disponibilidadeMaterial.at(0)?.quantidade) || 0} materiais disponíveis</h6>
                 )}
                 <span>Classe VII | OM</span>
               </div>
             </div>
-            <div
-              className="object-row clickable-div material-om-indisponivel"
-              onClick={() =>
-                navigate("/dashboard-sgl-sg7/materialom/indisponivel")
-              }
-            >
-              <img
-                className="small-icon"
-                src={UnavailableSVG}
-                alt="all-tickets"
-              />
+            <div className="object-row clickable-div material-om-indisponivel" onClick={() => navigate("/dashboard-sgl-sg7/materialom/indisponivel")}>
+              <img className="small-icon" src={UnavailableSVG} alt="all-tickets" />
               <div>
                 {loadingDisponibilidade ? (
                   <TextLoader />
                 ) : (
-                  <h6>
-                    {(disponibilidadeMaterial &&
-                      disponibilidadeMaterial.at(1)?.quantidade) ||
-                      0}{" "}
-                    materiais indisponíveis
-                  </h6>
+                  <h6>{(disponibilidadeMaterial && disponibilidadeMaterial.at(1)?.quantidade) || 0} materiais indisponíveis</h6>
                 )}
                 <span>Classe VII | OM</span>
               </div>
@@ -440,7 +259,7 @@ const UniquePage = () => {
           {/* Por Comando */}
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por CMDO/ODS</span>
+            <span className="span-subtitle">por C Mil A / ODS​</span>
             <QtdMaterialCmdoSmall onSelectedItem={handleSelectCmdo} />
           </div>
           {/* Por UF */}
@@ -464,17 +283,13 @@ const UniquePage = () => {
           {/* Material Indisponível */}
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">
-              indisponibilidade por categoria
-            </span>
-            <QtdCategoriaMaterialIndisponivelSmall
-              selectedData={selectedCmdoCategoria}
-            />
+            <span className="span-subtitle">indisponibilidade por categoria</span>
+            <QtdCategoriaMaterialIndisponivelSmall selectedData={selectedCmdoCategoria} />
           </div>
           {/* Por BDA */}
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por BDA</span>
+            <span className="span-subtitle">Brigadas com Maior Quantidade de Materiais</span>
             <QtdMaterialBdaSmall selectedData={selectedCmdoBda} />
           </div>
           {/* Chamados por OM */}
@@ -486,7 +301,7 @@ const UniquePage = () => {
           </div>
           <div className="grid-object">
             <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por subsistema</span>
+            <span className="span-subtitle">por sistema</span>
             <QtdMaterialSubsistemaSmall selectedData={selectedCmdoSubsistema} />
           </div>
           <div className="grid-object">
@@ -501,7 +316,7 @@ const UniquePage = () => {
           </div>
           <div className="grid-object">
             <span className="span-title">Diárias e Passagens</span>
-            <span className="span-subtitle">por código</span>
+            <span className="span-subtitle">por ação orçamentária</span>
             <ValorTotalCodAoDiariaPassagemSmall />
           </div>
         </div>

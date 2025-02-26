@@ -1,93 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
+import { useFetchData } from "utils/hooks/usefetchdata";
+import { useElementSize } from "utils/hooks/useelementsize";
 
 interface Props {
   selectedData?: QtdMaterialBdaType[];
 }
 
 const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<QtdMaterialBdaType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const [elementSize, setElementSize] = useState({
-    width: 0,
-    height: 0,
+  const { data, loading } = useFetchData<QtdMaterialBdaType>({
+    url: "/materiaisom/qtd/bda",
+    initialData: selectedData,
   });
 
-  useEffect(() => {
-    const handleResize = () => {
-      const newWidth = window.innerWidth;
-
-      if (newWidth < 768) {
-        setElementSize({
-          height: 300,
-          width: 300,
-        });
-      } else if (newWidth >= 768 && newWidth < 1600) {
-        setElementSize({
-          height: 300,
-          width: 400,
-        });
-      } else if (newWidth >= 1600 && newWidth < 1800) {
-        setElementSize({
-          height: 300,
-          width: 420,
-        });
-      } else {
-        setElementSize({
-          height: 300,
-          width: 450,
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Chama a função uma vez para definir o estado inicial
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const loadData = useCallback(() => {
-    setLoading(true);
-
-    if (selectedData && selectedData.length > 0) {
-      setTimeout(() => {
-        setData(selectedData);
-      }, 300);
-      setLoading(false);
-    } else {
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/bda",
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParams)
-        .then((res) => {
-          setTimeout(() => {
-            setData(res.data as QtdMaterialBdaType[]);
-          }, 300);
-        })
-        .catch(() => {
-          toast.error(
-            "Erro ao carregar dados de quantidade de materiais por comando."
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [selectedData]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const elementSize = useElementSize();
 
   // Ordena os dados do maior para o menor e seleciona os 10 primeiros
   const top10Data = [...data]

@@ -65,9 +65,7 @@ const ValorTotalClassificacaoDiariaPassagemSmall = () => {
         setData(res.data as ValorTotalClassificacaoDiariaPassagem[]);
       })
       .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de valor total de diárias e passagens por classificação."
-        );
+        toast.error("Erro ao carregar dados de valor total de diárias e passagens por classificação.");
       })
       .finally(() => {
         setLoading(false);
@@ -84,12 +82,7 @@ const ValorTotalClassificacaoDiariaPassagemSmall = () => {
   // 🔹 Organizando os dados para as séries
   const series = ["DIARIAS", "PASSAGENS"].map((classificacao) => ({
     name: classificacao,
-    data: anos.map(
-      (ano) =>
-        data.find(
-          (item) => item.ano === ano && item.classificacao === classificacao
-        )?.total || 0
-    ),
+    data: anos.map((ano) => data.find((item) => item.ano === ano && item.classificacao === classificacao)?.total || 0),
   }));
 
   const options: ApexOptions = {
@@ -134,7 +127,7 @@ const ValorTotalClassificacaoDiariaPassagemSmall = () => {
       theme: "dark",
     },
     stroke: {
-      curve: "smooth"
+      curve: "smooth",
     },
     colors: ["#0077F5", "#E37D24"], // Azul para DIARIAS e Laranja para PASSAGENS
     dataLabels: {
@@ -172,13 +165,7 @@ const ValorTotalClassificacaoDiariaPassagemSmall = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart
-          options={options}
-          series={series}
-          type="area"
-          height={elementSize.height}
-          width={elementSize.width}
-        />
+        <ReactApexChart options={options} series={series} type="area" height={elementSize.height} width={elementSize.width} />
       )}
     </div>
   );

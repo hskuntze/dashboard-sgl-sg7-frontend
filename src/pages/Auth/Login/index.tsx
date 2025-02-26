@@ -58,10 +58,7 @@ const Login = () => {
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
         <div className="login-form-logo">
-          <img
-            src={LogotipoSGLSAD2}
-            alt="Logotipo do Sistema de Gestão de Risco"
-          />
+          <img src={LogotipoSGLSAD2} alt="Logotipo do Sistema de Gestão de Risco" />
         </div>
         <div className="login-form-content">
           <div className="login-input-group">
@@ -74,9 +71,7 @@ const Login = () => {
                 required: "Campo obrigatório",
               })}
             />
-            <div className="invalid-feedback d-block div-erro">
-              {errors.username?.message}
-            </div>
+            <div className="invalid-feedback d-block div-erro">{errors.username?.message}</div>
           </div>
           <div className="login-input-group">
             <input
@@ -88,9 +83,7 @@ const Login = () => {
                 required: "Campo obrigatório",
               })}
             />
-            <div className="invalid-feedback d-block div-erro">
-              {errors.password?.message}
-            </div>
+            <div className="invalid-feedback d-block div-erro">{errors.password?.message}</div>
           </div>
           {loading ? (
             <Loader />
@@ -103,16 +96,12 @@ const Login = () => {
           )}
         </div>
         <div className="login-logos">
-          <img
-            src={LogotipoSISFRON}
-            className="logotipo-sisfron"
-            alt="Logotipo SISFRON"
-          />
-          <img
-            src={LogotipoCTCEA}
-            className="logotipo-ctcea"
-            alt="Logotipo SISFRON"
-          />
+          <div>
+            <img src={LogotipoSISFRON} className="logotipo-sisfron" alt="Logotipo SISFRON" />
+          </div>
+          <div>
+            <img src={LogotipoCTCEA} className="logotipo-ctcea" alt="Logotipo SISFRON" />
+          </div>
         </div>
       </form>
       {/* <Link to="/dashboard-sgl-sg7/enviaremail">
