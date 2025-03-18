@@ -14,12 +14,10 @@ import QtdMaterialBdaSmall from "components/QtdMaterialBdaSmall";
 import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
 import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
 import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
-import ValorTotalClassificacaoDiariaPassagemSmall from "components/ValorTotalClassificacaoDiariaPassagemSmall";
-import ValorTotalCodAoDiariaPassagemSmall from "components/ValorTotalCodAoDiariaPassagemSmall";
 import TextLoader from "components/TextLoader";
 import Map from "components/Map";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AxiosRequestConfig } from "axios";
 import { requestBackend } from "utils/requests";
 import { toast } from "react-toastify";
@@ -32,6 +30,19 @@ import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
 import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
 import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
+import ExecucaoOrcamentaria2024 from "components/ExecucaoOrcamentaria2024";
+import ExecucaoOrcamentaria2025 from "components/ExecucaoOrcamentaria2025";
+import ExecucaoOrcamentaria2024TipoAcao from "components/ExecucaoOrcamentaria2024TipoAcao";
+import ExecucaoOrcamentaria2025TipoAcao from "components/ExecucaoOrcamentaria2025TipoAcao";
+import RestantePorAno from "components/RestantePorAno";
+import TipoAcaoValor from "components/TipoAcaoValor";
+import MenuLateral from "components/MenuLateral";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import { Carousel } from "bootstrap";
+import MapQcpOM from "components/MapQcpOM";
+
 
 type DisponibilidadeMaterial = {
   disponibilidade: string;
@@ -66,6 +77,8 @@ const UniquePage = () => {
   const [selectedCmdoMapa, setSelectedCmdoMapa] = useState<GeorefCmdo[]>([]);
   const [selectedCmdoSubsistema, setSelectedCmdoSubsistema] = useState<QtdMaterialSubsistemaType[]>([]);
   const [selectedCmdoTipoEqp, setSelectedCmdoTipoEqp] = useState<QtdMaterialTipoEqpExistentePrevisto[]>([]);
+
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   const loadQtdTotal = useCallback(() => {
     setLoadingMateriais(true);
@@ -198,6 +211,15 @@ const UniquePage = () => {
     }
   };
 
+  const handleMenuClick = (index: number) => {
+    if (carouselRef.current) {
+      const carousel = new Carousel(carouselRef.current, {
+        interval: 10000,
+      });
+      carousel.to(index);
+    }
+  };
+
   useEffect(() => {
     loadQtdTotal();
     loadQtdChamados();
@@ -207,117 +229,178 @@ const UniquePage = () => {
 
   return (
     <>
-      <div className="unique-page-container">
-        <div className="unique-page-grid">
-          {/* Visão Geral */}
-          <div className="grid-object grid-row">
-            <span className="span-title">Visão Geral</span>
-            <div className="object-row">
-              <img className="small-icon" src={AllTicketsSVG} alt="all-tickets" />
-              <div>
-                {loadingChamados ? <TextLoader /> : <h6>{qtdChamados} chamados</h6>}
-                <span>SGL - Garantia</span>
+      <div id="element-content">
+        <MenuLateral onMenuClick={handleMenuClick} />
+        <div className="unique-page-container">
+          <div ref={carouselRef} id="carousel-page" className="carousel slide" data-bs-ride="carousel">
+            <div className="carousel-inner">
+              <div className="carousel-item active" id="dm7">
+                <div className="unique-page-grid">
+                  <div className="grid-object">
+                    <Map selectedData={selectedCmdoMapa} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">por C Mil A / ODS​</span>
+                    <QtdMaterialCmdoSmall onSelectedItem={handleSelectCmdo} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">por UF</span>
+                    <QtdMaterialCidadeEstadoSmall selectedData={selectedCmdoUf} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">por RM</span>
+                    <QtdMaterialRmSmall selectedData={selectedCmdoRm} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">Brigadas com Maior Quantidade de Materiais</span>
+                    <QtdMaterialBdaSmall selectedData={selectedCmdoBda} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">indisponibilidade por categoria</span>
+                    <QtdCategoriaMaterialIndisponivelSmall selectedData={selectedCmdoCategoria} />
+                  </div>
+                  <span className="painel-title">PAINEL DM7</span>
+                </div>
+              </div>
+              <div className="carousel-item" id="agge">
+                <div className="unique-page-grid">
+                  <div className="grid-object">
+                    <span className="span-title">Execução Orçamentária</span>
+                    <span className="span-subtitle">em 2024</span>
+                    <ExecucaoOrcamentaria2024 />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Execução Orçamentária</span>
+                    <span className="span-subtitle">em 2025</span>
+                    <ExecucaoOrcamentaria2025 />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Execução Orçamentária</span>
+                    <span className="span-subtitle">ações 147F, 15W6, 20XE, 20XJ, 14T5 e 21D2 em 2024</span>
+                    <ExecucaoOrcamentaria2024TipoAcao />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Execução Orçamentária</span>
+                    <span className="span-subtitle">ações 147F, 15W6, 20XE, 20XJ, 14T5 e 21D2 em 2025</span>
+                    <ExecucaoOrcamentaria2025TipoAcao />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Restos a Pagar</span>
+                    <span className="span-subtitle">restante por ano</span>
+                    <RestantePorAno />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Restos a Pagar</span>
+                    <span className="span-subtitle">por tipo de ação</span>
+                    <TipoAcaoValor />
+                  </div>
+                  <span className="painel-title">PAINEL AGGE</span>
+                </div>
+              </div>
+              <div className="carousel-item" id="cop">
+                <div className="unique-page-grid cop-grid">
+                  <div className="cop-top">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">por sistema</span>
+                    <QtdMaterialSubsistemaSmall selectedData={selectedCmdoSubsistema} />
+                  </div>
+                  <div className="cop-bottom">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">existentes e previstos</span>
+                    <QtdMaterialTipoEqpSmall selectedData={selectedCmdoTipoEqp} />
+                  </div>
+                  <div className="cop-right">
+                    <MapQcpOM selectedData={null} />
+                  </div>
+                  <span className="painel-title">PAINEL COP</span>
+                </div>
+              </div>
+              <div className="carousel-item" id="sisfron">
+                <div className="unique-page-grid">
+                  <div className="grid-object grid-row">
+                    <span className="span-title">Visão Geral</span>
+                    <div className="object-row">
+                      <img className="small-icon" src={AllTicketsSVG} alt="all-tickets" />
+                      <div>
+                        {loadingChamados ? <TextLoader /> : <h6>{qtdChamados} chamados</h6>}
+                        <span>SGL - Garantia</span>
+                      </div>
+                    </div>
+                    <div className="object-row">
+                      <img className="small-icon" src={OpenTicketsSVG} alt="all-tickets" />
+                      <div>
+                        {loadingChamadosAbertos ? <TextLoader /> : <h6>{qtdChamadosAbertos} chamados abertos</h6>}
+                        <span>SGL - Garantia</span>
+                      </div>
+                    </div>
+                    <div className="object-row clickable-div material-om" onClick={() => navigate("/dashboard-sgl-sg7/materialom")}>
+                      <img className="small-icon" src={MaterialsSVG} alt="all-tickets" />
+                      <div>
+                        {loadingMateriais ? <TextLoader /> : <h6>{totalMateriais} materiais</h6>}
+                        <span>Classe VII | OM</span>
+                      </div>
+                    </div>
+                    <div
+                      className="object-row clickable-div material-om-disponivel"
+                      onClick={() => navigate("/dashboard-sgl-sg7/materialom/disponivel")}
+                    >
+                      <img className="small-icon" src={AvailableSVG} alt="all-tickets" />
+                      <div>
+                        {loadingDisponibilidade ? (
+                          <TextLoader />
+                        ) : (
+                          <h6>{(disponibilidadeMaterial && disponibilidadeMaterial.at(0)?.quantidade) || 0} materiais disponíveis</h6>
+                        )}
+                        <span>Classe VII | OM</span>
+                      </div>
+                    </div>
+                    <div
+                      className="object-row clickable-div material-om-indisponivel"
+                      onClick={() => navigate("/dashboard-sgl-sg7/materialom/indisponivel")}
+                    >
+                      <img className="small-icon" src={UnavailableSVG} alt="all-tickets" />
+                      <div>
+                        {loadingDisponibilidade ? (
+                          <TextLoader />
+                        ) : (
+                          <h6>{(disponibilidadeMaterial && disponibilidadeMaterial.at(1)?.quantidade) || 0} materiais indisponíveis</h6>
+                        )}
+                        <span>Classe VII | OM</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Chamados por Ano</span>
+                    <span className="span-subtitle">SGL - Garantia</span>
+                    <QtdChamadoAnoSmall />
+                  </div>
+                  <span className="painel-title">PAINEL SISFRON</span>
+                </div>
               </div>
             </div>
-            <div className="object-row">
-              <img className="small-icon" src={OpenTicketsSVG} alt="all-tickets" />
-              <div>
-                {loadingChamadosAbertos ? <TextLoader /> : <h6>{qtdChamadosAbertos} chamados abertos</h6>}
-                <span>SGL - Garantia</span>
-              </div>
-            </div>
-            <div className="object-row clickable-div material-om" onClick={() => navigate("/dashboard-sgl-sg7/materialom")}>
-              <img className="small-icon" src={MaterialsSVG} alt="all-tickets" />
-              <div>
-                {loadingMateriais ? <TextLoader /> : <h6>{totalMateriais} materiais</h6>}
-                <span>Classe VII | OM</span>
-              </div>
-            </div>
-            <div className="object-row clickable-div material-om-disponivel" onClick={() => navigate("/dashboard-sgl-sg7/materialom/disponivel")}>
-              <img className="small-icon" src={AvailableSVG} alt="all-tickets" />
-              <div>
-                {loadingDisponibilidade ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{(disponibilidadeMaterial && disponibilidadeMaterial.at(0)?.quantidade) || 0} materiais disponíveis</h6>
-                )}
-                <span>Classe VII | OM</span>
-              </div>
-            </div>
-            <div className="object-row clickable-div material-om-indisponivel" onClick={() => navigate("/dashboard-sgl-sg7/materialom/indisponivel")}>
-              <img className="small-icon" src={UnavailableSVG} alt="all-tickets" />
-              <div>
-                {loadingDisponibilidade ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{(disponibilidadeMaterial && disponibilidadeMaterial.at(1)?.quantidade) || 0} materiais indisponíveis</h6>
-                )}
-                <span>Classe VII | OM</span>
-              </div>
-            </div>
-          </div>
-          {/* Por Comando */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por C Mil A / ODS​</span>
-            <QtdMaterialCmdoSmall onSelectedItem={handleSelectCmdo} />
-          </div>
-          {/* Por UF */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por UF</span>
-            <QtdMaterialCidadeEstadoSmall selectedData={selectedCmdoUf} />
-          </div>
-          {/* Por RM */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por RM</span>
-            <QtdMaterialRmSmall selectedData={selectedCmdoRm} />
-          </div>
-          {/* Por Ano (CHAMADOS) */}
-          <div className="grid-object">
-            <span className="span-title">Chamados por Ano</span>
-            <span className="span-subtitle">SGL - Garantia</span>
-            <QtdChamadoAnoSmall />
-          </div>
-          {/* Material Indisponível */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">indisponibilidade por categoria</span>
-            <QtdCategoriaMaterialIndisponivelSmall selectedData={selectedCmdoCategoria} />
-          </div>
-          {/* Por BDA */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">Brigadas com Maior Quantidade de Materiais</span>
-            <QtdMaterialBdaSmall selectedData={selectedCmdoBda} />
-          </div>
-          {/* Chamados por OM */}
-          <div className="grid-object">
-            {/* <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">indisponíveis por BDA</span>
-            <QtdIndisponivelPorBda selectedData={selectedCmdoIndisponivelBda} /> */}
-            <Map selectedData={selectedCmdoMapa} />
-          </div>
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por sistema</span>
-            <QtdMaterialSubsistemaSmall selectedData={selectedCmdoSubsistema} />
-          </div>
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">existentes e previstos</span>
-            <QtdMaterialTipoEqpSmall selectedData={selectedCmdoTipoEqp} />
-          </div>
-          <div className="grid-object">
-            <span className="span-title">Diárias e Passagens</span>
-            <span className="span-subtitle">por classificação</span>
-            <ValorTotalClassificacaoDiariaPassagemSmall />
-          </div>
-          <div className="grid-object">
-            <span className="span-title">Diárias e Passagens</span>
-            <span className="span-subtitle">por ação orçamentária</span>
-            <ValorTotalCodAoDiariaPassagemSmall />
+            {/* <button
+              className="carousel-control-prev"
+              type="button"
+              style={{ color: "#000", fontSize: "60px", opacity: "0.8" }}
+              data-bs-target="#carousel-page"
+              data-bs-slide="prev"
+            >
+              <i className="bi bi-chevron-left" />
+            </button>
+            <button
+              className="carousel-control-next"
+              type="button"
+              style={{ color: "#000", fontSize: "60px", opacity: "0.8" }}
+              data-bs-target="#carousel-page"
+              data-bs-slide="next"
+            >
+              <i className="bi bi-chevron-right" />
+            </button> */}
           </div>
         </div>
       </div>

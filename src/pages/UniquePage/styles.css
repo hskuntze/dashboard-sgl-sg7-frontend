@@ -65,8 +65,7 @@
 }
 
 .material-om:hover .small-icon {
-  filter: brightness(0) saturate(100%) invert(24%) sepia(20%) saturate(900%)
-    hue-rotate(170deg);
+  filter: brightness(0) saturate(100%) invert(24%) sepia(20%) saturate(900%) hue-rotate(170deg);
 }
 
 .material-om-disponivel:hover {
@@ -79,8 +78,7 @@
 }
 
 .material-om-disponivel:hover .small-icon {
-  filter: brightness(0) saturate(100%) invert(40%) sepia(60%) saturate(300%)
-    hue-rotate(90deg);
+  filter: brightness(0) saturate(100%) invert(40%) sepia(60%) saturate(300%) hue-rotate(90deg);
 }
 
 .material-om-indisponivel:hover {
@@ -93,22 +91,19 @@
 }
 
 .material-om-indisponivel:hover .small-icon {
-  filter: brightness(0) saturate(90%) invert(70%) sepia(80%) saturate(400%)
-    hue-rotate(-10deg);
+  filter: brightness(0) saturate(90%) invert(70%) sepia(80%) saturate(400%) hue-rotate(-10deg);
 }
 
 /* ------------ GRID ------------ */
 
 .unique-page-container {
-  width: max(100vw, 100%);
+  width: 100vw;
 }
 
 .unique-page-grid {
   display: grid;
   grid-template-columns: 1fr; /* Coluna maior à esquerda */
   grid-template-rows: auto;
-  height: calc(100vh - 71px);
-  max-height: calc(100vh - 71px);
   width: max(100vw, 100%);
 }
 
@@ -137,6 +132,22 @@
   z-index: 1000; /* Garante que o modal fique acima de outros elementos */
   width: 750px;
   height: 650px;
+}
+
+#element-content {
+  display: flex;
+}
+
+.painel-title {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-row: 3;
+  grid-column: 1 / 4;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.060em;
 }
 
 @media (min-width: 768px) {
@@ -173,7 +184,7 @@
     margin-right: 10px;
     margin-left: 0px;
   }
-  
+
   .object-row {
     display: flex;
     align-items: center;
@@ -191,14 +202,18 @@
   .unique-page-container {
     max-height: calc(100vh - 71px);
     height: calc(100vh - 71px);
+
+    width: calc(100vw - 170px);
   }
 
   .unique-page-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
     height: calc(100vh - 71px);
     max-height: calc(100vh - 71px);
+
+    max-width: calc(100vw - 170px);
   }
 
   .grid-object {
@@ -208,7 +223,7 @@
     justify-content: center;
     border: 1px solid #ccc;
 
-    min-width: 475px;
+    min-width: 435px;
     min-height: 381px;
 
     width: 100%;
@@ -216,55 +231,54 @@
 
     grid-column: auto;
     grid-row: auto;
+    background: #f8f9fa; /* Cor de fundo leve */
   }
 
-  /* .grid-object:nth-child(1) {
-    grid-column: 1 / 2;
-    grid-row: 1 / 2;
+  .cop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    height: calc(100vh - 71px);
+    max-height: calc(100vh - 71px);
+
+    max-width: calc(100vw - 170px);
   }
 
-  .grid-object:nth-child(2) {
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
+  .cop-top {
+    border: 1px solid #ccc;
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 435px;
+    min-height: 381px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
   }
 
-  .grid-object:nth-child(3) {
-    grid-column: 3 / 4;
-    grid-row: 1 / 2;
+  .cop-bottom {
+    border: 1px solid #ccc;
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 435px;
+    min-height: 381px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12px;
   }
 
-  .grid-object:nth-child(4) {
-    grid-column: 4 / 5;
-    grid-row: 1 / 2;
+  .cop-right {
+    border: 1px solid #ccc;
+    grid-column: 2; /* Segunda coluna */
+    grid-row: 1 / span 2;
+    min-width: 435px;
+    min-height: 381px;
+    width: 100%;
+    height: auto;
   }
-
-  .grid-object:nth-child(5) {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-  }
-
-  .grid-object:nth-child(6) {
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
-  }
-
-  .grid-object:nth-child(7) {
-    grid-column: 3 / 4;
-    grid-row: 2 / 3;
-  }
-
-  .grid-object:nth-child(8) {
-    grid-column: 4 / 5;
-    grid-row: 2 / 3;
-  }
-
-  .grid-object:nth-child(9) {
-    grid-column: 5 / 6;
-    grid-row: 1 / 2;
-  }
-
-  .grid-object:nth-child(10) {
-    grid-column: 5 / 6;
-    grid-row: 2 / 3;
-  } */
 }

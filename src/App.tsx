@@ -1,4 +1,5 @@
 import "assets/styles/custom.scss";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "react-toastify/dist/ReactToastify.min.css";
 import Routes from "Routes";

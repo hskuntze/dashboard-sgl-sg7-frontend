@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 import LogotipoSISFRON from "assets/images/corujinhaLoginEb.png";
 import LogotipoCTCEA from "assets/images/logo_ctcea.png";
+import LogotipoCCOMGEX from "assets/images/ccomgex.png";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "utils/contexts/AuthContext";
 import { removeAuthData, removeUserData } from "utils/storage";
@@ -41,11 +42,14 @@ const Navbar = () => {
           <Link to="/dashboard-sgl-sg7">
             <img className="navbar-logo" src={LogotipoSISFRON} alt="Logotipo sisfron" />
           </Link>
+          <div>
+            <img src={LogotipoCCOMGEX} className="ccomgex-logo" alt="Logitpo CComGEx" />
+          </div>
           <span className="navbar-title">
-            Consciência Situacional <span className="real-time-label"> Em tempo real</span>
+            Consciência Situacional <span className="versao">Vs 1.0</span> <span className="real-time-label"> Em tempo real</span>
           </span>
           <div>
-            <img className="ctcea-logo" src={LogotipoCTCEA} alt="Logotipo CTCEA" />
+            <img src={LogotipoCTCEA} className="ctcea-logo" alt="Logotipo CTCEA" />
           </div>
           {!isAdmin && (
             <div className="sair-topo">

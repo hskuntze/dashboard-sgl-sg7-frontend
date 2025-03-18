@@ -1,5 +1,6 @@
 import { GeorefUnidade } from "types/georef";
 import { GeorefCmdo } from "types/georefcmdo";
+import { GeorefQcpOM } from "types/georefqcpom";
 import { User } from "types/user";
 
 type LoginResponse = {
@@ -70,3 +71,15 @@ export const removeGeoRefCmdoData = () => {
   localStorage.removeItem("geoRef");
 };
 
+export const saveGeoRefQcpOmData = (data: GeorefQcpOM[]) => {
+  localStorage.setItem("geoRefQcpOm", JSON.stringify(data));
+};
+
+export const getGeoRefQcpOmData = () => {
+  const str = localStorage.getItem("geoRefQcpOm") ?? "{}";
+  return JSON.parse(str) as GeorefQcpOM;
+};
+
+export const removeGeoRefQcpOmData = () => {
+  localStorage.removeItem("geoRefQcpOm");
+};

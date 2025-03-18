@@ -247,9 +247,9 @@
   font-optical-sizing: auto;
 }
 
-body {
+/* body {
   min-width: max-content;
-}
+} */
 
 #root {
   max-height: 100vh;
