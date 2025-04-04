@@ -84,9 +84,7 @@ const Recover = () => {
                 required: "Campo obrigatório",
               })}
             />
-            <div className="invalid-feedback d-block div-erro">
-              {errors.senhaAntiga?.message}
-            </div>
+            <div className="invalid-feedback d-block div-erro">{errors.senhaAntiga?.message}</div>
           </div>
           <div className="login-input-group">
             <input
@@ -98,9 +96,7 @@ const Recover = () => {
                 required: "Campo obrigatório",
               })}
             />
-            <div className="invalid-feedback d-block div-erro">
-              {errors.senha?.message}
-            </div>
+            <div className="invalid-feedback d-block div-erro">{errors.senha?.message}</div>
           </div>
           <div className="login-input-group">
             <input
@@ -110,13 +106,10 @@ const Recover = () => {
               className="input-element"
               {...register("confirmarSenha", {
                 required: "Campo obrigatório",
-                validate: (value) =>
-                  value === senha || "Senhas não correspondem",
+                validate: (value) => value === senha || "Senhas não correspondem",
               })}
             />
-            <div className="invalid-feedback d-block div-erro">
-              {errors.confirmarSenha?.message}
-            </div>
+            <div className="invalid-feedback d-block div-erro">{errors.confirmarSenha?.message}</div>
           </div>
           {loading ? (
             <Loader />

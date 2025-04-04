@@ -21,7 +21,10 @@ import CMA from "assets/images/CMA.png";
 
 import markerIcon from "assets/images/marker-icon-3.png";
 import { GeorefCmdo } from "types/georefcmdo";
-import { useNavigate } from "react-router-dom";
+
+import "react-leaflet-fullscreen/styles.css";
+import "leaflet.fullscreen";
+import { FullscreenControl } from "react-leaflet-fullscreen";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -33,14 +36,14 @@ L.Marker.prototype.options.icon = DefaultIcon;
 // L.imageOverlay(MapaBrasil, [[-33.70, -53.43601], [5.24591, -60.18398]]);
 
 interface Props {
-  selectedData?: GeorefCmdo[];
+  onSelectedItem: (cmdo: string | null) => void;
 }
 
-const Map = ({ selectedData }: Props) => {
+const Map = ({ onSelectedItem }: Props) => {
   const [points, setPoints] = useState<GeorefCmdo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const navigate = useNavigate();
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const bounds: L.LatLngBoundsExpression = [
     [-34.15, -74.25],
@@ -63,46 +66,35 @@ const Map = ({ selectedData }: Props) => {
   const loadPoints = useCallback(() => {
     setLoading(true);
 
-    if (selectedData && selectedData.length > 0) {
-      setPoints(selectedData);
+    const savedGeoRef = localStorage.getItem("geoRef");
+    if (savedGeoRef) {
+      // Se houver dados salvos no localStorage, usa diretamente
+      const parsedGeoRef = JSON.parse(savedGeoRef) as GeorefCmdo[];
+
+      setPoints(parsedGeoRef);
       setLoading(false);
-
-      //mapRef.current?.setZoom(3);
-    } else {
-      const savedGeoRef = localStorage.getItem("geoRef");
-      if (savedGeoRef) {
-        // Se houver dados salvos no localStorage, usa diretamente
-        const parsedGeoRef = JSON.parse(savedGeoRef) as GeorefCmdo[];
-
-        setPoints(parsedGeoRef);
-        setLoading(false);
-        //mapRef.current?.setZoom(3);
-        return; // Não faz a requisição, já temos os dados
-      }
-
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/georef/cmdo",
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParams)
-        .then((res) => {
-          const geoRefData = res.data as GeorefCmdo[];
-          setPoints(geoRefData);
-          saveGeoRefCmdoData(geoRefData); // Armazena no localStorage
-          //mapRef.current?.setZoom(3);
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar os dados de georeferenciamento."
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      return; // Não faz a requisição, já temos os dados
     }
-  }, [selectedData]);
+
+    const requestParams: AxiosRequestConfig = {
+      url: "/materiaisom/georef/cmdo",
+      method: "GET",
+      withCredentials: true,
+    };
+
+    requestBackend(requestParams)
+      .then((res) => {
+        const geoRefData = res.data as GeorefCmdo[];
+        setPoints(geoRefData);
+        saveGeoRefCmdoData(geoRefData); // Armazena no localStorage
+      })
+      .catch((err) => {
+        toast.error("Erro ao tentar carregar os dados de georeferenciamento.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const forceRefresh = () => {
     setLoading(true);
@@ -139,24 +131,16 @@ const Map = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="map-wrapper">
-          <MapContainer
-            center={[-15, -50]}
-            zoom={3}
-            className="map-container"
-            style={{ width: "100%", height: "100%" }}
-            ref={mapRef}
-          >
+          <MapContainer center={[-15.78, -47.93]} zoom={3} className="map-container" style={{ width: "100%", height: "100%" }} ref={mapRef}>
+            <FullscreenControl position="topleft" />
             <button onClick={forceRefresh} className="refresh-map-button">
               <i className="bi bi-arrow-clockwise" />
             </button>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution=""
-            />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="" />
             <ImageOverlay
               url={MapaBrasil} // Estilos opcionais para o SVG
               bounds={bounds}
-              opacity={1}
+              opacity={0.5}
             />
             {points.map((point) => {
               const logoUrl = logos[point.cmdoOds]; // Usa um logo padrão caso não tenha mapeado
@@ -173,7 +157,7 @@ const Map = ({ selectedData }: Props) => {
                     </div>
                   </div>
                   `,
-                iconSize: [0, 0],
+                iconSize: [4, 4],
               });
 
               return (
@@ -182,38 +166,20 @@ const Map = ({ selectedData }: Props) => {
                   position={[Number(point.latitude), Number(point.longitude)]}
                   icon={customLabel}
                   eventHandlers={{
-                    click: () => navigate(`/dashboard-sgl-sg7/materialom/filter/${point.cmdoOds}`),
+                    click: () => {
+                      if (point.cmdoOds === selectedItem) {
+                        setSelectedItem(null);
+                        onSelectedItem(null);
+                      } else {
+                        setSelectedItem(point.cmdoOds);
+                        onSelectedItem(point.cmdoOds);
+                      }
+                    },
                   }}
                 />
               );
             })}
           </MapContainer>
-          {/* <div className="map-listing">
-            <div className="filter-container">
-              <input
-                type="text"
-                placeholder="Buscar equipamento"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="search-input"
-              />
-              <button onClick={handleFilter} className="filter-button">
-                Filtrar
-              </button>
-            </div>
-            <ul>
-              {filteredPoints.map((p, index) => (
-                <li
-                  key={index}
-                  onClick={() =>
-                    goToLocation(Number(p.latitude), Number(p.longitude))
-                  }
-                >
-                  {p.equipamento}, BDA: {p.bda}, OM: {p.om}
-                </li>
-              ))}
-            </ul>
-          </div> */}
         </div>
       )}
     </>

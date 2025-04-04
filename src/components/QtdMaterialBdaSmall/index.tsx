@@ -1,56 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
+import { useFetchData } from "utils/hooks/usefetchdata";
+import { useElementSize } from "utils/hooks/useelementsize";
+import { useState } from "react";
 
 interface Props {
   selectedData?: QtdMaterialBdaType[];
+  onSelectedItem: (cmdo: string | null) => void;
+  cmdoSelected: boolean;
 }
 
-const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<QtdMaterialBdaType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+const QtdMaterialBdaSmall = ({ selectedData, onSelectedItem, cmdoSelected }: Props) => {
+  const { data, loading } = useFetchData<QtdMaterialBdaType>({
+    url: "/materiaisom/qtd/bda",
+    initialData: selectedData,
+  });
 
-  const loadData = useCallback(() => {
-    setLoading(true);
+  const elementSize = useElementSize();
 
-    if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
-      setLoading(false);
-    } else {
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/bda",
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParams)
-        .then((res) => {
-          setData(res.data as QtdMaterialBdaType[]);
-        })
-        .catch(() => {
-          toast.error(
-            "Erro ao carregar dados de quantidade de materiais por comando."
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [selectedData]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   // Ordena os dados do maior para o menor e seleciona os 10 primeiros
-  const top10Data = [...data]
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .slice(0, 10);
+  const top10Data = [...data].sort((a, b) => b.quantidade - a.quantidade).slice(0, 10);
 
   const options: ApexOptions = {
     chart: {
@@ -58,6 +31,32 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
       background: "transparent",
       toolbar: {
         show: false,
+      },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          if (cmdoSelected) {
+            const selectedIndex = config.dataPointIndex;
+            const clickedItem = top10Data[selectedIndex];
+
+            if (clickedItem.bda === selectedItem) {
+              // Desseleção: o mesmo item foi clicado novamente
+              setSelectedItem(null);
+              onSelectedItem(null); // Notifica que nenhum item está selecionado
+            } else {
+              // Seleção: um novo item foi clicado
+              setSelectedItem(clickedItem.bda);
+              onSelectedItem(clickedItem.bda);
+            }
+          }
+        },
       },
     },
     title: {
@@ -105,7 +104,7 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
       labels: {
         show: true,
         style: {
-          fontSize: "12px",
+          fontSize: elementSize.width > 400 ? "12px" : "8px",
           colors: "#31374a",
         },
       },
@@ -113,6 +112,9 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
     yaxis: {
       show: true,
       labels: {
+        style: {
+          fontSize: elementSize.width > 400 ? "12px" : "10px",
+        },
         formatter: (val: number) => `${val}`, // Formata os valores do eixo Y
       },
     },
@@ -140,13 +142,7 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="column-chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={300}
-            width={450}
-          />
+          <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>

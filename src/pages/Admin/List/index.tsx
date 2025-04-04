@@ -39,16 +39,11 @@ const UsuarioList = () => {
       });
   }, []);
 
-  const handlePageChange = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    pageNumber: number
-  ) => {
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) => {
     setPage(pageNumber);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -71,10 +66,7 @@ const UsuarioList = () => {
     );
   });
 
-  const paginatedData = filteredData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleExportToExcel = () => {
     if (filteredData) {
@@ -82,7 +74,7 @@ const UsuarioList = () => {
         "Nome completo": u.nomecompleto,
         CPF: u.cpf,
         "Nome de guerra": u.nomeguerra,
-        "Organização": u.organizacao,
+        Organização: u.organizacao,
         Identidade: u.identidade,
         "E-mail": u.email,
         Telefone: u.telefone,
@@ -162,18 +154,10 @@ const UsuarioList = () => {
             Novo usuário
           </button>
         </Link>
-        <button
-          onClick={handleExportPDF}
-          type="button"
-          className="act-button create-button"
-        >
+        <button onClick={handleExportPDF} type="button" className="act-button create-button">
           <i className="bi bi-filetype-pdf" />
         </button>
-        <button
-          onClick={handleExportToExcel}
-          type="button"
-          className="act-button create-button"
-        >
+        <button onClick={handleExportToExcel} type="button" className="act-button create-button">
           <i className="bi bi-file-earmark-excel" />
         </button>
       </div>
@@ -187,9 +171,7 @@ const UsuarioList = () => {
               placeholder="Digite um termo para filtrar"
               onChange={handleFilterChange}
             />
-            <label htmlFor="titulo-ocorrencia-filtro">
-              Digite um termo para filtrar
-            </label>
+            <label htmlFor="titulo-ocorrencia-filtro">Digite um termo para filtrar</label>
           </div>
           <button className="search-button" type="button">
             <i className="bi bi-search" />
@@ -215,9 +197,7 @@ const UsuarioList = () => {
             </thead>
             <tbody className="table-body">
               {paginatedData.length > 0 ? (
-                paginatedData.map((t) => (
-                  <UsuarioCard onLoad={loadInfo} key={t.id} element={t} />
-                ))
+                paginatedData.map((t) => <UsuarioCard onLoad={loadInfo} key={t.id} element={t} />)
               ) : (
                 <tr>
                   <td colSpan={9}>

@@ -10,7 +10,7 @@ import { SpringPage } from "types/vendor/spring";
 import { requestBackend } from "utils/requests";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
-import QtdMaterialRmExtraSmall from "components/QtdMaterialRmExtraSmall";
+import { Link } from "react-router-dom";
 
 type ControlComponentsData = {
   activePage: number;
@@ -22,16 +22,12 @@ const MaterialOMDisponivel = () => {
   const [page, setPage] = useState<SpringPage<MaterialOMType>>();
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [controlComponentsData, setControlComponentsData] =
-    useState<ControlComponentsData>({
-      activePage: 0,
-      filterData: { nomeeqp: null, pn: null, sn: null, cmdo: null },
-    });
+  const [controlComponentsData, setControlComponentsData] = useState<ControlComponentsData>({
+    activePage: 0,
+    filterData: { nomeeqp: null, pn: null, sn: null, cmdo: null },
+  });
 
-  const handlePageChange = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    pageNumber: number
-  ) => {
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) => {
     setControlComponentsData({
       activePage: pageNumber,
       filterData: controlComponentsData.filterData,
@@ -42,9 +38,7 @@ const MaterialOMDisponivel = () => {
     setControlComponentsData({ activePage: 0, filterData: data });
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setControlComponentsData({
       activePage: 0,
@@ -76,120 +70,107 @@ const MaterialOMDisponivel = () => {
   }, [controlComponentsData, rowsPerPage]);
 
   const handleExportToExcel = () => {
-      if (page && page.content.length > 0) {
-        const capacitadosProcessado = page.content.map((u) => ({
-          "Nome eqp.": u.equipamento,
-          Modelo: u.modelo,
-          Fabricante: u.fabricante,
-          PN: u.pn,
-          SN: u.sn,
-          Disponibilidade: u.disponibilidade,
-          "Motivo da indisponibilidade": u.motivoindisp,
-          RM: u.rm,
-          CMDO: u.cmdoOds,
-          BDA: u.bda,
-          OM: u.om,
-          DE: u.de,
-          "Cidade/UF": u.cidade + "/" + u.estado,
-          Subsistema: u.subsistema,
-          Grupo: u.grupo,
-          Longitude: u.longitude,
-          Latitude: u.latitude,
-        }));
-  
-        const ws = XLSX.utils.json_to_sheet(capacitadosProcessado);
-        const wb = XLSX.utils.book_new();
-  
-        XLSX.utils.book_append_sheet(wb, ws, "Materiais");
-        XLSX.writeFile(wb, "materiais.xlsx");
-      }
-    };
-  
-    const handleExportPDF = () => {
-      const doc = new jsPDF();
-  
-      doc.setFontSize(18);
-      doc.text("Materiais disponíveis", 5, 20);
-  
-      doc.setFontSize(12);
-      const yStart = 30;
-      let y = yStart;
-      const lineHeight = 10;
-      const marginLeft = 15;
-      const colWidth = 50;
-  
-      if (page && page.content.length > 0) {
-        page.content?.forEach((u, i) => {
+    if (page && page.content.length > 0) {
+      const capacitadosProcessado = page.content.map((u) => ({
+        "Nome eqp.": u.equipamento,
+        Modelo: u.modelo,
+        Fabricante: u.fabricante,
+        PN: u.pn,
+        SN: u.sn,
+        Disponibilidade: u.disponibilidade,
+        "Motivo da indisponibilidade": u.motivoindisp,
+        RM: u.rm,
+        CMDO: u.cmdoOds,
+        BDA: u.bda,
+        OM: u.om,
+        DE: u.de,
+        "Cidade/UF": u.cidade + "/" + u.estado,
+        Subsistema: u.subsistema,
+        Grupo: u.grupo,
+        Longitude: u.longitude,
+        Latitude: u.latitude,
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(capacitadosProcessado);
+      const wb = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(wb, ws, "Materiais");
+      XLSX.writeFile(wb, "materiais.xlsx");
+    }
+  };
+
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Materiais disponíveis", 5, 20);
+
+    doc.setFontSize(12);
+    const yStart = 30;
+    let y = yStart;
+    const lineHeight = 10;
+    const marginLeft = 15;
+    const colWidth = 50;
+
+    if (page && page.content.length > 0) {
+      page.content?.forEach((u, i) => {
+        doc.setFont("helvetica", "bold");
+        doc.text(u.equipamento + ", " + u.sn, marginLeft, y);
+        y += lineHeight;
+
+        const data = [
+          ["Nome eqp.", u.equipamento ?? "-"],
+          ["Modelo", u.modelo ?? "-"],
+          ["Fabricante", u.fabricante ?? "-"],
+          ["PN", u.pn ?? "-"],
+          ["SN", u.sn ?? "-"],
+          ["Disponibilidade", u.disponibilidade ?? "-"],
+          ["Motivo da indisponibilidade", u.motivoindisp ?? "-"],
+          ["RM", u.rm ?? "-"],
+          ["CMDO", u.cmdoOds ?? "-"],
+          ["BDA", u.bda ?? "-"],
+          ["OM", u.om ?? "-"],
+          ["DE", u.de ?? "-"],
+          ["Cidade", u.cidade ?? "-"],
+          ["UF", u.estado ?? "-"],
+          ["Subsistema", u.subsistema ?? "-"],
+          ["Grupo", u.grupo ?? "-"],
+          ["Tipo Eqp.", u.tipo_eqp ?? "-"],
+          ["Longitude", String(u.longitude) ?? "-"],
+          ["Latitude", String(u.latitude) ?? "-"],
+        ];
+
+        data.forEach(([k, v]) => {
           doc.setFont("helvetica", "bold");
-          doc.text(u.equipamento + ", " + u.sn, marginLeft, y);
+          doc.text(k, marginLeft, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(v, marginLeft + colWidth, y);
           y += lineHeight;
-  
-          const data = [
-            ["Nome eqp.", u.equipamento ?? "-"],
-            ["Modelo", u.modelo ?? "-"],
-            ["Fabricante", u.fabricante ?? "-"],
-            ["PN", u.pn ?? "-"],
-            ["SN", u.sn ?? "-"],
-            ["Disponibilidade", u.disponibilidade ?? "-"],
-            ["Motivo da indisponibilidade", u.motivoindisp ?? "-"],
-            ["RM", u.rm ?? "-"],
-            ["CMDO", u.cmdoOds ?? "-"],
-            ["BDA", u.bda ?? "-"],
-            ["OM", u.om ?? "-"],
-            ["DE", u.de ?? "-"],
-            ["Cidade", u.cidade ?? "-"],
-            ["UF", u.estado ?? "-"],
-            ["Subsistema", u.subsistema ?? "-"],
-            ["Grupo", u.grupo ?? "-"],
-            ["Tipo Eqp.", u.tipo_eqp ?? "-"],
-            ["Longitude", String(u.longitude) ?? "-"],
-            ["Latitude", String(u.latitude) ?? "-"],
-          ];
-  
-          data.forEach(([k, v]) => {
-            doc.setFont("helvetica", "bold");
-            doc.text(k, marginLeft, y);
-            doc.setFont("helvetica", "normal");
-            doc.text(v, marginLeft + colWidth, y);
-            y += lineHeight;
-  
-            if (y > 270) {
-              doc.addPage();
-              y = 20;
-            }
-          });
-  
-          y += 10;
+
+          if (y > 270) {
+            doc.addPage();
+            y = 20;
+          }
         });
-      }
-  
-      doc.save("materiais_disponiveis.pdf");
-    };
+
+        y += 10;
+      });
+    }
+
+    doc.save("materiais_disponiveis.pdf");
+  };
 
   return (
     <div className="list-container">
-      <h2 style={{ marginLeft: "10px", marginTop: "20px" }}>
-        Materiais Disponíveis
-      </h2>
+      <h2 style={{ marginLeft: "10px", marginTop: "20px" }}>Materiais Disponíveis</h2>
       <div>
         <div className="top-list-buttons">
-          <button
-            onClick={handleExportPDF}
-            type="button"
-            className="act-button create-button"
-          >
+          <button onClick={handleExportPDF} type="button" className="act-button create-button">
             <i className="bi bi-filetype-pdf" />
           </button>
-          <button
-            onClick={handleExportToExcel}
-            type="button"
-            className="act-button create-button"
-          >
+          <button onClick={handleExportToExcel} type="button" className="act-button create-button">
             <i className="bi bi-file-earmark-excel" />
           </button>
-        </div>
-        <div className="fixed-graph">
-          <QtdMaterialRmExtraSmall />
         </div>
       </div>
       <div>
@@ -248,6 +229,13 @@ const MaterialOMDisponivel = () => {
           </tfoot>
         </table>
       )}
+      <div style={{ marginLeft: "20px" }}>
+        <Link to="/dashboard-sgl-sg7">
+          <button type="button" className="button delete-button">
+            Voltar
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };

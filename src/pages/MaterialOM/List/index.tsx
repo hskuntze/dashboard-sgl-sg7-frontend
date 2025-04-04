@@ -10,8 +10,7 @@ import { SpringPage } from "types/vendor/spring";
 import { requestBackend } from "utils/requests";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
-import QtdMaterialRmExtraSmall from "components/QtdMaterialRmExtraSmall";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 type ControlComponentsData = {
   activePage: number;
@@ -29,21 +28,17 @@ const MaterialOMList = () => {
   const [page, setPage] = useState<SpringPage<MaterialOMType>>();
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [controlComponentsData, setControlComponentsData] =
-    useState<ControlComponentsData>({
-      activePage: 0,
-      filterData: {
-        nomeeqp: null,
-        pn: null,
-        sn: null,
-        cmdo: urlParams.cmdo ? urlParams.cmdo : null,
-      },
-    });
+  const [controlComponentsData, setControlComponentsData] = useState<ControlComponentsData>({
+    activePage: 0,
+    filterData: {
+      nomeeqp: null,
+      pn: null,
+      sn: null,
+      cmdo: urlParams.cmdo ? urlParams.cmdo : null,
+    },
+  });
 
-  const handlePageChange = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    pageNumber: number
-  ) => {
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, pageNumber: number) => {
     setControlComponentsData({
       activePage: pageNumber,
       filterData: controlComponentsData.filterData,
@@ -54,9 +49,7 @@ const MaterialOMList = () => {
     setControlComponentsData({ activePage: 0, filterData: data });
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setControlComponentsData({
       activePage: 0,
@@ -181,35 +174,19 @@ const MaterialOMList = () => {
 
   return (
     <div className="list-container">
-      <h2 style={{ marginLeft: "10px", marginTop: "20px" }}>
-        Todos os materiais
-      </h2>
+      <h2 style={{ marginLeft: "10px", marginTop: "20px" }}>Todos os materiais</h2>
       <div>
         <div className="top-list-buttons">
-          <button
-            onClick={handleExportPDF}
-            type="button"
-            className="act-button create-button"
-          >
+          <button onClick={handleExportPDF} type="button" className="act-button create-button">
             <i className="bi bi-filetype-pdf" />
           </button>
-          <button
-            onClick={handleExportToExcel}
-            type="button"
-            className="act-button create-button"
-          >
+          <button onClick={handleExportToExcel} type="button" className="act-button create-button">
             <i className="bi bi-file-earmark-excel" />
           </button>
         </div>
-        <div className="fixed-graph">
-          <QtdMaterialRmExtraSmall />
-        </div>
       </div>
       <div>
-        <FilterMaterialOM
-          cmdo={urlParams.cmdo !== null ? urlParams.cmdo : null}
-          onSubmitFilter={handleSubmitFilter}
-        />
+        <FilterMaterialOM cmdo={urlParams.cmdo !== null ? urlParams.cmdo : null} onSubmitFilter={handleSubmitFilter} />
       </div>
       {loading ? (
         <div className="loader-div">
@@ -264,6 +241,13 @@ const MaterialOMList = () => {
           </tfoot>
         </table>
       )}
+      <div style={{ marginLeft: "20px" }}>
+        <Link to="/dashboard-sgl-sg7">
+          <button type="button" className="button delete-button">
+            Voltar
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };

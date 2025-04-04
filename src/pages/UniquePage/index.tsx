@@ -1,436 +1,321 @@
 import "./styles.css";
 
-import AllTicketsSVG from "assets/images/all_tickets.svg";
-import OpenTicketsSVG from "assets/images/open_tickets.svg";
-import AvailableSVG from "assets/images/available_materials.svg";
-import UnavailableSVG from "assets/images/unavailable_materials.svg";
-import MaterialsSVG from "assets/images/all_materials.svg";
-
-import QtdMaterialCidadeEstadoSmall from "components/QtdMaterialCidadeEstadoSmall";
-import QtdMaterialCmdoSmall from "components/QtdMaterialCmdoSmall";
-import QtdMaterialRmSmall from "components/QtdMaterialRmSmall";
+import ExecucaoOrcamentaria2025 from "components/ExecucaoOrcamentaria2025";
+import ExecucaoOrcamentaria2025TipoAcao from "components/ExecucaoOrcamentaria2025TipoAcao";
+import RestantePorAno from "components/RestantePorAno";
+import TipoAcaoValor from "components/TipoAcaoValor";
+import MenuLateral from "components/MenuLateral";
 import QtdChamadoAnoSmall from "components/QtdChamadoAnoSmall";
 import QtdMaterialBdaSmall from "components/QtdMaterialBdaSmall";
+import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
+import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
+import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
+import Map from "components/Map";
+import MapQcpOM from "components/MapQcpOM";
 
-import { useCallback, useEffect, useState } from "react";
-import { AxiosRequestConfig } from "axios";
+import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
+import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
+import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
+import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import { Carousel } from "bootstrap";
+import { useEffect, useRef, useState } from "react";
 import { requestBackend } from "utils/requests";
 import { toast } from "react-toastify";
-import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
-// import QtdIndisponivelPorBda from "components/QtdIndisponivelPorBda";
-import { useNavigate } from "react-router-dom";
-import TextLoader from "components/TextLoader";
-import { QtdMaterialCidadeEstadoType } from "types/relatorio/qtdmaterialcidadeestado";
-import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
-import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
-// import { QtdIndisponivelPorBdaType } from "types/relatorio/qtdindisponivelporbda";
-import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
-import Map from "components/Map";
-import { GeorefCmdo } from "types/georefcmdo";
-
-type DisponibilidadeMaterial = {
-  disponibilidade: string;
-  quantidade: number;
-};
+import QtdMaterialDisponibilidadePorCmdo from "components/QtdMaterialDisponibilidadePorCmdo";
+import { QtdMaterialDisponibilidadeCmdoType } from "types/relatorio/qtdmaterialdisponibilidadecmdo";
+import MapOperacoes from "components/MapOperacoes";
+import { useLocation, useNavigate } from "react-router-dom";
+import SituacaoRisco from "components/SituacaoRisco";
+import QuantidadeDemandas from "components/QuantidadeDemandas";
+import ExecucaoFinanceira from "components/ExecucaoFinanceira";
+import PorcentagemEmpenhadaGauge from "components/PorcentagemEmpenhadaGauge";
+import PorcentagemLiquidadaGauge from "components/PorcentagemLiquidadaGauge";
+import useActiveObserver from "utils/hooks/useobserver";
 
 const UniquePage = () => {
-  const [totalMateriais, setTotalMateriais] = useState<string>();
-  const [qtdChamados, setQtdChamados] = useState<string>();
-  const [qtdChamadosAbertos, setQtdChamadosAbertos] = useState<string>();
-  const [disponibilidadeMaterial, setDisponibilidadeMaterial] =
-    useState<DisponibilidadeMaterial[]>();
+  const [selectedCmdo, setSelectedCmdo] = useState<string>();
+  const [selectedBrigada, setSelectedBrigada] = useState<string>();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const [loadingChamados, setLoadingChamados] = useState<boolean>(false);
-  const [loadingChamadosAbertos, setLoadingChamadosAbertos] =
-    useState<boolean>(false);
-  const [loadingMateriais, setLoadingMateriais] = useState<boolean>(false);
-  const [loadingDisponibilidade, setLoadingDisponibilidade] =
-    useState<boolean>(false);
+  const [selectedCategoria, setSelectedCategoria] = useState<CategoriaMaterialIndisponivelType[]>([]);
+  const [selectedBda, setSelectedBda] = useState<QtdMaterialBdaType[]>([]);
+  const [selectedSubsistema, setSelectedSubsistema] = useState<QtdMaterialSubsistemaType[]>([]);
+  const [selectedTipoEqp, setSelectedTipoEqp] = useState<QtdMaterialTipoEqpExistentePrevisto[]>([]);
 
-  // Função para garantir a ordem correta dos dados
-  const organizeDisponibilidadeMaterial = (data: DisponibilidadeMaterial[]) => {
-    const disponiveis = data.find(
-      (item) => item.disponibilidade === "Disponível"
-    );
-    const indisponiveis = data.find(
-      (item) => item.disponibilidade === "Indisponível"
-    );
+  const [selectedDisponibilidadeCmdo, setSelectedDisponibilidadeCmdo] = useState<QtdMaterialDisponibilidadeCmdoType[]>([]);
 
-    return [
-      disponiveis || { quantidade: 0, disponibilidade: "Disponível" },
-      indisponiveis || { quantidade: 0, disponibilidade: "Indisponível" },
-    ];
-  };
-
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const carouselInstance = useRef<Carousel | null>(null);
   const navigate = useNavigate();
 
-  const [selectedCmdoUf, setSelectedCmdoUf] = useState<QtdMaterialCidadeEstadoType[]>([]);
-  const [selectedCmdoRm, setSelectedCmdoRm] = useState<QtdMaterialRmType[]>([]);
-  const [selectedCmdoCategoria, setSelectedCmdoCategoria] = useState<CategoriaMaterialIndisponivelType[]>([]);
-  const [selectedCmdoBda, setSelectedCmdoBda] = useState<QtdMaterialBdaType[]>([]);
-  // const [selectedCmdoIndisponivelBda, setSelectedCmdoIndisponivelBda] =
-  //   useState<QtdIndisponivelPorBdaType[]>([]);
-  const [selectedCmdoMapa, setSelectedCmdoMapa] = useState<GeorefCmdo[]>([]);
+  const location = useLocation();
 
-  const loadQtdTotal = useCallback(() => {
-    setLoadingMateriais(true);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const index = params.get("carouselIndex");
+    
+    if (index !== null) {
+      // Definir o slide ativo do carousel
+      handleMenuClick(parseInt(index));
+    }
+  }, [location]);
 
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/total",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        setTotalMateriais(res.data);
-      })
-      .catch((err) => {
-        toast.error("Não foi possível carregar a quantidade de materiais.");
-      })
-      .finally(() => {
-        setLoadingMateriais(false);
-      });
-  }, []);
-
-  const loadQtdChamados = useCallback(() => {
-    setLoadingChamados(true);
-
-    const requestParams: AxiosRequestConfig = {
-      url: "/chamados",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        setQtdChamados(res.data);
-      })
-      .catch((err) => {
-        toast.error("Não foi possível carregar a quantidade de chamados.");
-      })
-      .finally(() => {
-        setLoadingChamados(false);
-      });
-  }, []);
-
-  const loadQtdChamadosAbertos = useCallback(() => {
-    setLoadingChamadosAbertos(true);
-
-    const requestParams: AxiosRequestConfig = {
-      url: "/chamados/abertos",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        setQtdChamadosAbertos(res.data);
-      })
-      .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de chamados abertos."
-        );
-      })
-      .finally(() => {
-        setLoadingChamadosAbertos(false);
-      });
-  }, []);
-
-  const loadDisponibilidadeMaterial = useCallback(() => {
-    setLoadingDisponibilidade(true);
-
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/disponibilidade",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        let data = res.data as DisponibilidadeMaterial[];
-        let organizedData = organizeDisponibilidadeMaterial(data);
-        setDisponibilidadeMaterial(organizedData);
-      })
-      .catch((err) => {
-        toast.error(
-          "Não foi possível carregar a quantidade de materiais disponíveis."
-        );
-      })
-      .finally(() => {
-        setLoadingDisponibilidade(false);
-      });
-  }, []);
-
-  const handleSelectCmdo = (cmdo: string | null) => {
+  const handleSelectCmdo = async (cmdo: string | null) => {
     if (cmdo !== null) {
-      const requestParamsUf: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/ufcmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
+      // Mapeando os endpoints para facilitar a manutenção
+      const endpoints = [
+        { key: "bda", url: `/materiaisom/qtd/bdacmdo/${cmdo}`, stateSetter: setSelectedBda },
+        { key: "catIndisponivel", url: `/materiaisom/qtd/ctgmtindisponivelcmdo/${cmdo}`, stateSetter: setSelectedCategoria },
+        { key: "subsistema", url: `/materiaisom/qtd/subsistema/${cmdo}`, stateSetter: setSelectedSubsistema },
+        { key: "tipoEqp", url: `/materiaisom/qtd/tipoeqp/${cmdo}`, stateSetter: setSelectedTipoEqp },
+        { key: "disponibilidadecmdo", url: `/materiaisom/qtd/material/cmdo/${cmdo}`, stateSetter: setSelectedDisponibilidadeCmdo },
+      ];
 
-      const requestParamsRm: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/rmcmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
+      try {
+        // Criando as requisições em paralelo
+        const responses = await Promise.all(
+          endpoints.map(({ url }) =>
+            requestBackend({ url, method: "GET", withCredentials: true }).catch((err) => {
+              toast.error(`Erro ao carregar dados de ${url}`);
+              return null;
+            })
+          )
+        );
 
-      const requestParamsBda: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/bdacmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      // const requestParamsIndisponivelBda: AxiosRequestConfig = {
-      //   url: `/materiaisom/qtd/indisponivelbdacmdo/${cmdo}`,
-      //   method: "GET",
-      //   withCredentials: true,
-      // };
-
-      const requestParamsCatIndisponivel: AxiosRequestConfig = {
-        url: `/materiaisom/qtd/ctgmtindisponivelcmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      const requestParamsMapa: AxiosRequestConfig = {
-        url: `/materiaisom/georef/cmdo/${cmdo}`,
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParamsUf)
-        .then((res) => {
-          setSelectedCmdoUf(res.data as QtdMaterialCidadeEstadoType[]);
-        })
-        .catch((err) => {
-          toast.error("Erro ao tentar carregar dados de UF por CMDO.");
+        // Atualizando os estados com os dados das respostas
+        responses.forEach((res, index) => {
+          if (res !== null) {
+            endpoints[index].stateSetter(res.data);
+          }
         });
-
-      requestBackend(requestParamsRm)
-        .then((res) => {
-          setSelectedCmdoRm(res.data as QtdMaterialRmType[]);
-        })
-        .catch((err) => {
-          toast.error("Erro ao tentar carregar dados de RM por CMDO.");
-        });
-
-      requestBackend(requestParamsBda)
-        .then((res) => {
-          setSelectedCmdoBda(res.data as QtdMaterialBdaType[]);
-        })
-        .catch((err) => {
-          toast.error("Erro ao tentar carregar dados de BDA por CMDO.");
-        });
-
-      // requestBackend(requestParamsIndisponivelBda)
-      //   .then((res) => {
-      //     setSelectedCmdoIndisponivelBda(
-      //       res.data as QtdIndisponivelPorBdaType[]
-      //     );
-      //   })
-      //   .catch((err) => {
-      //     toast.error(
-      //       "Erro ao tentar carregar dados de indisponível por BDA por CMDO."
-      //     );
-      //   });
-
-      requestBackend(requestParamsCatIndisponivel)
-        .then((res) => {
-          setSelectedCmdoCategoria(
-            res.data as CategoriaMaterialIndisponivelType[]
-          );
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar dados de categoria indisponível por CMDO."
-          );
-        });
-
-      requestBackend(requestParamsMapa)
-        .then((res) => {
-          setSelectedCmdoMapa(res.data as GeorefCmdo[]);
-        })
-        .catch((err) => {
-          toast.error(
-            "Erro ao tentar carregar dados de georeferenciamento por CMDO."
-          );
-        });
+      } catch (error) {
+        toast.error("Erro ao carregar os dados do CMDO.");
+      } finally {
+        setSelectedCmdo(cmdo);
+      }
     } else {
-      setSelectedCmdoUf([]);
-      setSelectedCmdoRm([]);
-      setSelectedCmdoBda([]);
-      // setSelectedCmdoIndisponivelBda([]);
-      setSelectedCmdoCategoria([]);
-      setSelectedCmdoMapa([]);
+      // Resetando os estados de uma vez só
+      setSelectedBda([]);
+      setSelectedCategoria([]);
+      setSelectedSubsistema([]);
+      setSelectedTipoEqp([]);
+      setSelectedDisponibilidadeCmdo([]);
     }
   };
 
-  useEffect(() => {
-    loadQtdTotal();
-    loadQtdChamados();
-    loadQtdChamadosAbertos();
-    loadDisponibilidadeMaterial();
-  }, [
-    loadQtdTotal,
-    loadQtdChamados,
-    loadQtdChamadosAbertos,
-    loadDisponibilidadeMaterial,
-  ]);
+  const handleSelectBda = async (bda: string | null) => {
+    if (bda !== null) {
+      if (bda === "Vinculação direta") {
+        bda = "Vinculação direta ao CMDO";
+      }
+
+      setSelectedBrigada(bda);
+
+      const endpoints = [
+        {
+          key: "catIndisponivel",
+          url: `/materiaisom/qtd/ctgmtindisponivelcmdo/bda`,
+          stateSetter: setSelectedCategoria,
+          params: { cmdo: selectedCmdo, bda: bda },
+        },
+        { key: "subsistema", url: `/materiaisom/qtd/subsistema/bda`, stateSetter: setSelectedSubsistema, params: { cmdo: selectedCmdo, bda: bda } },
+        { key: "tipoEqp", url: `/materiaisom/qtd/tipoeqp/bda`, stateSetter: setSelectedTipoEqp, params: { cmdo: selectedCmdo, bda: bda } },
+        {
+          key: "disponibilidadecmdo",
+          url: `/materiaisom/qtd/material/cmdo/bda`,
+          stateSetter: setSelectedDisponibilidadeCmdo,
+          params: { cmdo: selectedCmdo, bda: bda },
+        },
+      ];
+
+      try {
+        // Criando as requisições em paralelo
+        const responses = await Promise.all(
+          endpoints.map(({ url, params }) =>
+            requestBackend({ url, method: "GET", withCredentials: true, params }).catch((err) => {
+              toast.error(`Erro ao carregar dados de ${url}`);
+              return null;
+            })
+          )
+        );
+
+        // Atualizando os estados com os dados das respostas
+        responses.forEach((res, index) => {
+          if (res !== null) {
+            endpoints[index].stateSetter(res.data);
+          }
+        });
+      } catch (error) {
+        toast.error("Erro ao carregar os dados da BDA.");
+      }
+    } else {
+      // Resetando os estados de uma vez só
+      setSelectedBda([]);
+      setSelectedCategoria([]);
+      setSelectedSubsistema([]);
+      setSelectedTipoEqp([]);
+    }
+  };
+
+  const handleSelectCategoria = (cat: string | null) => {
+    if (selectedBrigada && selectedCmdo) {
+      navigate(`/dashboard-sgl-sg7/materialom/material/indisponivel`, { state: { selectedBrigada, cat } });
+    } else {
+      toast.info("Por favor, selecione um comando e uma brigada.");
+    }
+  };
+
+  const handleMenuClick = (index: number) => {
+    if (carouselRef.current) {
+      if (!carouselInstance.current) {
+        carouselInstance.current = new Carousel(carouselRef.current);
+      }
+
+      carouselInstance.current.to(index);
+
+      if (index === 2) {
+        setRefreshTrigger((prev) => prev + 1);
+      }
+    }
+  };
+
+  useActiveObserver({
+    onActive: () => {
+      setRefreshTrigger((prev) => prev + 1);
+    },
+    id: "cop",
+    className: "active",
+  });
 
   return (
     <>
-      <div className="unique-page-container">
-        <div className="unique-page-grid">
-          {/* Visão Geral */}
-          <div className="grid-object grid-row">
-            <span className="span-title">Visão Geral</span>
-            <div className="object-row">
-              <img
-                className="small-icon"
-                src={AllTicketsSVG}
-                alt="all-tickets"
-              />
-              <div>
-                {loadingChamados ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{qtdChamados} chamados</h6>
-                )}
-                <span>SGL - Garantia</span>
+      <div id="element-content">
+        <MenuLateral onMenuClick={handleMenuClick} />
+        <div id="unique-page-container" className="unique-page-container">
+          <div ref={carouselRef} id="carousel-page" className="carousel slide" data-bs-ride="carousel" data-bs-interval="30000">
+            <div className="carousel-inner">
+              <div className="carousel-item active" id="dm7">
+                <div className="unique-page-grid">
+                  <div className="grid-object">
+                    <Map onSelectedItem={handleSelectCmdo} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">Brigadas com Maior Quantidade de Materiais</span>
+                    <QtdMaterialBdaSmall
+                      cmdoSelected={selectedCmdo !== undefined ? true : false}
+                      onSelectedItem={handleSelectBda}
+                      selectedData={selectedBda}
+                    />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">disponível e indisponível por C Mil A</span>
+                    <QtdMaterialDisponibilidadePorCmdo selectedData={selectedDisponibilidadeCmdo} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">por Sistema</span>
+                    <QtdMaterialSubsistemaSmall selectedData={selectedSubsistema} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">Existentes e Previstos</span>
+                    <QtdMaterialTipoEqpSmall selectedData={selectedTipoEqp} />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Materiais Classe VII</span>
+                    <span className="span-subtitle">Indisponibilidade por Categoria</span>
+                    <QtdCategoriaMaterialIndisponivelSmall
+                      bdaSelected={selectedBrigada !== undefined ? true : false}
+                      onSelectCategoria={handleSelectCategoria}
+                      selectedData={selectedCategoria}
+                    />
+                  </div>
+                  <span className="painel-title">PAINEL DM7</span>
+                </div>
+              </div>
+              <div className="carousel-item" id="agge">
+                <div className="unique-page-grid">
+                  <div className="grid-object">
+                    <span className="span-title">Execução orçamentária 2025</span>
+                    <span className="span-subtitle">Área Interna</span>
+                    <ExecucaoOrcamentaria2025 />
+                    <span className="hint">Atualizado em 28/03/2025</span>
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Execução orçamentária 2025</span>
+                    <span className="span-subtitle">Porcentagem Empenhada</span>
+                    <PorcentagemEmpenhadaGauge />
+                    <span className="hint">Atualizado em 28/03/2025</span>
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Execução orçamentária 2025</span>
+                    <span className="span-subtitle">Porcentagem Liquidada</span>
+                    <PorcentagemLiquidadaGauge />
+                    <span className="hint">Atualizado em 28/03/2025</span>
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Execução Orçamentária das Ações Finalísticas 2025</span>
+                    <span className="span-subtitle">147F, 15W6, 20XE, 20XJ, 14T5 e 21D2</span>
+                    <ExecucaoOrcamentaria2025TipoAcao />
+                    <span className="hint">Atualizado em 28/03/2025</span>
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Restos a Pagar Não Processados a Liquidar</span>
+                    <span className="span-subtitle">Restante por Ano</span>
+                    <RestantePorAno />
+                    <span className="hint">Atualizado em 28/03/2025</span>
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Restos a Pagar Não Processados a Liquidar</span>
+                    <span className="span-subtitle">por Tipo de Ação</span>
+                    <TipoAcaoValor />
+                    <span className="hint">Atualizado em 28/03/2025</span>
+                  </div>
+                  <span className="painel-title">PAINEL AGGE</span>
+                </div>
+              </div>
+              <div className="carousel-item" id="cop">
+                <div className="unique-page-grid cop-grid">
+                  <div className="cop-left">
+                    <MapOperacoes refreshTrigger={refreshTrigger} />
+                  </div>
+                  <div className="cop-right">
+                    <MapQcpOM refreshTrigger={refreshTrigger} selectedData={null} />
+                  </div>
+                  <span className="painel-title">PAINEL COP</span>
+                </div>
+              </div>
+              <div className="carousel-item" id="sisfron">
+                <div className="unique-page-grid">
+                  <div className="grid-object">
+                    <span className="span-title">SGL</span>
+                    <span className="span-subtitle">Chamados por Ano</span>
+                    <QtdChamadoAnoSmall />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Gestão de Riscos dos Projetos SAD</span>
+                    <span className="span-subtitle">Quantidade de riscos por magnitude</span>
+                    <SituacaoRisco />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Resultados da Parceria CComGEx - CTCEA</span>
+                    <span className="span-subtitle">Quantidade de demandas realizadas por Projetos SAD/SISFRON</span>
+                    <QuantidadeDemandas />
+                  </div>
+                  <div className="grid-object">
+                    <span className="span-title">Execução Financeira Anual</span>
+                    <span className="span-subtitle">em 2025</span>
+                    <ExecucaoFinanceira />
+                  </div>
+                  <span className="painel-title">PAINEL SISFRON</span>
+                </div>
               </div>
             </div>
-            <div className="object-row">
-              <img
-                className="small-icon"
-                src={OpenTicketsSVG}
-                alt="all-tickets"
-              />
-              <div>
-                {loadingChamadosAbertos ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{qtdChamadosAbertos} chamados abertos</h6>
-                )}
-                <span>SGL - Garantia</span>
-              </div>
-            </div>
-            <div
-              className="object-row clickable-div material-om"
-              onClick={() => navigate("/dashboard-sgl-sg7/materialom")}
-            >
-              <img
-                className="small-icon"
-                src={MaterialsSVG}
-                alt="all-tickets"
-              />
-              <div>
-                {loadingMateriais ? (
-                  <TextLoader />
-                ) : (
-                  <h6>{totalMateriais} materiais</h6>
-                )}
-                <span>Classe VII | OM</span>
-              </div>
-            </div>
-            <div
-              className="object-row clickable-div material-om-disponivel"
-              onClick={() =>
-                navigate("/dashboard-sgl-sg7/materialom/disponivel")
-              }
-            >
-              <img
-                className="small-icon"
-                src={AvailableSVG}
-                alt="all-tickets"
-              />
-              <div>
-                {loadingDisponibilidade ? (
-                  <TextLoader />
-                ) : (
-                  <h6>
-                    {(disponibilidadeMaterial &&
-                      disponibilidadeMaterial.at(0)?.quantidade) ||
-                      0}{" "}
-                    materiais disponíveis
-                  </h6>
-                )}
-                <span>Classe VII | OM</span>
-              </div>
-            </div>
-            <div
-              className="object-row clickable-div material-om-indisponivel"
-              onClick={() =>
-                navigate("/dashboard-sgl-sg7/materialom/indisponivel")
-              }
-            >
-              <img
-                className="small-icon"
-                src={UnavailableSVG}
-                alt="all-tickets"
-              />
-              <div>
-                {loadingDisponibilidade ? (
-                  <TextLoader />
-                ) : (
-                  <h6>
-                    {(disponibilidadeMaterial &&
-                      disponibilidadeMaterial.at(1)?.quantidade) ||
-                      0}{" "}
-                    materiais indisponíveis
-                  </h6>
-                )}
-                <span>Classe VII | OM</span>
-              </div>
-            </div>
-          </div>
-          {/* Por Comando */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por CMDO/ODS</span>
-            <QtdMaterialCmdoSmall onSelectedItem={handleSelectCmdo} />
-          </div>
-          {/* Por UF */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por UF</span>
-            <QtdMaterialCidadeEstadoSmall selectedData={selectedCmdoUf} />
-          </div>
-          {/* Por RM */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por RM</span>
-            <QtdMaterialRmSmall selectedData={selectedCmdoRm} />
-          </div>
-          {/* Por Ano (CHAMADOS) */}
-          <div className="grid-object">
-            <span className="span-title">Chamados por Ano</span>
-            <span className="span-subtitle">SGL - Garantia</span>
-            <QtdChamadoAnoSmall />
-          </div>
-          {/* Material Indisponível */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">
-              indisponibilidade por categoria
-            </span>
-            <QtdCategoriaMaterialIndisponivelSmall
-              selectedData={selectedCmdoCategoria}
-            />
-          </div>
-          {/* Por BDA */}
-          <div className="grid-object">
-            <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">por BDA</span>
-            <QtdMaterialBdaSmall selectedData={selectedCmdoBda} />
-          </div>
-          {/* Chamados por OM */}
-          <div className="grid-object">
-            {/* <span className="span-title">Materiais Classe VII</span>
-            <span className="span-subtitle">indisponíveis por BDA</span>
-            <QtdIndisponivelPorBda selectedData={selectedCmdoIndisponivelBda} /> */}
-            <Map selectedData={selectedCmdoMapa} />
           </div>
         </div>
       </div>

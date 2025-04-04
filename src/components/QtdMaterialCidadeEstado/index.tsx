@@ -43,9 +43,7 @@ const QtdMaterialCidadeEstado = () => {
         setData(res.data as QtdMaterialCidadeEstadoType[]);
       })
       .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por cidade e estado."
-        );
+        toast.error("Erro ao carregar dados de quantidade de materiais por cidade e estado.");
       })
       .finally(() => {
         setLoading(false);

@@ -1,63 +1,30 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
 import Loader from "components/Loader";
-import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
 
 import "./styles.css";
+import { useElementSize } from "utils/hooks/useelementsize";
+import { useFetchData } from "utils/hooks/usefetchdata";
+import Chart from "components/Chart";
 
 interface Props {
   selectedData?: CategoriaMaterialIndisponivelType[];
+  onSelectCategoria: (categoria: string | null) => void;
+  bdaSelected: boolean;
 }
 
-const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<CategoriaMaterialIndisponivelType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+const QtdCategoriaMaterialIndisponivelSmall = ({ bdaSelected, selectedData, onSelectCategoria }: Props) => {
+  const { data, loading } = useFetchData<CategoriaMaterialIndisponivelType>({
+    url: "/materiaisom/qtd/ctgmtindisponivel",
+    initialData: selectedData,
+  });
 
-  const loadData = useCallback(() => {
-    setLoading(true);
+  const elementSize = useElementSize();
 
-    if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
-      setLoading(false);
-    } else {
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/ctgmtindisponivel",
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParams)
-        .then((res) => {
-          setData(res.data as CategoriaMaterialIndisponivelType[]);
-        })
-        .catch(() => {
-          toast.error(
-            "Erro ao carregar dados de quantidade de categorias de materiais indisponíveis."
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [selectedData]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const top10Data =
-    selectedData && selectedData.length > 0
-      ? [...data]
-          .sort((a, b) => b.quantidade - a.quantidade)
-          .slice(0, 10)
-      : [...data]
-          .sort((a, b) => b.quantidade - a.quantidade)
-          .slice(0, 10)
-          .filter((a, b) => a.categoria !== "OUTROS");
+  const top10Data = data
+    .sort((a, b) => b.quantidade - a.quantidade)
+    .slice(0, 10)
+    .filter((item) => item.categoria !== "OUTROS");
 
   const options: ApexOptions = {
     chart: {
@@ -65,6 +32,22 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
       background: "transparent",
       toolbar: {
         show: false,
+      },
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const selectedIndex = config.dataPointIndex;
+          const clickedItem = top10Data[selectedIndex];
+
+          onSelectCategoria(clickedItem.categoria);
+        },
       },
     },
     title: {
@@ -86,7 +69,7 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
             {
               from: 0,
               to: 100000,
-              color: "#2A6DFA",
+              color: "#D01B11",
             },
           ],
         },
@@ -152,12 +135,7 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
     },
   };
 
-  const series = [
-    {
-      name: "Quantidade",
-      data: top10Data.map((item) => item.quantidade),
-    },
-  ];
+  const series = [{ name: "Quantidade", data: top10Data.map((item) => item.quantidade) }];
 
   return (
     <div className="card-chart">
@@ -167,13 +145,7 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={300}
-            width={450}
-          />
+          <Chart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>

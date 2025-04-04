@@ -1,52 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
+import { useState } from "react";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialCmdoType } from "types/relatorio/qtdmaterialcmdo";
 
 import "./styles.css";
+import { useElementSize } from "utils/hooks/useelementsize";
+import { useFetchData } from "utils/hooks/usefetchdata";
 
 interface Props {
   onSelectedItem: (cmdo: string | null) => void;
 }
 
 const QtdMaterialCmdoSmall = ({ onSelectedItem }: Props) => {
-  const [data, setData] = useState<QtdMaterialCmdoType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const { data, loading } = useFetchData<QtdMaterialCmdoType>({
+    url: "/materiaisom/qtd/cmdo",
+    initialData: null
+  });
 
-  const loadData = useCallback(() => {
-    setLoading(true);
+  const elementSize = useElementSize();
 
-    const requestParams: AxiosRequestConfig = {
-      url: "/materiaisom/qtd/cmdo",
-      method: "GET",
-      withCredentials: true,
-    };
-
-    requestBackend(requestParams)
-      .then((res) => {
-        setData(res.data as QtdMaterialCmdoType[]);
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por comando."
-        );
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const sortedData = data
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .filter((a, b) => a.cmdo !== "");
+  const sortedData = data.sort((a, b) => b.quantidade - a.quantidade).filter((a, b) => a.cmdo !== "");
 
   const [selectedItem, setSelectedItem] = useState<QtdMaterialCmdoType | null>(null);
 
@@ -84,7 +58,7 @@ const QtdMaterialCmdoSmall = ({ onSelectedItem }: Props) => {
             {
               from: 0,
               to: 100000,
-              color: "#006CFA",
+              color: "#E6B301",
             },
           ],
         },
@@ -156,13 +130,7 @@ const QtdMaterialCmdoSmall = ({ onSelectedItem }: Props) => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={300}
-            width={450}
-          />
+          <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>

@@ -13,6 +13,44 @@ const QtdChamadoAnoSmall = () => {
   const [data, setData] = useState<QtdChamadoAnoType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [elementSize, setElementSize] = useState({
+    width: 0,
+    height: 0,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newWidth = window.innerWidth;
+
+      if (newWidth < 768) {
+        setElementSize({
+          height: 300,
+          width: 300,
+        });
+      } else if (newWidth >= 768 && newWidth < 1600) {
+        setElementSize({
+          height: 300,
+          width: 400,
+        });
+      } else if (newWidth >= 1600 && newWidth < 1800) { 
+        setElementSize({
+          height: 300,
+          width: 420,
+        });
+      } else {
+        setElementSize({
+          height: 300,
+          width: 450,
+        });
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Chama a função uma vez para definir o estado inicial
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const loadData = useCallback(() => {
     setLoading(true);
 
@@ -51,22 +89,31 @@ const QtdChamadoAnoSmall = () => {
     chart: {
       type: "line", // Mudado para gráfico de linha
       background: "transparent",
-      height: 500,
       width: "100%",
       toolbar: {
         show: false,
       },
       fontFamily: "Nunito, serif",
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
+      offsetX: 6,
     },
     xaxis: {
       categories: labels, // Anos como categorias no eixo X
-      title: {
+      labels: {
         style: {
-          fontSize: "14px",
-          fontWeight: "bold",
+          fontSize: "12px",
           fontFamily: "Nunito, serif",
+          fontWeight: 600
         },
-      },
+        offsetX: 0.5,
+      }
     },
     yaxis: {
       show: false, //REMOVER DEPOIS
@@ -93,19 +140,19 @@ const QtdChamadoAnoSmall = () => {
     dataLabels: {
       enabled: true, // Desabilitado para gráficos de linha
       style: {
-        fontSize: "15px",
+        fontSize: "13px",
         fontFamily: "Nunito, serif",
-        fontWeight: "700"
+        fontWeight: "700",
       },
       background: {
         opacity: 0,
-        foreColor: "#333"
+        foreColor: "#333",
       },
       offsetY: -7,
     },
     markers: {
       size: 6, // Tamanho dos marcadores nos pontos da linha
-      colors: ["#8987F4"], // Cor dos marcadores
+      colors: ["#0077F5"], // Cor dos marcadores
       strokeColors: "#ffffff", // Cor de borda dos marcadores
       strokeWidth: 2, // Largura da borda dos marcadores
     },
@@ -113,7 +160,7 @@ const QtdChamadoAnoSmall = () => {
       width: 3, // Largura da linha
       curve: "smooth", // Linha suave
     },
-    colors: ["#8987F4"], // Cor da linha
+    colors: ["#0077F5"], // Cor da linha
     grid: {
       show: false,
     },
@@ -133,8 +180,8 @@ const QtdChamadoAnoSmall = () => {
           options={options}
           series={[{ name: "Quantidade", data: values }]}
           type="line"
-          height={300}
-          width={450}
+          height={elementSize.height}
+          width={elementSize.width}
         />
       )}
     </div>

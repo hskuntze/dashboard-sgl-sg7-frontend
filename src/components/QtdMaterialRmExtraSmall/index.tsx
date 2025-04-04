@@ -27,9 +27,7 @@ const QtdMaterialRmExtraSmall = () => {
         setData(res.data as QtdMaterialRmType[]);
       })
       .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de materiais por comando."
-        );
+        toast.error("Erro ao carregar dados de quantidade de materiais por comando.");
       })
       .finally(() => {
         setLoading(false);
@@ -47,9 +45,7 @@ const QtdMaterialRmExtraSmall = () => {
   };
 
   // Ordena os dados corretamente de 1 a 12
-  const sortedData = [...data].sort(
-    (a, b) => extractNumber(a.rm) - extractNumber(b.rm)
-  );
+  const sortedData = [...data].sort((a, b) => extractNumber(a.rm) - extractNumber(b.rm));
 
   // Define os rótulos e valores para o gráfico de pizza
   const labels = sortedData.map((item) => item.rm);
@@ -98,20 +94,7 @@ const QtdMaterialRmExtraSmall = () => {
       offsetX: 80,
       show: false,
     },
-    colors: [
-      "#A7C0F2",
-      "#ABBCDD",
-      "#ABB5C8",
-      "#9AA2B3",
-      "#7A869D",
-      "#5E6C88",
-      "#465573",
-      "#31405E",
-      "#202D48",
-      "#121D33",
-      "#0E1A33",
-      "#0A1833",
-    ],
+    colors: ["#A7C0F2", "#ABBCDD", "#ABB5C8", "#9AA2B3", "#7A869D", "#5E6C88", "#465573", "#31405E", "#202D48", "#121D33", "#0E1A33", "#0A1833"],
     stroke: {
       show: false,
     },
@@ -133,13 +116,7 @@ const QtdMaterialRmExtraSmall = () => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={values}
-            type="pie"
-            height={210}
-            width={300}
-          />
+          <ReactApexChart options={options} series={values} type="pie" height={210} width={300} />
         </div>
       )}
     </div>

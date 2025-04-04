@@ -1,53 +1,23 @@
-import { useState, useEffect, useCallback } from "react";
-import { AxiosRequestConfig } from "axios";
-import { requestBackend } from "utils/requests";
-import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { QtdMaterialRmType } from "types/relatorio/qtdmaterialrm";
 
 import "./styles.css";
+import { useFetchData } from "utils/hooks/usefetchdata";
+import { useElementSize } from "utils/hooks/useelementsize";
 
 interface Props {
   selectedData?: QtdMaterialRmType[];
 }
 
 const QtdMaterialRmSmall = ({ selectedData }: Props) => {
-  const [data, setData] = useState<QtdMaterialRmType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const {data, loading} = useFetchData<QtdMaterialRmType>({
+    url: "/materiaisom/qtd/rm",
+    initialData: selectedData,
+  });
 
-  const loadData = useCallback(() => {
-    setLoading(true);
-
-    if (selectedData && selectedData.length > 0) {
-      setData(selectedData);
-      setLoading(false);
-    } else {
-      const requestParams: AxiosRequestConfig = {
-        url: "/materiaisom/qtd/rm",
-        method: "GET",
-        withCredentials: true,
-      };
-
-      requestBackend(requestParams)
-        .then((res) => {
-          setData(res.data as QtdMaterialRmType[]);
-        })
-        .catch(() => {
-          toast.error(
-            "Erro ao carregar dados de quantidade de materiais por comando."
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [selectedData]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const elementSize = useElementSize();
 
   // Função para extrair o número da RM (ex: "3ª RM" -> 3)
   const extractNumber = (rm: string) => {
@@ -56,9 +26,7 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
   };
 
   // Ordena os dados corretamente de 1 a 12
-  const sortedData = [...data].sort(
-    (a, b) => extractNumber(a.rm) - extractNumber(b.rm)
-  );
+  const sortedData = [...data].sort((a, b) => extractNumber(a.rm) - extractNumber(b.rm));
 
   // Define os rótulos e valores para o gráfico de pizza
   const labels = sortedData.map((item) => item.rm);
@@ -68,8 +36,14 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
     chart: {
       type: "pie",
       background: "transparent",
-      width: 500,
-      height: 500,
+      animations: {
+        enabled: true,
+        speed: 800,
+        dynamicAnimation: {
+          enabled: true,
+          speed: 1000,
+        },
+      },
     },
     labels: labels,
     tooltip: {
@@ -107,20 +81,7 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
       offsetX: 80,
       show: false,
     },
-    colors: [
-      "#A7C0F2",
-      "#ABBCDD",
-      "#ABB5C8",
-      "#9AA2B3",
-      "#7A869D",
-      "#5E6C88",
-      "#465573",
-      "#31405E",
-      "#202D48",
-      "#121D33",
-      "#0E1A33",
-      "#0A1833",
-    ],
+    colors: ["#018AE6", "#1184D0", "#1F7DBB", "#2974A6", "#306A91", "#335E7B", "#335266", "#2F4351", "#28343C", "#262E33", "#2B3033", "#2D3133"],
     stroke: {
       show: false,
     },
@@ -142,13 +103,7 @@ const QtdMaterialRmSmall = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={values}
-            type="pie"
-            height={300}
-            width={450}
-          />
+          <ReactApexChart options={options} series={values} type="pie" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>
