@@ -9,9 +9,11 @@ import Chart from "components/Chart";
 
 interface Props {
   selectedData?: CategoriaMaterialIndisponivelType[];
+  onSelectCategoria: (categoria: string | null) => void;
+  bdaSelected: boolean;
 }
 
-const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
+const QtdCategoriaMaterialIndisponivelSmall = ({ bdaSelected, selectedData, onSelectCategoria }: Props) => {
   const { data, loading } = useFetchData<CategoriaMaterialIndisponivelType>({
     url: "/materiaisom/qtd/ctgmtindisponivel",
     initialData: selectedData,
@@ -37,6 +39,14 @@ const QtdCategoriaMaterialIndisponivelSmall = ({ selectedData }: Props) => {
         dynamicAnimation: {
           enabled: true,
           speed: 1000,
+        },
+      },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const selectedIndex = config.dataPointIndex;
+          const clickedItem = top10Data[selectedIndex];
+
+          onSelectCategoria(clickedItem.categoria);
         },
       },
     },

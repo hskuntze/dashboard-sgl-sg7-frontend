@@ -57,6 +57,7 @@ const QtdMaterialSubsistemaSmall = ({ selectedData }: Props) => {
     CTC: "#64E324",
     SAT: "#E3DA24",
     TAT: "#E37D24",
+    OUT: "#A0CCDA",
     // Adicione mais subsistemas conforme necessário
   };
 
@@ -67,7 +68,6 @@ const QtdMaterialSubsistemaSmall = ({ selectedData }: Props) => {
       type: "donut",
       background: "transparent",
       fontFamily: "Nunito, serif",
-      offsetX: elementSize.width < 320 ? 0 : -40,
       animations: {
         enabled: true,
         speed: 800,
@@ -107,7 +107,7 @@ const QtdMaterialSubsistemaSmall = ({ selectedData }: Props) => {
       fontWeight: 800,
       formatter: (val) => `${val}`,
       show: true,
-      offsetY: elementSize.width < 320 ? 25 : 60,
+      offsetY: 40,
     },
     labels: labels,
     colors: colors,

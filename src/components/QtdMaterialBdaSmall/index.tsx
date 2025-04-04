@@ -4,12 +4,15 @@ import { ApexOptions } from "apexcharts";
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 import { useFetchData } from "utils/hooks/usefetchdata";
 import { useElementSize } from "utils/hooks/useelementsize";
+import { useState } from "react";
 
 interface Props {
   selectedData?: QtdMaterialBdaType[];
+  onSelectedItem: (cmdo: string | null) => void;
+  cmdoSelected: boolean;
 }
 
-const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
+const QtdMaterialBdaSmall = ({ selectedData, onSelectedItem, cmdoSelected }: Props) => {
   const { data, loading } = useFetchData<QtdMaterialBdaType>({
     url: "/materiaisom/qtd/bda",
     initialData: selectedData,
@@ -17,10 +20,10 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
 
   const elementSize = useElementSize();
 
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
   // Ordena os dados do maior para o menor e seleciona os 10 primeiros
-  const top10Data = [...data]
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .slice(0, 10);
+  const top10Data = [...data].sort((a, b) => b.quantidade - a.quantidade).slice(0, 10);
 
   const options: ApexOptions = {
     chart: {
@@ -35,6 +38,24 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
         dynamicAnimation: {
           enabled: true,
           speed: 1000,
+        },
+      },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          if (cmdoSelected) {
+            const selectedIndex = config.dataPointIndex;
+            const clickedItem = top10Data[selectedIndex];
+
+            if (clickedItem.bda === selectedItem) {
+              // Desseleção: o mesmo item foi clicado novamente
+              setSelectedItem(null);
+              onSelectedItem(null); // Notifica que nenhum item está selecionado
+            } else {
+              // Seleção: um novo item foi clicado
+              setSelectedItem(clickedItem.bda);
+              onSelectedItem(clickedItem.bda);
+            }
+          }
         },
       },
     },
@@ -121,13 +142,7 @@ const QtdMaterialBdaSmall = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="column-chart">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={elementSize.height}
-            width={elementSize.width}
-          />
+          <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
         </div>
       )}
     </div>

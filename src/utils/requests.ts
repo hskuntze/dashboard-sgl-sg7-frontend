@@ -7,7 +7,7 @@ import { getAuthData } from "./storage";
  * LOCALHOST
  */
 export const BASE_URL =
-  process.env.REACT_APP_BACKEND_URL ?? "http://172.20.71.150:9989/dashboard-sgl-sg7/api";
+  process.env.REACT_APP_BACKEND_URL ?? "http://172.20.71.103:9989/dashboard-sgl-sg7/api";
 
 /**
  * HOMOL

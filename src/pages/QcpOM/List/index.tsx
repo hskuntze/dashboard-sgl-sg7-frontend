@@ -173,7 +173,7 @@ const QcpOMList = () => {
               <th scope="col">Sigla</th>
               <th scope="col">Latitude</th>
               <th scope="col">Longitude</th>
-              <th scope="col">Posto</th>
+              <th scope="col">Posto/Graduação</th>
               <th scope="col">Previsto</th>
               <th scope="col">Efetivo</th>
             </tr>

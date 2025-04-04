@@ -1,13 +1,24 @@
 .menu-lateral-container {
   width: 170px;
   height: calc(100vh - 71px);
+  transition: width 0.4s ease-in;
+  z-index: 5;
+}
+
+.menu-lateral-container.collapsed {
+  width: 5px;
+}
+
+.menu-lateral-container.expanded {
+  width: 170px;
 }
 
 .menu-lateral-content {
-  width: 100%;
+  width: 100% !important;
   height: 100%;
   background-color: #fff;
   border-right: 1px solid #ddd;
+  overflow: hidden;
 }
 
 .menu-lateral {
@@ -54,4 +65,28 @@
 
 .icone-file {
   filter: brightness(0) saturate(200%) invert(75%) sepia(50%) saturate(1000%) hue-rotate(500deg);
+}
+
+.submenu {
+  background: #fff;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+}
+
+.submenu li {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: 10px;
+  height: 64px;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: 1px solid #ddd;
+  color: #333;
+  transition: background 0.3s;
+}
+
+.submenu li:hover {
+  background: #f3f3f3;
 }

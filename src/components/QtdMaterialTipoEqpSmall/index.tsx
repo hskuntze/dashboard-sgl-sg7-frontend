@@ -94,7 +94,7 @@ const QtdMaterialTipoEqpSmall = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="column-chart">
-          <ReactApexChart options={options} series={series} type="bar" height={320} width={540} />
+          <ReactApexChart options={options} series={series} type="bar" height={300} width={500} />
         </div>
       )}
     </div>

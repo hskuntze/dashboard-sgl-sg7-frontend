@@ -13,44 +13,6 @@ const ExecucaoOrcamentaria2024 = () => {
   const [data, setData] = useState<UnidadeOrcamentariaType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [elementSize, setElementSize] = useState({
-    width: 0,
-    height: 0,
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      const newWidth = window.innerWidth;
-
-      if (newWidth < 768) {
-        setElementSize({
-          height: 300,
-          width: 300,
-        });
-      } else if (newWidth >= 768 && newWidth < 1600) {
-        setElementSize({
-          height: 300,
-          width: 400,
-        });
-      } else if (newWidth >= 1600 && newWidth < 1800) {
-        setElementSize({
-          height: 300,
-          width: 420,
-        });
-      } else {
-        setElementSize({
-          height: 300,
-          width: 550,
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Chama a função uma vez para definir o estado inicial
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const loadData = useCallback(() => {
     setLoading(true);
 
@@ -173,7 +135,7 @@ const ExecucaoOrcamentaria2024 = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
+        <ReactApexChart options={options} series={series} type="bar" height={720} width={800} />
       )}
     </div>
   );

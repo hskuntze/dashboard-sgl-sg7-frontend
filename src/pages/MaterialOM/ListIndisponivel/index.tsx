@@ -10,7 +10,6 @@ import { SpringPage } from "types/vendor/spring";
 import { requestBackend } from "utils/requests";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
-import QtdMaterialRmExtraSmall from "components/QtdMaterialRmExtraSmall";
 import { Link } from "react-router-dom";
 
 type ControlComponentsData = {
@@ -172,9 +171,6 @@ const MaterialOMIndisponivel = () => {
           <button onClick={handleExportToExcel} type="button" className="act-button create-button">
             <i className="bi bi-file-earmark-excel" />
           </button>
-        </div>
-        <div className="fixed-graph">
-          <QtdMaterialRmExtraSmall />
         </div>
       </div>
       <div>

@@ -1,11 +1,13 @@
 import Navbar from "components/Navbar";
 import Admin from "pages/Admin";
+import Acoes2024 from "pages/AGGE/Acoes2024";
+import AcoesFinalisticas from "pages/AGGE/AcoesFinalisticas";
 import Auth from "pages/Auth";
 import Confirmar from "pages/Confirmar";
-import Home from "pages/Home";
 import MaterialOM from "pages/MaterialOM";
 import NaoEncontrado from "pages/NaoEncontrado";
 import OMs from "pages/OM";
+import Operacoes from "pages/Operacoes";
 import QcpOM from "pages/QcpOM";
 import UniquePage from "pages/UniquePage";
 import PrivateRoute from "PrivateRoute";
@@ -40,20 +42,6 @@ const Routes = () => {
                 ]}
               >
                 <UniquePage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dashboard-sgl-sg7/old"
-            element={
-              <PrivateRoute
-                roles={[
-                  { id: 1, autorizacao: "PERFIL_ADMIN" },
-                  { id: 2, autorizacao: "PERFIL_USUARIO" },
-                  { id: 5, autorizacao: "PERFIL_SLI" },
-                ]}
-              >
-                <Home />
               </PrivateRoute>
             }
           />
@@ -98,6 +86,48 @@ const Routes = () => {
                 ]}
               >
                 <QcpOM />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/operacoes/*"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <Operacoes />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/agge/acoes2024"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <Acoes2024 />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/agge/acoesfinalisticas"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <AcoesFinalisticas />
               </PrivateRoute>
             }
           />

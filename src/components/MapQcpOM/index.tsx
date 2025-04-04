@@ -1,3 +1,5 @@
+import "leaflet/dist/leaflet.css";
+
 import { MapContainer, TileLayer, Marker, ImageOverlay } from "react-leaflet";
 import L from "leaflet";
 
@@ -26,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 
 import "react-leaflet-fullscreen/styles.css";
 import "leaflet.fullscreen";
+import FooterControl from "components/FooterControl";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -34,13 +37,13 @@ let DefaultIcon = L.icon({
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
-// L.imageOverlay(MapaBrasil, [[-33.70, -53.43601], [5.24591, -60.18398]]);
 
 interface Props {
   selectedData?: GeorefQcpOM[] | null;
+  refreshTrigger: number;
 }
 
-const MapQcpOM = ({ selectedData }: Props) => {
+const MapQcpOM = ({ selectedData, refreshTrigger }: Props) => {
   const [points, setPoints] = useState<GeorefQcpOM[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -71,7 +74,7 @@ const MapQcpOM = ({ selectedData }: Props) => {
       setPoints(selectedData);
       setLoading(false);
 
-      // mapRef.current?.setZoom(3);
+      mapRef.current?.setZoom(3);
     } else {
       const savedGeoRef = localStorage.getItem("geoRefQcpOm");
       if (savedGeoRef) {
@@ -80,7 +83,7 @@ const MapQcpOM = ({ selectedData }: Props) => {
 
         setPoints(parsedGeoRef);
         setLoading(false);
-        // mapRef.current?.setZoom(3);
+        mapRef.current?.setZoom(3);
         return; // Não faz a requisição, já temos os dados
       }
 
@@ -95,7 +98,7 @@ const MapQcpOM = ({ selectedData }: Props) => {
           const geoRefData = res.data as GeorefQcpOM[];
           setPoints(geoRefData);
           saveGeoRefQcpOmData(geoRefData); // Armazena no localStorage
-          // mapRef.current?.setZoom(3);
+          mapRef.current?.setZoom(3);
         })
         .catch((err) => {
           toast.error("Erro ao tentar carregar os dados de georeferenciamento.");
@@ -134,10 +137,8 @@ const MapQcpOM = ({ selectedData }: Props) => {
   }, [loadPoints]);
 
   useEffect(() => {
-    setTimeout(() => {
-      forceRefresh();
-    }, 300);
-  }, []);
+    forceRefresh();
+  }, [refreshTrigger]);
 
   return (
     <>
@@ -147,23 +148,31 @@ const MapQcpOM = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="map-wrapper">
-          <MapContainer center={[-15.78, -47.93]} zoom={4} className="map-container" style={{ width: "100%", height: "100%" }} ref={mapRef}>
+          <MapContainer
+            center={[-15.78, -47.93]}
+            zoom={4}
+            className="map-container"
+            style={{ width: "100%", height: "100%" }}
+            ref={mapRef}
+            whenReady={() => {}}
+          >
             <FullscreenControl position="topleft" />
             <button onClick={forceRefresh} className="refresh-map-button">
               <i className="bi bi-arrow-clockwise" />
             </button>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="" />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="" key={loading ? "loading" : "loaded"} />
             <ImageOverlay
               url={MapaBrasil} // Estilos opcionais para o SVG
               bounds={bounds}
               opacity={0.5}
             />
-            {points.map((point) => {
-              const logoUrl = logos[point.cmdo]; // Usa um logo padrão caso não tenha mapeado
+            {points &&
+              points.map((point) => {
+                const logoUrl = logos[point.cmdo]; // Usa um logo padrão caso não tenha mapeado
 
-              const customLabel = L.divIcon({
-                className: "custom-label",
-                html: `
+                const customLabel = L.divIcon({
+                  className: "custom-label",
+                  html: `
                   <div class="map-icon">
                     <div class="label" style="background-image: url(${logoUrl});">
                     </div>
@@ -174,47 +183,23 @@ const MapQcpOM = ({ selectedData }: Props) => {
                     </div>
                   </div>
                   `,
-                iconSize: [4, 4],
-              });
+                  iconSize: [4, 4],
+                });
 
-              return (
-                <Marker
-                  key={point.cmdo}
-                  position={[Number(point.latitude), Number(point.longitude)]}
-                  icon={customLabel}
-                  eventHandlers={{
-                    click: () => navigate(`/dashboard-sgl-sg7/qcpom/filter/${point.cmdo}`),
-                  }}
-                />
-              );
-            })}
+                return (
+                  <Marker
+                    key={point.cmdo}
+                    position={[Number(point.latitude), Number(point.longitude)]}
+                    icon={customLabel}
+                    eventHandlers={{
+                      click: () => navigate(`/dashboard-sgl-sg7/qcpom/filter/${point.cmdo}`),
+                    }}
+                  />
+                );
+              })}
+
+            <FooterControl title="Mapa QCP OM" key={"mapa-qcp-om"} />
           </MapContainer>
-          {/* <div className="map-listing">
-            <div className="filter-container">
-              <input
-                type="text"
-                placeholder="Buscar equipamento"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="search-input"
-              />
-              <button onClick={handleFilter} className="filter-button">
-                Filtrar
-              </button>
-            </div>
-            <ul>
-              {filteredPoints.map((p, index) => (
-                <li
-                  key={index}
-                  onClick={() =>
-                    goToLocation(Number(p.latitude), Number(p.longitude))
-                  }
-                >
-                  {p.equipamento}, BDA: {p.bda}, OM: {p.om}
-                </li>
-              ))}
-            </ul>
-          </div> */}
         </div>
       )}
     </>
