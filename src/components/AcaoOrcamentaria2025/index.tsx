@@ -40,12 +40,12 @@ const AcaoOrcamentaria2025 = () => {
   }, [loadData]);
 
   // Definição das categorias no eixo X
-  const categorias = ["Provisão Recebida", "Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
+  const categorias = ["Provisão Recebida", "Crédito Disponível", "Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
  
   // Criando as séries baseadas em `grupoCodUo`
   const series = data.map((item) => ({
     name: item.acao,
-    data: [item.provisaoRecebida, item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
+    data: [item.provisaoRecebida, item.creditoDisponivel, item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
   }));
 
   const options: ApexOptions = {

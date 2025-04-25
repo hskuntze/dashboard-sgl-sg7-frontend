@@ -5,17 +5,18 @@ import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { QtdChamadoAnoType } from "types/relatorio/qtdchamadosano";
 
 import "./styles.css";
+import { QtdChamadoCategoriaType } from "types/relatorio/qtdchamadoscategoria";
 
 interface Props {
-  onSelectAno: (ano: number) => void;
+  ano: number;
 }
 
-const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
-  const [data, setData] = useState<QtdChamadoAnoType[]>([]);
+const QtdChamadoSubsistemaSmall = ({ ano }: Props) => {
+  const [data, setData] = useState<QtdChamadoCategoriaType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [subsistema, setSubsistema] = useState<string>();
 
   const [elementSize, setElementSize] = useState({
     width: 0,
@@ -36,15 +37,15 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
           height: 300,
           width: 400,
         });
-      } else if (newWidth >= 1600 && newWidth < 1800) { 
+      } else if (newWidth >= 1600 && newWidth < 1800) {
         setElementSize({
-          height: 300,
-          width: 420,
+          height: 570,
+          width: 620,
         });
       } else {
         setElementSize({
-          height: 300,
-          width: 450,
+          height: 670,
+          width: 750,
         });
       }
     };
@@ -59,76 +60,82 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/chamados/ano",
+      url: `/chamados/subsistema/${ano}`,
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as QtdChamadoAnoType[]);
+        setData(res.data as QtdChamadoCategoriaType[]);
       })
       .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de chamados por ano."
-        );
+        toast.error("Erro ao carregar dados de quantidade de chamados por ano.");
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [ano]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  // Ordena os dados por ano de forma crescente
-  const sortedData = [...data].sort((a, b) => a.ano - b.ano);
-
-  // Define os rótulos (anos) e valores (quantidade) para o gráfico de linha
-  const labels = sortedData.map((item) => item.ano);
-  const values = sortedData.map((item) => item.quantidade);
+  const series = [
+    {
+      name: "Quantidade",
+      data: [...data.map((item) => item.quantidade)],
+    },
+  ];
 
   const options: ApexOptions = {
     chart: {
-      type: "line", // Mudado para gráfico de linha
+      type: "bar",
       background: "transparent",
-      width: "100%",
       toolbar: {
         show: false,
       },
-      fontFamily: "Nunito, serif",
-      animations: {
-        enabled: true,
-        speed: 800,
-        dynamicAnimation: {
-          enabled: true,
-          speed: 1000,
-        },
-      },
       events: {
-        markerClick: (event, chartContext, config) => {
+        dataPointSelection: (event, chartContext, config) => {
           const selectedIndex = config.dataPointIndex;
           const clickedItem = data[selectedIndex];
 
-          onSelectAno(clickedItem.ano);
+          setSubsistema(clickedItem.categoria);
         },
       },
-      offsetX: 6,
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: "60%",
+        distributed: true,
+        dataLabels: {
+          position: "top",
+        },
+      },
+    },
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontSize: "13px",
+        fontFamily: "Nunito, serif",
+        fontWeight: "bold",
+        colors: ["#333"],
+      },
+      offsetY: -20,
     },
     xaxis: {
-      categories: labels, // Anos como categorias no eixo X
+      categories: [...data.map((item) => item.categoria)],
       labels: {
         style: {
-          fontSize: "12px",
+          fontSize: "10px",
           fontFamily: "Nunito, serif",
-          fontWeight: 600
+          fontWeight: 600,
         },
-        offsetX: 0.5,
-      }
+        rotate: -40,
+      },
     },
     yaxis: {
-      show: false,
       title: {
         text: "Quantidade",
         style: {
@@ -144,40 +151,28 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
       y: {
         formatter: (val: number) => `${val}`,
       },
-      style: {
-        fontSize: "15px",
-        fontFamily: "Nunito, serif",
-      },
     },
-    dataLabels: {
-      enabled: true, // Desabilitado para gráficos de linha
-      style: {
-        fontSize: "13px",
-        fontFamily: "Nunito, serif",
-        fontWeight: "700",
-      },
-      background: {
-        opacity: 0,
-        foreColor: "#333",
-      },
-      offsetY: -7,
-    },
-    markers: {
-      size: 6, // Tamanho dos marcadores nos pontos da linha
-      colors: ["#0077F5"], // Cor dos marcadores
-      strokeColors: "#ffffff", // Cor de borda dos marcadores
-      strokeWidth: 2, // Largura da borda dos marcadores
-    },
-    stroke: {
-      width: 3, // Largura da linha
-      curve: "smooth", // Linha suave
-    },
-    colors: ["#0077F5"], // Cor da linha
+    colors: [
+      "#3091E6",
+      "#30E6C5",
+      "#3058E6",
+      "#30E688",
+      "#31CDE8",
+      "#E68B37",
+      "#E66C37",
+      "#E6D037",
+      "#E8A22A",
+      "#E64E30",
+      "#2047E6",
+      "#3820E6",
+      "#BA20E6",
+      "#8C41E8",
+    ],
     grid: {
       show: false,
     },
     legend: {
-      show: false, // Não exibe legenda para o gráfico de linha
+      show: false,
     },
   };
 
@@ -188,16 +183,10 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart
-          options={options}
-          series={[{ name: "Quantidade", data: values }]}
-          type="line"
-          height={elementSize.height}
-          width={elementSize.width}
-        />
+        <ReactApexChart options={options} series={series} type="bar" height={elementSize.height} width={elementSize.width} />
       )}
     </div>
   );
 };
 
-export default QtdChamadoAnoSmall;
+export default QtdChamadoSubsistemaSmall;

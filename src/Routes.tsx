@@ -4,6 +4,8 @@ import Acoes2024 from "pages/AGGE/Acoes2024";
 import AcoesFinalisticas from "pages/AGGE/AcoesFinalisticas";
 import Auth from "pages/Auth";
 import Confirmar from "pages/Confirmar";
+import DM7 from "pages/DM7";
+import Distribuicao from "pages/DM7/Distribuicao";
 import MaterialOM from "pages/MaterialOM";
 import NaoEncontrado from "pages/NaoEncontrado";
 import OMs from "pages/OM";
@@ -128,6 +130,20 @@ const Routes = () => {
                 ]}
               >
                 <AcoesFinalisticas />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/dm7/*"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <DM7 />
               </PrivateRoute>
             }
           />

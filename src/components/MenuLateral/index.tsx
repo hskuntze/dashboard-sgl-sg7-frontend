@@ -44,9 +44,16 @@ const MenuLateral = ({ onMenuClick }: { onMenuClick: (index: number) => void }) 
     <div className={`menu-lateral-container ${expanded ? "expanded" : "collapsed"}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className="menu-lateral-content">
         <ul className="menu-lateral">
-          <li className="menu-lateral-item" onClick={() => handleClick(0)}>
+          <li className="menu-lateral-item" onClick={() => handleClick(0)} onMouseEnter={() => setIsSubMenuVisible(true)}>
             <img className="menu-item-icone icone-box" src={IconeBox} alt="" /> DM7
           </li>
+          {isSubMenuVisible && (
+            <ul className="submenu" onMouseLeave={() => setIsSubMenuVisible(false)}>
+              <Link to="/dashboard-sgl-sg7/dm7/distribuicao">
+                <li>Distribuição</li>
+              </Link>
+            </ul>
+          )}
           <li className="menu-lateral-item" onClick={() => handleClick(1)} onMouseEnter={() => setIsSubMenuVisible(true)}>
             <img className="menu-item-icone icone-cash" src={IconeCash} alt="" /> AGGE
           </li>

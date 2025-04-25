@@ -5,16 +5,16 @@ import { toast } from "react-toastify";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { QtdChamadoAnoType } from "types/relatorio/qtdchamadosano";
 
 import "./styles.css";
+import { QtdChamadoMesType } from "types/relatorio/qtdchamadosmes";
 
 interface Props {
-  onSelectAno: (ano: number) => void;
+  ano: number;
 }
 
-const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
-  const [data, setData] = useState<QtdChamadoAnoType[]>([]);
+const QtdChamadoMesSmall = ({ ano }: Props) => {
+  const [data, setData] = useState<QtdChamadoMesType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const [elementSize, setElementSize] = useState({
@@ -36,15 +36,15 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
           height: 300,
           width: 400,
         });
-      } else if (newWidth >= 1600 && newWidth < 1800) { 
+      } else if (newWidth >= 1600 && newWidth < 1800) {
         setElementSize({
-          height: 300,
-          width: 420,
+          height: 570,
+          width: 620,
         });
       } else {
         setElementSize({
-          height: 300,
-          width: 450,
+          height: 670,
+          width: 750,
         });
       }
     };
@@ -59,34 +59,34 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/chamados/ano",
+      url: `/chamados/ano/${ano}`,
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as QtdChamadoAnoType[]);
+        setData(res.data as QtdChamadoMesType[]);
       })
       .catch(() => {
-        toast.error(
-          "Erro ao carregar dados de quantidade de chamados por ano."
-        );
+        toast.error("Erro ao carregar dados de quantidade de chamados por ano.");
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [ano]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
   // Ordena os dados por ano de forma crescente
-  const sortedData = [...data].sort((a, b) => a.ano - b.ano);
+  const sortedData = [...data].sort((a, b) => a.mes - b.mes);
 
   // Define os rótulos (anos) e valores (quantidade) para o gráfico de linha
-  const labels = sortedData.map((item) => item.ano);
+  const nomesMeses = ["Jan.", "Fev.", "Mar.", "Abr.", "Mai.", "Jun.", "Jul.", "Ago.", "Set.", "Out.", "Nov.", "Dez."];
+
+  const labels = sortedData.map((item) => nomesMeses[item.mes - 1]);
   const values = sortedData.map((item) => item.quantidade);
 
   const options: ApexOptions = {
@@ -106,14 +106,6 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
           speed: 1000,
         },
       },
-      events: {
-        markerClick: (event, chartContext, config) => {
-          const selectedIndex = config.dataPointIndex;
-          const clickedItem = data[selectedIndex];
-
-          onSelectAno(clickedItem.ano);
-        },
-      },
       offsetX: 6,
     },
     xaxis: {
@@ -122,13 +114,13 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
         style: {
           fontSize: "12px",
           fontFamily: "Nunito, serif",
-          fontWeight: 600
+          fontWeight: 600,
         },
         offsetX: 0.5,
-      }
+      },
     },
     yaxis: {
-      show: false,
+      show: false, //REMOVER DEPOIS
       title: {
         text: "Quantidade",
         style: {
@@ -164,7 +156,7 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
     },
     markers: {
       size: 6, // Tamanho dos marcadores nos pontos da linha
-      colors: ["#0077F5"], // Cor dos marcadores
+      colors: ["#52E656"], // Cor dos marcadores
       strokeColors: "#ffffff", // Cor de borda dos marcadores
       strokeWidth: 2, // Largura da borda dos marcadores
     },
@@ -172,7 +164,7 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
       width: 3, // Largura da linha
       curve: "smooth", // Linha suave
     },
-    colors: ["#0077F5"], // Cor da linha
+    colors: ["#2CE69F"], // Cor da linha
     grid: {
       show: false,
     },
@@ -200,4 +192,4 @@ const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
   );
 };
 
-export default QtdChamadoAnoSmall;
+export default QtdChamadoMesSmall;
