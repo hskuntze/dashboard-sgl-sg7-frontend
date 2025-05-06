@@ -1,0 +1,49 @@
+.small-values-list {
+  margin-left: 30px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.small-values-list h6 {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.quantidade-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 15px;
+}
+
+.quantidade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #fff;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  padding: 5px;
+  width: 100px;
+  height: 70px;
+  margin: 0 5px;
+
+  transition: background-color 0.3s ease-in-out;
+}
+
+.quantidade:hover {
+  background-color: #ccc;
+}
+
+.quantidade-title {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.quantidade-value {
+  font-weight: 800;
+  font-size: 23px;
+}

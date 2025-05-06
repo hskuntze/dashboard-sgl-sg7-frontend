@@ -10,7 +10,6 @@ import useActiveObserver from "utils/hooks/useobserver";
 import { Box, Modal } from "@mui/material";
 
 import ExecucaoOrcamentaria2025 from "components/ExecucaoOrcamentaria2025";
-import ExecucaoOrcamentaria2025TipoAcao from "components/ExecucaoOrcamentaria2025TipoAcao";
 import RestantePorAno from "components/RestantePorAno";
 import TipoAcaoValor from "components/TipoAcaoValor";
 import MenuLateral from "components/MenuLateral";
@@ -28,8 +27,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SituacaoRisco from "components/SituacaoRisco";
 import QuantidadeDemandas from "components/QuantidadeDemandas";
 import ExecucaoFinanceira from "components/ExecucaoFinanceira";
-import PorcentagemEmpenhadaGauge from "components/PorcentagemEmpenhadaGauge";
-import PorcentagemLiquidadaGauge from "components/PorcentagemLiquidadaGauge";
 
 import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
 import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
@@ -41,6 +38,8 @@ import QtdMotivoIndisponibilidade from "components/QtdMotivoIndisponibilidade";
 import QtdChamadoMesSmall from "components/QtdChamadoMesSmall";
 import QtdChamadoSubsistemaSmall from "components/QtdChamadoSubsistemaSmall";
 import QtdChamadoStatusPorAno from "components/QtdChamadoStatusPorAno";
+import OmOrcamento from "components/OmOrcamento";
+import PorcentagemLiquidadaGauge from "components/PorcentagemLiquidadaGauge";
 
 const UniquePage = () => {
   const [selectedCmdo, setSelectedCmdo] = useState<string>();
@@ -328,23 +327,18 @@ const UniquePage = () => {
                 <div className="unique-page-grid">
                   <div className="grid-object">
                     <span className="span-title">Execução orçamentária 2025</span>
-                    <span className="span-subtitle">Área Interna</span>
+                    <span className="span-subtitle">por Grupo de Despesas</span>
                     <ExecucaoOrcamentaria2025 />
                   </div>
-                  <div className="grid-object">
+                  <div className="grid-object-two-squares">
                     <span className="span-title">Execução orçamentária 2025</span>
-                    <span className="span-subtitle">Porcentagem Empenhada</span>
-                    <PorcentagemEmpenhadaGauge />
+                    <span className="span-subtitle">por OM</span>
+                    <OmOrcamento />
                   </div>
                   <div className="grid-object">
                     <span className="span-title">Execução orçamentária 2025</span>
                     <span className="span-subtitle">Porcentagem Liquidada</span>
                     <PorcentagemLiquidadaGauge />
-                  </div>
-                  <div className="grid-object">
-                    <span className="span-title">Execução Orçamentária das Ações Finalísticas 2025</span>
-                    <span className="span-subtitle">147F, 15W6, 20XE, 20XJ, 14T5 e 21D2</span>
-                    <ExecucaoOrcamentaria2025TipoAcao />
                   </div>
                   <div className="grid-object">
                     <span className="span-title">Restos a Pagar Não Processados a Liquidar</span>

@@ -46,7 +46,8 @@ const Navbar = () => {
             <img src={LogotipoCCOMGEX} className="ccomgex-logo" alt="Logitpo CComGEx" />
           </div>
           <span className="navbar-title">
-            Consciência Situacional <span className="versao">Vs 1.0</span> <span className="real-time-label"> Em tempo real</span>
+            Consciência Situacional <span className="versao">Vs 1.0</span> 
+            {/* <span className="real-time-label"> Em tempo real</span> */}
           </span>
           <div>
             <img src={LogotipoCTCEA} className="ctcea-logo" alt="Logotipo CTCEA" />

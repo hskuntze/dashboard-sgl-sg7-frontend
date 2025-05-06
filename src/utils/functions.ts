@@ -37,14 +37,18 @@ export const formatarPerfil = (perfil: string) => {
 };
 
 export const formatarNumero = (num: number): string => {
-  if (num >= 1_000_000_000) {
-    return `${(num / 1_000_000_000).toFixed(1).replace(".0", "")}bi`;
+  if(num) {
+    if (num >= 1_000_000_000) {
+      return `${(num / 1_000_000_000).toFixed(1).replace(".0", "")}bi`;
+    }
+    if (num >= 1_000_000) {
+      return `${(num / 1_000_000).toFixed(1).replace(".0", "")}mi`;
+    }
+    if (num >= 1_000) {
+      return `${(num / 1_000).toFixed(1).replace(".0", "")} mil`;
+    }
+    return num.toString();
+  } else {
+    return "";
   }
-  if (num >= 1_000_000) {
-    return `${(num / 1_000_000).toFixed(1).replace(".0", "")}mi`;
-  }
-  if (num >= 1_000) {
-    return `${(num / 1_000).toFixed(1).replace(".0", "")} mil`;
-  }
-  return num.toString();
 };

@@ -7,28 +7,28 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
 import "./styles.css";
-import { AcaoOrcamentariaType } from "types/relatorio/acaoorcamentaria";
 import { formatarNumero } from "utils/functions";
+import { OmOrcamentoType } from "types/relatorio/omorcamento";
 
-const AcaoOrcamentaria2025 = () => {
-  const [data, setData] = useState<AcaoOrcamentariaType[]>([]);
+const OmOrcamento = () => {
+  const [data, setData] = useState<OmOrcamentoType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/execucao/acao/2025",
+      url: "/execucao/om",
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as AcaoOrcamentariaType[]);
+        setData(res.data as OmOrcamentoType[]);
       })
       .catch(() => {
-        toast.error("Erro ao carregar dados de valor total por Unidade Gestora.");
+        toast.error("Erro ao carregar dados de valor total por OM.");
       })
       .finally(() => {
         setLoading(false);
@@ -41,10 +41,10 @@ const AcaoOrcamentaria2025 = () => {
 
   // Definição das categorias no eixo X
   const categorias = ["Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
- 
+
   // Criando as séries baseadas em `grupoCodUo`
   const series = data.map((item) => ({
-    name: item.acao,
+    name: item.om,
     data: [item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
   }));
 
@@ -67,19 +67,19 @@ const AcaoOrcamentaria2025 = () => {
     },
     yaxis: {
       labels: {
-        formatter: (val: number) => formatarNumero(val)
-      }
+        formatter: (val: number) => formatarNumero(val),
+      },
     },
     tooltip: {
       enabled: true,
       theme: "dark",
-      custom: function({ seriesIndex, dataPointIndex, w }) {
+      custom: function ({ seriesIndex, dataPointIndex, w }) {
         const seriesName = w.config.series[seriesIndex].name;
         const dataValue = w.config.series[seriesIndex].data[dataPointIndex];
-        
+
         // Formatação do valor como moeda
         const formattedValue = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(dataValue);
-  
+
         return `
           <div style="padding: 10px; background: #00000cc; border: 1px solid #ccc;">
             <strong>${seriesName}</strong><br />
@@ -95,7 +95,7 @@ const AcaoOrcamentaria2025 = () => {
     plotOptions: {
       bar: {
         horizontal: false, // Barras verticais
-        columnWidth: "79%", // Largura das colunas
+        columnWidth: "90%", // Largura das colunas
         dataLabels: {
           position: "top",
         },
@@ -103,16 +103,22 @@ const AcaoOrcamentaria2025 = () => {
     },
     dataLabels: {
       enabled: true,
-      formatter: (val: number) => formatarNumero(val),
-      offsetY: -20,
+      formatter: function (val, opts) {
+        // Recupera o valor real da série
+        const seriesIndex = opts.seriesIndex;
+        const dataPointIndex = opts.dataPointIndex;
+        const value = opts.w.config.series[seriesIndex].data[dataPointIndex];
+        return formatarNumero(value);
+      },
       style: {
-        colors: ["#000"],
+        colors: ["#333"],
         fontSize: "10px",
         fontFamily: "Nunito, serif",
-        fontWeight: 700
-      }
+        fontWeight: 700,
+      },
+      offsetY: -20,
     },
-    colors: ["#0052DB", "#A0DB00", "#DB1D00", "#86392D", "#2E3F5C", "#4F5C2E"], // Cores para cada série
+    colors: ["#E00D00", "#5969F0", "#2062E6", "#01AFF0", "#30E000", "#E0DD00"], // Cores para cada série
     legend: {
       position: "bottom",
     },
@@ -125,10 +131,10 @@ const AcaoOrcamentaria2025 = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart options={options} series={series} type="bar" height={720} width={1400} />
+        <ReactApexChart options={options} series={series} type="bar" height={300} width={1200} />
       )}
     </div>
   );
 };
 
-export default AcaoOrcamentaria2025;
+export default OmOrcamento;

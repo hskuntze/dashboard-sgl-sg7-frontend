@@ -1,11 +1,9 @@
 import Navbar from "components/Navbar";
 import Admin from "pages/Admin";
-import Acoes2024 from "pages/AGGE/Acoes2024";
 import AcoesFinalisticas from "pages/AGGE/AcoesFinalisticas";
 import Auth from "pages/Auth";
 import Confirmar from "pages/Confirmar";
 import DM7 from "pages/DM7";
-import Distribuicao from "pages/DM7/Distribuicao";
 import MaterialOM from "pages/MaterialOM";
 import NaoEncontrado from "pages/NaoEncontrado";
 import OMs from "pages/OM";
@@ -105,7 +103,7 @@ const Routes = () => {
               </PrivateRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/dashboard-sgl-sg7/agge/acoes2024"
             element={
               <PrivateRoute
@@ -118,7 +116,7 @@ const Routes = () => {
                 <Acoes2024 />
               </PrivateRoute>
             }
-          />
+          /> */}
           <Route
             path="/dashboard-sgl-sg7/agge/acoesfinalisticas"
             element={

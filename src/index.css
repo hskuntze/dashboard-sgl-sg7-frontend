@@ -477,6 +477,14 @@
   background-position: center;
 }
 
+.small-icon {
+  width: 5px;
+  height: 5px;
+  text-align: center;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .label-content {
   width: 120px;
   height: 30px;
@@ -490,6 +498,25 @@
   justify-content: center;
   align-content: center;
   text-align: center;
+}
+
+.small-content {
+  width: 45px;
+  height: 34px;
+  font-size: 10px;
+  border-radius: 3px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.small-content span:first-child {
+  font-weight: 700;
+  font-size: 11px;
 }
 
 .disabled {

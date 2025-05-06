@@ -5,12 +5,16 @@ import { ApexOptions } from "apexcharts";
 
 import "./styles.css";
 import { useFetchData } from "utils/hooks/usefetchdata";
-import { TipoAcaoValorType } from "types/relatorio/tipoacaovalor";
+import { ApoioDiretoFabricanteType } from "types/relatorio/apoiodiretofabricante";
 
-const TipoAcaoValor = () => {
-  const { data, loading } = useFetchData<TipoAcaoValorType>({
-    url: "/execucao/tipo",
-    initialData: null,
+interface Props {
+  selectedData?: ApoioDiretoFabricanteType[];
+}
+
+const ApoioDiretoFabricante = ({ selectedData }: Props) => {
+  const { data, loading } = useFetchData<ApoioDiretoFabricanteType>({
+    url: "/apoiodireto/fabricante",
+    initialData: selectedData,
   });
 
   const [elementSize, setElementSize] = useState({
@@ -34,39 +38,22 @@ const TipoAcaoValor = () => {
         });
       } else {
         setElementSize({
-          height: 400,
-          width: 420,
+          height: 300,
+          width: 320,
         });
       }
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Chama a função uma vez para definir o estado inicial
+    handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const dadosFiltrados = data.filter((item) => item.valor >= 1_000_000);
-  const totalOutros = data
-    .filter((item) => item.valor < 1_000_000)
-    .reduce((acc, item) => acc + item.valor, 0);
+  const labels = data.map((item) => item.fabricante);
+  const values = data.map((item) => item.quantidade);
 
-  if(totalOutros > 0) {
-    dadosFiltrados.push(({ tipo: "Outros", valor: totalOutros }));
-  }
-
-  const labels = dadosFiltrados.map((item) => item.tipo);
-  const values = dadosFiltrados.map((item) => item.valor);
-
-  const colorMap: Record<string, string> = {
-    "14T5": "#0011CC",
-    "147F": "#9148CD",
-    "20XE": "#CABACD",
-    "21GO": "#3781F0",
-    // Adicione mais subsistemas conforme necessário
-  };
-
-  const colors = labels.map((label) => colorMap[label] || "#000");
+  const colors = ["#AAB0F0", "#C6C2A1"];
 
   const options: ApexOptions = {
     chart: {
@@ -85,7 +72,7 @@ const TipoAcaoValor = () => {
     tooltip: {
       enabled: true,
       y: {
-        formatter: (val: number) => `${Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val)}`,
+        formatter: (val: number) => `${val}`,
       },
       style: {
         fontSize: "15px",
@@ -96,7 +83,7 @@ const TipoAcaoValor = () => {
     dataLabels: {
       enabled: true,
       style: {
-        fontSize: "12px",
+        fontSize: "10px",
         fontWeight: "bold",
         fontFamily: "Nunito, serif",
         colors: ["#FFF"],
@@ -110,9 +97,16 @@ const TipoAcaoValor = () => {
       fontSize: "14px",
       fontFamily: "Nunito, serif",
       fontWeight: 800,
-      formatter: (val) => `${val}`,
+      formatter: function (label: string, opts) {
+        const series = opts.w.globals.series;
+        const total = series.reduce((acc: number, val: number) => acc + val, 0);
+        const index = opts.seriesIndex;
+        const value = series[index];
+        const percent = ((value / total) * 100).toFixed(1); // arredondado com 1 casa decimal
+        return `${label} - ${percent}%`;
+      },
       show: true,
-      offsetY: elementSize.width < 320 ? 25 : 60,
+      offsetY: 100,
     },
     labels: labels,
     colors: colors,
@@ -132,18 +126,14 @@ const TipoAcaoValor = () => {
               fontFamily: "Nunito, serif",
               color: "#333",
               formatter: function (w) {
-                let total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
-                return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(total);
+                return w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
               },
             },
             value: {
-              fontSize: "17px",
+              fontSize: "22px",
               fontWeight: "bold",
               fontFamily: "Nunito, serif",
               color: "#333",
-              formatter: function (w) {
-                return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(w));
-              },
             },
           },
         },
@@ -163,8 +153,8 @@ const TipoAcaoValor = () => {
             options={options}
             series={values}
             type="donut"
-            height={elementSize.height}
-            width={elementSize.width}
+            height={480}
+            width={480}
           />
         </div>
       )}
@@ -172,4 +162,4 @@ const TipoAcaoValor = () => {
   );
 };
 
-export default TipoAcaoValor;
+export default ApoioDiretoFabricante;

@@ -23,9 +23,9 @@ const ExecucaoOrcamentaria2025 = () => {
       } else if (newWidth >= 768 && newWidth < 1600) {
         setElementSize({ height: 300, width: 400 });
       } else if (newWidth >= 1600 && newWidth < 1800) {
-        setElementSize({ height: 300, width: 490 });
+        setElementSize({ height: 300, width: 520 });
       } else {
-        setElementSize({ height: 300, width: 550 });
+        setElementSize({ height: 300, width: 580 });
       }
     };
 
@@ -61,12 +61,12 @@ const ExecucaoOrcamentaria2025 = () => {
   }, [loadData]);
 
   // Definição das categorias no eixo X
-  const categorias = ["Provisão Recebida", "Crédito Disponível", "Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
+  const categorias = ["Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
 
   // Criando as séries baseadas em `grupoCodUo`
   const series = data.map((item) => ({
     name: item.grupoCodUo,
-    data: [item.provisaoRecebida, item.creditoDisponivel, item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
+    data: [item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
   }));
 
   // Calculando o total de cada coluna

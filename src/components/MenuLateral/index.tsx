@@ -49,6 +49,9 @@ const MenuLateral = ({ onMenuClick }: { onMenuClick: (index: number) => void }) 
           </li>
           {isSubMenuVisible && (
             <ul className="submenu" onMouseLeave={() => setIsSubMenuVisible(false)}>
+              <Link to="/dashboard-sgl-sg7/dm7/apoiodireto">
+                <li>Apoio Direto</li>
+              </Link>
               <Link to="/dashboard-sgl-sg7/dm7/distribuicao">
                 <li>Distribuição</li>
               </Link>
@@ -59,9 +62,9 @@ const MenuLateral = ({ onMenuClick }: { onMenuClick: (index: number) => void }) 
           </li>
           {isSubMenuVisible && (
             <ul className="submenu" onMouseLeave={() => setIsSubMenuVisible(false)}>
-              <Link to="/dashboard-sgl-sg7/agge/acoes2024">
+              {/* <Link to="/dashboard-sgl-sg7/agge/acoes2024">
                 <li>Ações 2024</li>
-              </Link>
+              </Link> */}
               <Link to="/dashboard-sgl-sg7/agge/acoesfinalisticas">
                 <li>Ações finalísticas</li>
               </Link>

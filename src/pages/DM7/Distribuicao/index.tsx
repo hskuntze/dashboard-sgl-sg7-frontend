@@ -8,8 +8,6 @@ const Distribuicao = () => {
   const navigate = useNavigate();
 
   const handleSelectCategoria = (cmdo: string | null, cat: string | null) => {
-    console.log(cmdo);
-    console.log(cat);
     navigate(`/dashboard-sgl-sg7/dm7/distribuicao/lista`, { state: { cmdo, cat } });
   };
 
