@@ -341,12 +341,12 @@ const UniquePage = () => {
                     <PorcentagemLiquidadaGauge />
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Restos a Pagar Não Processados a Liquidar</span>
+                    <span className="span-title">Restos a Pagar Não Processados a Pagar</span>
                     <span className="span-subtitle">Restante por Ano</span>
                     <RestantePorAno />
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Restos a Pagar Não Processados a Liquidar</span>
+                    <span className="span-title">Restos a Pagar Não Processados a Pagar</span>
                     <span className="span-subtitle">por Tipo de Ação</span>
                     <TipoAcaoValor />
                   </div>

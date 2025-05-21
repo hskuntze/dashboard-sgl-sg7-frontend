@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
@@ -9,46 +8,14 @@ import { ApoioDiretoFabricanteType } from "types/relatorio/apoiodiretofabricante
 
 interface Props {
   selectedData?: ApoioDiretoFabricanteType[];
+  onSelectedFabricante: (fabricante: string | null) => void;
 }
 
-const ApoioDiretoFabricante = ({ selectedData }: Props) => {
+const ApoioDiretoFabricante = ({ selectedData, onSelectedFabricante }: Props) => {
   const { data, loading } = useFetchData<ApoioDiretoFabricanteType>({
     url: "/apoiodireto/fabricante",
     initialData: selectedData,
   });
-
-  const [elementSize, setElementSize] = useState({
-    width: 0,
-    height: 0,
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      const newWidth = window.innerWidth;
-
-      if (newWidth < 768) {
-        setElementSize({
-          height: 300,
-          width: 260,
-        });
-      } else if (newWidth >= 768 && newWidth < 1600) {
-        setElementSize({
-          height: 300,
-          width: 300,
-        });
-      } else {
-        setElementSize({
-          height: 300,
-          width: 320,
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const labels = data.map((item) => item.fabricante);
   const values = data.map((item) => item.quantidade);
@@ -66,6 +33,14 @@ const ApoioDiretoFabricante = ({ selectedData }: Props) => {
         dynamicAnimation: {
           enabled: true,
           speed: 1000,
+        },
+      },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const selectedIndex = config.dataPointIndex;
+          const clickedItem = data[selectedIndex];
+
+          onSelectedFabricante(clickedItem.fabricante);
         },
       },
     },
@@ -149,13 +124,7 @@ const ApoioDiretoFabricante = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="severity-column-chart">
-          <ReactApexChart
-            options={options}
-            series={values}
-            type="donut"
-            height={480}
-            width={480}
-          />
+          <ReactApexChart options={options} series={values} type="donut" height={480} width={480} />
         </div>
       )}
     </div>
