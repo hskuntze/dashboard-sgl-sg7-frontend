@@ -1,5 +1,3 @@
-import "./styles.css";
-
 import { ApexOptions } from "apexcharts";
 import { AxiosRequestConfig } from "axios";
 import Loader from "components/Loader";
@@ -8,7 +6,7 @@ import ReactApexChart from "react-apexcharts";
 import { toast } from "react-toastify";
 import { requestBackend } from "utils/requests";
 
-const PorcentagemEmpenhadaGauge = () => {
+const MetaEmpenhada20XE = () => {
   const [data, setData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -16,7 +14,7 @@ const PorcentagemEmpenhadaGauge = () => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/execucao/percentual/empenhado",
+      url: "/acao20xe/meta/empenhada",
       method: "GET",
       withCredentials: true,
     };
@@ -26,7 +24,7 @@ const PorcentagemEmpenhadaGauge = () => {
         setData(res.data as number);
       })
       .catch(() => {
-        toast.error("Erro ao carregar porcentagem empenhada.");
+        toast.error("Erro ao carregar total de materiais para formar a porcentagem.");
       })
       .finally(() => {
         setLoading(false);
@@ -74,7 +72,7 @@ const PorcentagemEmpenhadaGauge = () => {
             color: "#141824",
             fontFamily: "Nunito, serif",
             offsetY: 0,
-            formatter: () => `${percentage.toFixed(1)}%`,
+            formatter: () => `${percentage.toFixed(2)}%`,
           },
         },
       },
@@ -89,7 +87,7 @@ const PorcentagemEmpenhadaGauge = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <div className="percentage-chart">
+        <div className="severity-column-chart">
           <ReactApexChart options={options} series={[percentage]} type="radialBar" height={450} width={500} />
         </div>
       )}
@@ -97,4 +95,4 @@ const PorcentagemEmpenhadaGauge = () => {
   );
 };
 
-export default PorcentagemEmpenhadaGauge;
+export default MetaEmpenhada20XE;

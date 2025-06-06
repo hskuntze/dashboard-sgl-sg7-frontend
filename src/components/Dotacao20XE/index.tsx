@@ -3,19 +3,19 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { useFetchData } from "utils/hooks/usefetchdata";
 import { useElementSize } from "utils/hooks/useelementsize";
-import { ApoioDiretoDisponibilidadeFabricanteType } from "types/relatorio/apoiodiretodisponibilidadefabricante";
+import { Dotacao20XEType } from "types/relatorio/dotacao20xe";
 
 interface Props {
-  selectedData?: ApoioDiretoDisponibilidadeFabricanteType[];
+  onSelectItem: (element: number) => void;
 }
 
-const ApoioDiretoDisponibilidadeFabricante = ({ selectedData }: Props) => {
-  const { data, loading } = useFetchData<ApoioDiretoDisponibilidadeFabricanteType>({
-    url: "/apoiodireto/disponibilidade/fabricante",
-    initialData: selectedData,
+const Dotacao20XE = ({ onSelectItem }: Props) => {
+  const { data, loading } = useFetchData<Dotacao20XEType>({
+    url: "/acao20xe/dotacao",
+    initialData: null,
   });
 
-  const elementSize  = useElementSize();
+  const elementSize = useElementSize();
 
   const options: ApexOptions = {
     chart: {
@@ -31,26 +31,44 @@ const ApoioDiretoDisponibilidadeFabricante = ({ selectedData }: Props) => {
           speed: 1000,
         },
       },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const selectedIndex = config.dataPointIndex;
+          const clickedItem = selectedIndex;
+
+          onSelectItem(clickedItem);
+        },
+      },
     },
     plotOptions: {
       bar: {
         columnWidth: "70%",
         dataLabels: {
           position: "top",
-          hideOverflowingLabels: true
-        }
+          hideOverflowingLabels: true,
+        },
       },
     },
     dataLabels: {
       enabled: true,
       style: {
-        fontSize: "12px",
+        fontSize: "10px",
         fontFamily: "Nunito, serif",
         fontWeight: 500,
         colors: ["#333"],
       },
       offsetY: -20,
-      offsetX: 5,
+      formatter: (val: number) => {
+        return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
+      },
+      dropShadow: {
+        enabled: true,
+        color: "#aaa",
+      },
+      background: {
+        enabled: true,
+        foreColor: "#fff"
+      }
     },
     tooltip: {
       enabled: true,
@@ -59,7 +77,7 @@ const ApoioDiretoDisponibilidadeFabricante = ({ selectedData }: Props) => {
       },
     },
     xaxis: {
-      categories: data.map((item) => item.fabricante),
+      categories: data.map((item) => item.nomeGrupo),
       labels: {
         style: {
           fontSize: elementSize.width > 400 ? "12px" : "8px",
@@ -76,18 +94,22 @@ const ApoioDiretoDisponibilidadeFabricante = ({ selectedData }: Props) => {
         },
       },
     },
-    colors: ["#1CDB2C", "#DB281D"],
+    colors: ["#14B226", "#FA2117", "#67497E"],
     legend: { show: true },
   };
 
   const series = [
     {
-      name: "Disponível",
-      data: data.map((item) => item.disponivel),
+      name: "Dotação",
+      data: data.map((item) => item.dotacao),
     },
     {
-      name: "Indisponível",
-      data: data.map((item) => item.indisponivel),
+      name: "Crédito Indisponível",
+      data: data.map((item) => item.creditoIndisponivel),
+    },
+    {
+      name: "Disponível",
+      data: data.map((item) => item.dotacao - item.creditoIndisponivel),
     },
   ];
 
@@ -99,11 +121,11 @@ const ApoioDiretoDisponibilidadeFabricante = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="column-chart">
-          <ReactApexChart options={options} series={series} type="bar" height={500} width={700} />
+          <ReactApexChart options={options} series={series} type="bar" height={300} width={600} />
         </div>
       )}
     </div>
   );
 };
 
-export default ApoioDiretoDisponibilidadeFabricante;
+export default Dotacao20XE;

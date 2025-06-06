@@ -1,5 +1,3 @@
-import "./styles.css";
-
 import { useState, useEffect, useCallback } from "react";
 import { AxiosRequestConfig } from "axios";
 import { requestBackend } from "utils/requests";
@@ -8,28 +6,27 @@ import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-import { AcaoOrcamentariaType } from "types/relatorio/acaoorcamentaria";
-import { formatarNumero } from "utils/functions";
+import "./styles.css";
+import { ExecucaoOrcamentaria20XEType } from "types/relatorio/tipoexecucaoorcamentaria20xe";
 
-const AcaoOrcamentaria2025 = () => {
-  const [data, setData] = useState<AcaoOrcamentariaType[]>([]);
+const Acao20XEPorUnidadeExecutora = () => {
+  const [data, setData] = useState<ExecucaoOrcamentaria20XEType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
   const loadData = useCallback(() => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/execucao/acao/2025",
+      url: "/acao20xe/execucao/unidade",
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as AcaoOrcamentariaType[]);
+        setData(res.data as ExecucaoOrcamentaria20XEType[]);
       })
       .catch(() => {
-        toast.error("Erro ao carregar dados de valor total por Unidade Gestora.");
+        toast.error("Erro ao carregar dados de valor total de passagens.");
       })
       .finally(() => {
         setLoading(false);
@@ -41,18 +38,24 @@ const AcaoOrcamentaria2025 = () => {
   }, [loadData]);
 
   // Definição das categorias no eixo X
-  const categorias = ["Provisão Recebida", "Crédito Disponível", "Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
- 
+  const categorias = ["Provisão Recebida", "Crédito Disponível", "Despesa Empenhada", "Despesa Liquidada", "Despesa Paga"];
+
   // Criando as séries baseadas em `grupoCodUo`
   const series = data.map((item) => ({
-    name: item.acao,
-    data: [item.provisaoRecebida, item.creditoDisponivel, item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
+    name: item.elemento,
+    data: [item.provisaoRecebida, item.creditoDisponivel, item.despesaEmpenhada, item.despesaLiquidada, item.despesaPaga],
   }));
+
+  // Calculando o total de cada coluna
+  const totals = categorias.map((_, index) => {
+    return series.reduce((sum, serie) => sum + serie.data[index], 0);
+  });
 
   const options: ApexOptions = {
     chart: {
       type: "bar",
       background: "transparent",
+      stacked: true,
       toolbar: { show: false },
       fontFamily: "Nunito, serif",
     },
@@ -68,7 +71,9 @@ const AcaoOrcamentaria2025 = () => {
     },
     yaxis: {
       labels: {
-        formatter: (val: number) => formatarNumero(val)
+        formatter: (val) => {
+          return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
+        }
       }
     },
     tooltip: {
@@ -96,24 +101,24 @@ const AcaoOrcamentaria2025 = () => {
     plotOptions: {
       bar: {
         horizontal: false, // Barras verticais
-        columnWidth: "79%", // Largura das colunas
+        columnWidth: "80%", // Largura das colunas
         dataLabels: {
           position: "top",
+          total: {
+            offsetY: -5,
+            enabled: true,
+            formatter: function (val, { dataPointIndex }) {
+              // Exibe o total somatório no topo de cada barra
+              return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(totals[dataPointIndex]);
+            },
+          }
         },
       },
     },
     dataLabels: {
-      enabled: true,
-      formatter: (val: number) => formatarNumero(val),
-      offsetY: -20,
-      style: {
-        colors: ["#000"],
-        fontSize: "10px",
-        fontFamily: "Nunito, serif",
-        fontWeight: 700
-      }
+      enabled: false,
     },
-    colors: ["#0052DB", "#A0DB00", "#DB1D00", "#86392D", "#2E3F5C", "#4F5C2E"], // Cores para cada série
+    colors: ["#FA8705", "#FAC605", "#7A5F40", "#FA5C05", "#FA3A05", "#9CFA00", "#FAE664", "#7FFA05"], // Cores para cada série
     legend: {
       position: "bottom",
     },
@@ -126,10 +131,10 @@ const AcaoOrcamentaria2025 = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart options={options} series={series} type="bar" height={720} width={1400} />
+        <ReactApexChart options={options} series={series} type="bar" height={700} width={800} />
       )}
     </div>
   );
 };
 
-export default AcaoOrcamentaria2025;
+export default Acao20XEPorUnidadeExecutora;

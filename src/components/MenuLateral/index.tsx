@@ -62,9 +62,9 @@ const MenuLateral = ({ onMenuClick }: { onMenuClick: (index: number) => void }) 
           </li>
           {isSubMenuVisible && (
             <ul className="submenu" onMouseLeave={() => setIsSubMenuVisible(false)}>
-              {/* <Link to="/dashboard-sgl-sg7/agge/acoes2024">
-                <li>Ações 2024</li>
-              </Link> */}
+              <Link to="/dashboard-sgl-sg7/agge/acao20xe">
+                <li>Ação 20XE</li>
+              </Link>
               <Link to="/dashboard-sgl-sg7/agge/acoesfinalisticas">
                 <li>Ações finalísticas</li>
               </Link>

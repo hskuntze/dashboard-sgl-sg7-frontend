@@ -1,6 +1,8 @@
 import Navbar from "components/Navbar";
 import Admin from "pages/Admin";
+import Acao20XE from "pages/AGGE/Acao20XE";
 import AcoesFinalisticas from "pages/AGGE/AcoesFinalisticas";
+import DetalhamentoAGGE from "pages/AGGE/Detalhamento";
 import Auth from "pages/Auth";
 import Confirmar from "pages/Confirmar";
 import DM7 from "pages/DM7";
@@ -42,6 +44,7 @@ const Routes = () => {
                 ]}
               >
                 <UniquePage />
+                {/* <Manutencao /> */}
               </PrivateRoute>
             }
           />
@@ -103,20 +106,6 @@ const Routes = () => {
               </PrivateRoute>
             }
           />
-          {/* <Route
-            path="/dashboard-sgl-sg7/agge/acoes2024"
-            element={
-              <PrivateRoute
-                roles={[
-                  { id: 1, autorizacao: "PERFIL_ADMIN" },
-                  { id: 2, autorizacao: "PERFIL_USUARIO" },
-                  { id: 5, autorizacao: "PERFIL_SLI" },
-                ]}
-              >
-                <Acoes2024 />
-              </PrivateRoute>
-            }
-          /> */}
           <Route
             path="/dashboard-sgl-sg7/agge/acoesfinalisticas"
             element={
@@ -132,6 +121,20 @@ const Routes = () => {
             }
           />
           <Route
+            path="/dashboard-sgl-sg7/agge/acao20xe"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <Acao20XE />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/dashboard-sgl-sg7/dm7/*"
             element={
               <PrivateRoute
@@ -142,6 +145,34 @@ const Routes = () => {
                 ]}
               >
                 <DM7 />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/dm7/*"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <DM7 />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/agge/detalhamento/*"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <DetalhamentoAGGE />
               </PrivateRoute>
             }
           />

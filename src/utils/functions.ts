@@ -37,7 +37,7 @@ export const formatarPerfil = (perfil: string) => {
 };
 
 export const formatarNumero = (num: number): string => {
-  if(num) {
+  if (num) {
     if (num >= 1_000_000_000) {
       return `${(num / 1_000_000_000).toFixed(1).replace(".0", "")}bi`;
     }
@@ -50,5 +50,13 @@ export const formatarNumero = (num: number): string => {
     return num.toString();
   } else {
     return "";
+  }
+};
+
+export const formatarDinheiro = (num: number): string => {
+  if(num !== undefined && num !== 0) {
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(num));
+  } else {
+    return "R$ 0,00";
   }
 };

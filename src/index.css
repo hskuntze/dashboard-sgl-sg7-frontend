@@ -477,6 +477,17 @@
   background-position: center;
 }
 
+.icone-op {
+  color: black;
+  white-space: nowrap;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .small-icon {
   width: 5px;
   height: 5px;
@@ -493,6 +504,19 @@
   padding: 4px 8px;
   border-radius: 5px;
   margin-top: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+}
+
+.map-label-content {
+  width: 120px;
+  height: 10px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -550,11 +574,47 @@
   border-left: 1px solid #ccc;
 }
 
+.four-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  height: calc(100vh - 71px);
+  max-height: calc(100vh - 71px);
+}
+
 .hint {
   letter-spacing: 0.03rem;
   font-size: 13px;
   font-style: italic;
   color: #949292ea;
+}
+
+.full-height {
+  height: calc(100vh - 71px);
+}
+
+.percentage-chart {
+  max-height: 258px !important;
+}
+
+.valor-disponivel {
+  background-color: #222;
+  opacity: 0.8;
+  color: #fff;
+  padding: 10px;
+  width: auto;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  font-size: 30px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.valor-disponivel:hover {
+  background-color: #444;
 }
 
 @media (min-width: 768px) {
@@ -578,5 +638,37 @@
 
   .map-wrapper {
     height: 100%;
+  }
+
+  .carousel-button {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    margin-top: calc(50vh - 20px);
+    color: #000;
+    text-align: center;
+    background: 0 0;
+    border: 0;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+  }
+
+  .carousel-button-left {
+    left: 0;
+  }
+
+  .carousel-button-right {
+    right: 0;
+  }
+
+  .carousel-button i {
+    font-size: 30px;
   }
 }

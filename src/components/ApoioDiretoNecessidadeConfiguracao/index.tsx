@@ -99,7 +99,7 @@ const ApoioDiretoNecessidadeConfiguracao = ({ selectedData }: Props) => {
         </div>
       ) : (
         <div className="column-chart">
-          <ReactApexChart options={options} series={series} type="bar" height={300} width={500} />
+          <ReactApexChart options={options} series={series} type="bar" height={500} width={700} />
         </div>
       )}
     </div>

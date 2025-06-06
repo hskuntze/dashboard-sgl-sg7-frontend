@@ -6,12 +6,13 @@ import { Carousel } from "bootstrap";
 import { useEffect, useRef, useState } from "react";
 import { requestBackend } from "utils/requests";
 import { toast } from "react-toastify";
-import useActiveObserver from "utils/hooks/useobserver";
 import { Box, Modal } from "@mui/material";
 
-import ExecucaoOrcamentaria2025 from "components/ExecucaoOrcamentaria2025";
+import useActiveObserver from "utils/hooks/useobserver";
+
+import CloseIcon from "assets/images/x-lg.svg";
+
 import RestantePorAno from "components/RestantePorAno";
-import TipoAcaoValor from "components/TipoAcaoValor";
 import MenuLateral from "components/MenuLateral";
 import QtdChamadoAnoSmall from "components/QtdChamadoAnoSmall";
 import QtdMaterialBdaSmall from "components/QtdMaterialBdaSmall";
@@ -21,25 +22,25 @@ import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
 import Map from "components/Map";
 import MapQcpOM from "components/MapQcpOM";
 import QtdMaterialDisponibilidadePorCmdo from "components/QtdMaterialDisponibilidadePorCmdo";
-import { QtdMaterialDisponibilidadeCmdoType } from "types/relatorio/qtdmaterialdisponibilidadecmdo";
 import MapOperacoes from "components/MapOperacoes";
 import { useLocation, useNavigate } from "react-router-dom";
 import SituacaoRisco from "components/SituacaoRisco";
 import QuantidadeDemandas from "components/QuantidadeDemandas";
 import ExecucaoFinanceira from "components/ExecucaoFinanceira";
-
-import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
-import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
-import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
-import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
-
-import CloseIcon from "assets/images/x-lg.svg";
 import QtdMotivoIndisponibilidade from "components/QtdMotivoIndisponibilidade";
 import QtdChamadoMesSmall from "components/QtdChamadoMesSmall";
 import QtdChamadoSubsistemaSmall from "components/QtdChamadoSubsistemaSmall";
 import QtdChamadoStatusPorAno from "components/QtdChamadoStatusPorAno";
 import OmOrcamento from "components/OmOrcamento";
 import PorcentagemLiquidadaGauge from "components/PorcentagemLiquidadaGauge";
+
+import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
+import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
+import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
+import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
+import { QtdMaterialDisponibilidadeCmdoType } from "types/relatorio/qtdmaterialdisponibilidadecmdo";
+import ExecucaoOrcamentaria2025AreaInterna from "components/ExecucaoOrcamentaria2025AreaInterna";
+import PorcentagemEmpenhadaGauge from "components/PorcentagemEmpenhadaGauge";
 
 const UniquePage = () => {
   const [selectedCmdo, setSelectedCmdo] = useState<string>();
@@ -61,13 +62,13 @@ const UniquePage = () => {
 
   const carouselRef = useRef<HTMLDivElement>(null);
   const carouselInstance = useRef<Carousel | null>(null);
-  
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
   /**
-   * Necessário para definir o slide ativo do carrossel baseado no clique do menu lateral, 
+   * Necessário para definir o slide ativo do carrossel baseado no clique do menu lateral,
    * uma vez que o menu lateral é um componente a parte.
    */
   useEffect(() => {
@@ -82,7 +83,7 @@ const UniquePage = () => {
 
   /**
    * Para que os filtros sejam aplicados nos outros gráficos ao selecionar um comando
-   * @param cmdo 
+   * @param cmdo
    */
   const handleSelectCmdo = async (cmdo: string | null) => {
     if (cmdo !== null) {
@@ -187,22 +188,18 @@ const UniquePage = () => {
 
   /**
    * Ao selecionar uma categoria de material indisponível abre o modal
-   * @param cat 
+   * @param cat
    */
   const handleSelectCategoria = (cat: string | null) => {
-    if (selectedBrigada && selectedCmdo && cat) {
-      setOpenModalMotivoIndisponibilidade(true);
-      setSelectedEqp(cat);
-    } else {
-      toast.info("Por favor, selecione um comando e uma brigada.");
-    }
+    setOpenModalMotivoIndisponibilidade(true);
+    setSelectedEqp(cat || "");
   };
 
   /**
    * Quando o modal de indisponibilidade é aberto ele exibe os motivos da indisponibilidade.
    * É possível que o usuário selecione um dos motivos. Ao selecionar o motivo ele é redirecionado
    * para a página de listagem dos materiais de acordo com o motivo.
-   * @param motivo 
+   * @param motivo
    */
   const handleSelectMotivo = (motivo: string) => {
     setOpenModalMotivoIndisponibilidade(false);
@@ -217,7 +214,7 @@ const UniquePage = () => {
    * que não carrega os 'tiles' se não for na página inicial. Dessa forma,
    * ao clicar no índice do "COp" ele força a recarregar os componentes
    * e os 'tiles' carregam.
-   * @param index 
+   * @param index
    */
   const handleMenuClick = (index: number) => {
     if (carouselRef.current) {
@@ -327,8 +324,8 @@ const UniquePage = () => {
                 <div className="unique-page-grid">
                   <div className="grid-object">
                     <span className="span-title">Execução orçamentária 2025</span>
-                    <span className="span-subtitle">por Grupo de Despesas</span>
-                    <ExecucaoOrcamentaria2025 />
+                    <span className="span-subtitle">Área Interna</span>
+                    <ExecucaoOrcamentaria2025AreaInterna />
                   </div>
                   <div className="grid-object-two-squares">
                     <span className="span-title">Execução orçamentária 2025</span>
@@ -341,14 +338,14 @@ const UniquePage = () => {
                     <PorcentagemLiquidadaGauge />
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Restos a Pagar Não Processados a Pagar</span>
-                    <span className="span-subtitle">Restante por Ano</span>
-                    <RestantePorAno />
+                    <span className="span-title">Execução orçamentária 2025</span>
+                    <span className="span-subtitle">Porcentagem Empenhada</span>
+                    <PorcentagemEmpenhadaGauge />
                   </div>
                   <div className="grid-object">
                     <span className="span-title">Restos a Pagar Não Processados a Pagar</span>
-                    <span className="span-subtitle">por Tipo de Ação</span>
-                    <TipoAcaoValor />
+                    <span className="span-subtitle">Restante por Ano</span>
+                    <RestantePorAno />
                   </div>
                   <span className="painel-title">PAINEL AGGE</span>
                 </div>

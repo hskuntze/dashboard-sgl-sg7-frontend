@@ -18,6 +18,7 @@ import { Box, Modal } from "@mui/material";
 import CloseIcon from "assets/images/x-lg.svg";
 import ApoioDiretoNecessidadeConfiguracao from "components/ApoioDiretoNecessidadeConfiguracao";
 import ApoioDiretoDisponibilidadeFabricante from "components/ApoioDiretoDisponibilidadeFabricante";
+import { ApoioDiretoNecessidadeConfiguracaoType } from "types/relatorio/apoiodiretonecessidadeconfiguracao";
 
 const ApoioDireto = () => {
   const handleMenuClick = (index: number) => {};
@@ -26,11 +27,10 @@ const ApoioDireto = () => {
 
   const [dadosQuantitativos, setDadosQuantitativos] = useState<ApoioDiretoDadosQuantitativos>();
   const [dadosDisponibilidadeFabricante, setDadosDisponibilidadeFabricante] = useState<ApoioDiretoDisponibilidadeFabricanteType[]>();
+  const [dadosNecessidadeConfiguracao, setDadosNecessidadeConfiguracao] = useState<ApoioDiretoNecessidadeConfiguracaoType[]>();
 
-  const [selectedFabricanteElement, setSelectedFabricanteElement] = useState<string>();
   const [openModalFabricante, setOpenModalFabricante] = useState<boolean>(false);
 
-  const [selectedRm, setSelectedRm] = useState<string>();
   const [selectedFabricante, setSelectedFabricante] = useState<ApoioDiretoFabricanteType[]>([]);
   const [selectedOm, setSelectedOm] = useState<ApoioDiretoOmType[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<ApoioDiretoMaterialType[]>([]);
@@ -40,7 +40,8 @@ const ApoioDireto = () => {
       const endpoints = [
         { key: "fabricante", url: `/apoiodireto/fabricante/${rm}`, stateSetter: setSelectedFabricante },
         { key: "om", url: `/apoiodireto/om/${rm}`, stateSetter: setSelectedOm },
-        { key: "om", url: `/apoiodireto/material/${rm}`, stateSetter: setSelectedMaterial },
+        { key: "material", url: `/apoiodireto/material/${rm}`, stateSetter: setSelectedMaterial },
+        { ket: "configuracao", url: `/apoiodireto/configuracao/${rm}`, stateSetter: setDadosNecessidadeConfiguracao }
       ];
 
       try {
@@ -63,7 +64,6 @@ const ApoioDireto = () => {
       } catch (error) {
         toast.error("Erro ao carregar os dados do CMDO.");
       } finally {
-        setSelectedRm(rm);
         loadDadosQuantitativosPorRm(rm);
         loadDisponibilidadeFabricante(rm);
       }
@@ -71,6 +71,7 @@ const ApoioDireto = () => {
       setSelectedFabricante([]);
       setSelectedOm([]);
       setSelectedMaterial([]);
+      setDadosNecessidadeConfiguracao([]);
 
       loadInitialData();
       loadDisponibilidadeFabricante();
@@ -83,7 +84,6 @@ const ApoioDireto = () => {
 
   const handleSelectFabricante = (fabricante: string | null) => {
     if (fabricante) {
-      setSelectedFabricanteElement(fabricante);
       setOpenModalFabricante(true);
     }
   };
@@ -216,16 +216,6 @@ const ApoioDireto = () => {
                     </span>
                   )}
                 </span>
-                {dadosDisponibilidadeFabricante &&
-                  dadosDisponibilidadeFabricante.map((el) => (
-                    <>
-                      <span>
-                        <b>Fabricante:</b> {el.fabricante} {" - "}
-                        <b>Disp.: </b> <span style={{ color: "green" }}>{el.disponivel}</span> | <b>Indisp.: </b>
-                        <span style={{ color: "red" }}>{el.indisponivel}</span>
-                      </span>
-                    </>
-                  ))}
               </div>
             </>
           )}
@@ -246,12 +236,12 @@ const ApoioDireto = () => {
               <div className="modal-grid-multiple-object">
                 <span className="span-title">Apoio Direto</span>
                 <span className="span-subtitle">Motivos de Indisponibilidade</span>
-                <ApoioDiretoDisponibilidadeFabricante selectedData={[]} />
+                <ApoioDiretoDisponibilidadeFabricante selectedData={dadosDisponibilidadeFabricante} />
               </div>
               <div className="modal-grid-multiple-object">
                 <span className="span-title">Apoio Direto</span>
                 <span className="span-subtitle">Necessidade de Configuração</span>
-                <ApoioDiretoNecessidadeConfiguracao selectedData={[]} />
+                <ApoioDiretoNecessidadeConfiguracao selectedData={dadosNecessidadeConfiguracao} />
               </div>
             </div>
           </Box>

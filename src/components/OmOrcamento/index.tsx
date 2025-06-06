@@ -40,13 +40,28 @@ const OmOrcamento = () => {
   }, [loadData]);
 
   // Definição das categorias no eixo X
-  const categorias = ["Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
+  // const categorias = ["Provisao Recebida", "Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
+  const categorias = data.map((el) => el.om);
 
   // Criando as séries baseadas em `grupoCodUo`
-  const series = data.map((item) => ({
-    name: item.om,
-    data: [item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
-  }));
+  const series = [
+    {
+      name: "Provisão Recebida",
+      data: data.map((el) => el.provisaoRecebida),
+    },
+    {
+      name: "Despesas Empenhadas",
+      data: data.map((el) => el.despesasEmpenhadas),
+    },
+    {
+      name: "Despesas Liquidadas",
+      data: data.map((el) => el.despesasLiquidadas),
+    },
+    {
+      name: "Despesas Pagas",
+      data: data.map((el) => el.despesasPagas),
+    },
+  ];
 
   const options: ApexOptions = {
     chart: {
@@ -95,7 +110,7 @@ const OmOrcamento = () => {
     plotOptions: {
       bar: {
         horizontal: false, // Barras verticais
-        columnWidth: "90%", // Largura das colunas
+        columnWidth: "70%", // Largura das colunas
         dataLabels: {
           position: "top",
         },
@@ -112,11 +127,19 @@ const OmOrcamento = () => {
       },
       style: {
         colors: ["#333"],
-        fontSize: "10px",
+        fontSize: "9px",
         fontFamily: "Nunito, serif",
         fontWeight: 700,
       },
-      offsetY: -20,
+      offsetY: -15,
+      background: {
+        foreColor: "#fff",
+        borderColor: "#bbb",
+        borderWidth: 1,
+        opacity: 0.7,
+        enabled: true,
+        borderRadius: 4,
+      },
     },
     colors: ["#E00D00", "#5969F0", "#2062E6", "#01AFF0", "#30E000", "#E0DD00"], // Cores para cada série
     legend: {
@@ -131,7 +154,7 @@ const OmOrcamento = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart options={options} series={series} type="bar" height={300} width={1200} />
+        <ReactApexChart options={options} series={series} type="bar" height={320} width={1200} />
       )}
     </div>
   );

@@ -88,7 +88,7 @@ const PorcentagemLiquidadaGauge = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <div className="severity-column-chart">
+        <div className="percentage-chart">
           <ReactApexChart options={options} series={[percentage]} type="radialBar" height={450} width={500} />
         </div>
       )}
