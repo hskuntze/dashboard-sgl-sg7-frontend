@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 const MenuLateral = ({ onMenuClick }: { onMenuClick: (index: number) => void }) => {
   const [expanded, setExpanded] = useState(true);
   const [isSubMenuVisible, setIsSubMenuVisible] = useState(false); // Estado do submenu
+  const [isSisfronSubMenuVisible, setIsSisfronSubMenuVisible] = useState(false); // Estado do submenu
   const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
 
@@ -73,14 +74,28 @@ const MenuLateral = ({ onMenuClick }: { onMenuClick: (index: number) => void }) 
           <li className="menu-lateral-item" onClick={() => handleClick(2)}>
             <img className="menu-item-icone icone-broad" src={IconeBroadcast} alt="" /> COp
           </li>
-          {/* {isSubMenuVisible && (
-            <ul className="submenu" onMouseLeave={() => setIsSubMenuVisible(false)}>
-              <li>Monitoramento Sites</li>
-            </ul>
-          )} */}
-          <li className="menu-lateral-item" onClick={() => handleClick(3)}>
+          <li className="menu-lateral-item" onMouseEnter={() => setIsSisfronSubMenuVisible(true)}>
             <img className="menu-item-icone icone-file" src={IconeFile} alt="" /> SISFRON
           </li>
+          {isSisfronSubMenuVisible && (
+            <ul className="submenu" onMouseLeave={() => setIsSisfronSubMenuVisible(false)}>
+              <Link to="/dashboard-sgl-sg7/sisfron/sad1">
+                <li>SAD 1</li>
+              </Link>
+              <Link to="/dashboard-sgl-sg7/sisfron/sad2">
+                <li>SAD 2</li>
+              </Link>
+              <Link to="/dashboard-sgl-sg7/sisfron/sad3">
+                <li>SAD 3</li>
+              </Link>
+              <Link to="/dashboard-sgl-sg7/sisfron/sad3a">
+                <li>SAD 3A</li>
+              </Link>
+              <Link to="/dashboard-sgl-sg7/sisfron/sad7">
+                <li>SAD 7</li>
+              </Link>
+            </ul>
+          )}
         </ul>
       </div>
     </div>

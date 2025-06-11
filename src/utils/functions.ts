@@ -4,9 +4,14 @@
  * @returns String formatada
  */
 export const formatarData = (date: string) => {
-  if (date) {
+  if (date && date !== "-" && date !== "00:00:00") {
     let containsT = date.includes("T");
-    if (!containsT) {
+    let containsSpace = date.includes(" ");
+    if (containsSpace) {
+      const [dt, time] = date.split(" ");
+      const [year, month, day] = dt.split("-");
+      return `${day}/${month}/${year}`;
+    } else if(!containsT) {
       const [year, month, day] = date.split("-"); // Divide a string em ano, mês e dia
       return `${day}/${month}/${year}`;
     } else {
@@ -15,7 +20,7 @@ export const formatarData = (date: string) => {
       return `${day}/${month}/${year}`;
     }
   } else {
-    return "";
+    return "-";
   }
 };
 

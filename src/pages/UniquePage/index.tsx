@@ -14,7 +14,6 @@ import CloseIcon from "assets/images/x-lg.svg";
 
 import RestantePorAno from "components/RestantePorAno";
 import MenuLateral from "components/MenuLateral";
-import QtdChamadoAnoSmall from "components/QtdChamadoAnoSmall";
 import QtdMaterialBdaSmall from "components/QtdMaterialBdaSmall";
 import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
 import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
@@ -24,13 +23,7 @@ import MapQcpOM from "components/MapQcpOM";
 import QtdMaterialDisponibilidadePorCmdo from "components/QtdMaterialDisponibilidadePorCmdo";
 import MapOperacoes from "components/MapOperacoes";
 import { useLocation, useNavigate } from "react-router-dom";
-import SituacaoRisco from "components/SituacaoRisco";
-import QuantidadeDemandas from "components/QuantidadeDemandas";
-import ExecucaoFinanceira from "components/ExecucaoFinanceira";
 import QtdMotivoIndisponibilidade from "components/QtdMotivoIndisponibilidade";
-import QtdChamadoMesSmall from "components/QtdChamadoMesSmall";
-import QtdChamadoSubsistemaSmall from "components/QtdChamadoSubsistemaSmall";
-import QtdChamadoStatusPorAno from "components/QtdChamadoStatusPorAno";
 import OmOrcamento from "components/OmOrcamento";
 import PorcentagemLiquidadaGauge from "components/PorcentagemLiquidadaGauge";
 
@@ -46,7 +39,6 @@ const UniquePage = () => {
   const [selectedCmdo, setSelectedCmdo] = useState<string>();
   const [selectedBrigada, setSelectedBrigada] = useState<string>();
   const [selectedEqp, setSelectedEqp] = useState<string>();
-  const [selectedAno, setSelectedAno] = useState<number>();
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -58,7 +50,6 @@ const UniquePage = () => {
   const [selectedDisponibilidadeCmdo, setSelectedDisponibilidadeCmdo] = useState<QtdMaterialDisponibilidadeCmdoType[]>([]);
 
   const [openModalMotivoIndisponibilidade, setOpenModalMotivoIndisponibilidade] = useState<boolean>(false);
-  const [openModalGraficosSgl, setOpenModalGraficosSgl] = useState<boolean>(false);
 
   const carouselRef = useRef<HTMLDivElement>(null);
   const carouselInstance = useRef<Carousel | null>(null);
@@ -363,63 +354,25 @@ const UniquePage = () => {
               </div>
               <div className="carousel-item" id="sisfron">
                 <div className="unique-page-grid">
-                  {/**
-                   * MODAL PARA MOSTRAR OS GRÁFICOS DO SGL
-                   */}
-                  <Modal open={openModalGraficosSgl} onClose={() => setOpenModalGraficosSgl(!openModalGraficosSgl)}>
-                    <Box className="modal-on-unique-page">
-                      {openModalGraficosSgl && (
-                        <>
-                          <div className="modal-header">
-                            <button onClick={() => setOpenModalGraficosSgl(false)}>
-                              <img src={CloseIcon} alt="" />
-                            </button>
-                          </div>
-                          <div className="modal-grid-multiple">
-                            <div className="modal-grid-multiple-object">
-                              <span className="span-title">SGL</span>
-                              <span className="span-subtitle">Chamados por mês do ano de {selectedAno}</span>
-                              <QtdChamadoMesSmall ano={selectedAno ? selectedAno : 0} />
-                            </div>
-                            <div className="modal-grid-multiple-object">
-                              <span className="span-title">SGL</span>
-                              <span className="span-subtitle">Chamados por subcategoria do ano de {selectedAno}</span>
-                              <QtdChamadoSubsistemaSmall ano={selectedAno ? selectedAno : 0} />
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </Box>
-                  </Modal>
                   <div className="grid-object">
-                    <span className="span-title">SGL</span>
-                    <span className="span-subtitle">Chamados por ano</span>
-                    <QtdChamadoAnoSmall
-                      onSelectAno={(ano) => {
-                        setOpenModalGraficosSgl(true);
-                        setSelectedAno(ano);
-                      }}
-                    />
+                    <span className="em-desenvolvimento-title">SAD 1</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">SGL</span>
-                    <span className="span-subtitle">Chamados por status de acordo com o ano</span>
-                    <QtdChamadoStatusPorAno />
+                    <span className="em-desenvolvimento-title">SAD 2</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Gestão de Riscos dos Projetos SAD</span>
-                    <span className="span-subtitle">Quantidade de riscos por magnitude</span>
-                    <SituacaoRisco />
+                    <span className="em-desenvolvimento-title">SAD 3</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Resultados da Parceria CComGEx - CTCEA</span>
-                    <span className="span-subtitle">Quantidade de demandas realizadas por Projetos SAD/SISFRON</span>
-                    <QuantidadeDemandas />
+                    <span className="em-desenvolvimento-title">SAD 3A</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Execução Financeira Anual</span>
-                    <span className="span-subtitle">em 2025</span>
-                    <ExecucaoFinanceira />
+                    <span className="em-desenvolvimento-title">SAD 7</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <span className="painel-title">PAINEL SISFRON</span>
                 </div>

@@ -65,7 +65,7 @@ const Acao20XE = () => {
               <div className="unique-page-grid">
                 <div className="grid-object">
                   <span className="span-title">Ação 20XE</span>
-                  <span className="span-subtitle">Valores totais</span>
+                  <span className="span-subtitle">Valores nas UGE</span>
                   <Acao20XETotal onSelectItem={handleSelectAcaoTotal} />
                 </div>
                 <div className="grid-object">

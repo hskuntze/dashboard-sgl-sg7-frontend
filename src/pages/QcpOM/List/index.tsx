@@ -142,9 +142,7 @@ const QcpOMList = () => {
         setLoading(false);
       });
   }, [urlParams, controlComponentsData, rowsPerPage]);
-
-  console.log(page);
-
+  
   return (
     <div className="list-container">
       <h2 style={{ marginLeft: "10px", marginTop: "20px" }}>QCP OM - {urlParams.cmdo}</h2>

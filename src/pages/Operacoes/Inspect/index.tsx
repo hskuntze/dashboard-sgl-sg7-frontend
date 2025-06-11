@@ -30,7 +30,6 @@ const OperacoesInspect = () => {
     requestBackend(params)
       .then((res) => {
         setEl(res.data as OperacoesType);
-        console.log(res.data as OperacoesType);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);

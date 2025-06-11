@@ -11,6 +11,7 @@ import NaoEncontrado from "pages/NaoEncontrado";
 import OMs from "pages/OM";
 import Operacoes from "pages/Operacoes";
 import QcpOM from "pages/QcpOM";
+import SISFRON from "pages/SISFRON";
 import UniquePage from "pages/UniquePage";
 import PrivateRoute from "PrivateRoute";
 import { BrowserRouter, Navigate, Route, Routes as Switch } from "react-router-dom";
@@ -173,6 +174,20 @@ const Routes = () => {
                 ]}
               >
                 <DetalhamentoAGGE />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard-sgl-sg7/sisfron/*"
+            element={
+              <PrivateRoute
+                roles={[
+                  { id: 1, autorizacao: "PERFIL_ADMIN" },
+                  { id: 2, autorizacao: "PERFIL_USUARIO" },
+                  { id: 5, autorizacao: "PERFIL_SLI" },
+                ]}
+              >
+                <SISFRON />
               </PrivateRoute>
             }
           />

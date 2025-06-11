@@ -104,9 +104,6 @@ const QtdMotivoIndisponibilidade = ({ cmdo, bda, eqp, onSelectMotivo }: Props) =
           const selectedIndex = config.dataPointIndex;
           const clickedItem = data[selectedIndex];
 
-          console.log("selectedIndex", selectedIndex);
-          console.log("clickedItem", clickedItem);
-
           setTimeout(() => {
             onSelectMotivo(clickedItem.motivo);
           }, 0);
