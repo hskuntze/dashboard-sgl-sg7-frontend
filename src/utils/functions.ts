@@ -4,9 +4,14 @@
  * @returns String formatada
  */
 export const formatarData = (date: string) => {
-  if (date) {
+  if (date && date !== "-" && date !== "00:00:00") {
     let containsT = date.includes("T");
-    if (!containsT) {
+    let containsSpace = date.includes(" ");
+    if (containsSpace) {
+      const [dt, time] = date.split(" ");
+      const [year, month, day] = dt.split("-");
+      return `${day}/${month}/${year}`;
+    } else if(!containsT) {
       const [year, month, day] = date.split("-"); // Divide a string em ano, mês e dia
       return `${day}/${month}/${year}`;
     } else {
@@ -15,7 +20,7 @@ export const formatarData = (date: string) => {
       return `${day}/${month}/${year}`;
     }
   } else {
-    return "";
+    return "-";
   }
 };
 
@@ -37,14 +42,26 @@ export const formatarPerfil = (perfil: string) => {
 };
 
 export const formatarNumero = (num: number): string => {
-  if (num >= 1_000_000_000) {
-    return `${(num / 1_000_000_000).toFixed(1).replace(".0", "")}bi`;
+  if (num) {
+    if (num >= 1_000_000_000) {
+      return `${(num / 1_000_000_000).toFixed(1).replace(".0", "")}bi`;
+    }
+    if (num >= 1_000_000) {
+      return `${(num / 1_000_000).toFixed(1).replace(".0", "")}mi`;
+    }
+    if (num >= 1_000) {
+      return `${(num / 1_000).toFixed(1).replace(".0", "")} mil`;
+    }
+    return num.toString();
+  } else {
+    return "";
   }
-  if (num >= 1_000_000) {
-    return `${(num / 1_000_000).toFixed(1).replace(".0", "")}mi`;
+};
+
+export const formatarDinheiro = (num: number): string => {
+  if(num !== undefined && num !== 0) {
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(num));
+  } else {
+    return "R$ 0,00";
   }
-  if (num >= 1_000) {
-    return `${(num / 1_000).toFixed(1).replace(".0", "")} mil`;
-  }
-  return num.toString();
 };

@@ -1,43 +1,45 @@
 import "./styles.css";
 
-import ExecucaoOrcamentaria2025 from "components/ExecucaoOrcamentaria2025";
-import ExecucaoOrcamentaria2025TipoAcao from "components/ExecucaoOrcamentaria2025TipoAcao";
-import RestantePorAno from "components/RestantePorAno";
-import TipoAcaoValor from "components/TipoAcaoValor";
-import MenuLateral from "components/MenuLateral";
-import QtdChamadoAnoSmall from "components/QtdChamadoAnoSmall";
-import QtdMaterialBdaSmall from "components/QtdMaterialBdaSmall";
-import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
-import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
-import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
-import Map from "components/Map";
-import MapQcpOM from "components/MapQcpOM";
-
-import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
-import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
-import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
-import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Carousel } from "bootstrap";
 import { useEffect, useRef, useState } from "react";
 import { requestBackend } from "utils/requests";
 import { toast } from "react-toastify";
+import { Box, Modal } from "@mui/material";
+
+import useActiveObserver from "utils/hooks/useobserver";
+
+import CloseIcon from "assets/images/x-lg.svg";
+
+import RestantePorAno from "components/RestantePorAno";
+import MenuLateral from "components/MenuLateral";
+import QtdMaterialBdaSmall from "components/QtdMaterialBdaSmall";
+import QtdCategoriaMaterialIndisponivelSmall from "components/QtdCategoriaMaterialIndisponivelSmall";
+import QtdMaterialSubsistemaSmall from "components/QtdMaterialSubsistemaSmall";
+import QtdMaterialTipoEqpSmall from "components/QtdMaterialTipoEqpSmall";
+import Map from "components/Map";
+import MapQcpOM from "components/MapQcpOM";
 import QtdMaterialDisponibilidadePorCmdo from "components/QtdMaterialDisponibilidadePorCmdo";
-import { QtdMaterialDisponibilidadeCmdoType } from "types/relatorio/qtdmaterialdisponibilidadecmdo";
 import MapOperacoes from "components/MapOperacoes";
 import { useLocation, useNavigate } from "react-router-dom";
-import SituacaoRisco from "components/SituacaoRisco";
-import QuantidadeDemandas from "components/QuantidadeDemandas";
-import ExecucaoFinanceira from "components/ExecucaoFinanceira";
-import PorcentagemEmpenhadaGauge from "components/PorcentagemEmpenhadaGauge";
+import QtdMotivoIndisponibilidade from "components/QtdMotivoIndisponibilidade";
+import OmOrcamento from "components/OmOrcamento";
 import PorcentagemLiquidadaGauge from "components/PorcentagemLiquidadaGauge";
-import useActiveObserver from "utils/hooks/useobserver";
+
+import { QtdMaterialBdaType } from "types/relatorio/qtdmaterialbda";
+import { CategoriaMaterialIndisponivelType } from "types/relatorio/qtdcategoriamaterialindisponivel";
+import { QtdMaterialSubsistemaType } from "types/relatorio/qtdmaterialsubsistema";
+import { QtdMaterialTipoEqpExistentePrevisto } from "types/relatorio/qtdmaterialtipoeqp";
+import { QtdMaterialDisponibilidadeCmdoType } from "types/relatorio/qtdmaterialdisponibilidadecmdo";
+import ExecucaoOrcamentaria2025AreaInterna from "components/ExecucaoOrcamentaria2025AreaInterna";
+import PorcentagemEmpenhadaGauge from "components/PorcentagemEmpenhadaGauge";
 
 const UniquePage = () => {
   const [selectedCmdo, setSelectedCmdo] = useState<string>();
   const [selectedBrigada, setSelectedBrigada] = useState<string>();
+  const [selectedEqp, setSelectedEqp] = useState<string>();
+
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [selectedCategoria, setSelectedCategoria] = useState<CategoriaMaterialIndisponivelType[]>([]);
@@ -47,22 +49,33 @@ const UniquePage = () => {
 
   const [selectedDisponibilidadeCmdo, setSelectedDisponibilidadeCmdo] = useState<QtdMaterialDisponibilidadeCmdoType[]>([]);
 
+  const [openModalMotivoIndisponibilidade, setOpenModalMotivoIndisponibilidade] = useState<boolean>(false);
+
   const carouselRef = useRef<HTMLDivElement>(null);
   const carouselInstance = useRef<Carousel | null>(null);
+
   const navigate = useNavigate();
 
   const location = useLocation();
 
+  /**
+   * Necessário para definir o slide ativo do carrossel baseado no clique do menu lateral,
+   * uma vez que o menu lateral é um componente a parte.
+   */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const index = params.get("carouselIndex");
-    
+
     if (index !== null) {
       // Definir o slide ativo do carousel
       handleMenuClick(parseInt(index));
     }
   }, [location]);
 
+  /**
+   * Para que os filtros sejam aplicados nos outros gráficos ao selecionar um comando
+   * @param cmdo
+   */
   const handleSelectCmdo = async (cmdo: string | null) => {
     if (cmdo !== null) {
       // Mapeando os endpoints para facilitar a manutenção
@@ -106,6 +119,10 @@ const UniquePage = () => {
     }
   };
 
+  /**
+   * Para que os filtros sejam aplicados ao selecionar uma brigada
+   * @param bda
+   */
   const handleSelectBda = async (bda: string | null) => {
     if (bda !== null) {
       if (bda === "Vinculação direta") {
@@ -160,14 +177,36 @@ const UniquePage = () => {
     }
   };
 
+  /**
+   * Ao selecionar uma categoria de material indisponível abre o modal
+   * @param cat
+   */
   const handleSelectCategoria = (cat: string | null) => {
-    if (selectedBrigada && selectedCmdo) {
-      navigate(`/dashboard-sgl-sg7/materialom/material/indisponivel`, { state: { selectedBrigada, cat } });
-    } else {
-      toast.info("Por favor, selecione um comando e uma brigada.");
-    }
+    setOpenModalMotivoIndisponibilidade(true);
+    setSelectedEqp(cat || "");
   };
 
+  /**
+   * Quando o modal de indisponibilidade é aberto ele exibe os motivos da indisponibilidade.
+   * É possível que o usuário selecione um dos motivos. Ao selecionar o motivo ele é redirecionado
+   * para a página de listagem dos materiais de acordo com o motivo.
+   * @param motivo
+   */
+  const handleSelectMotivo = (motivo: string) => {
+    setOpenModalMotivoIndisponibilidade(false);
+    navigate(`/dashboard-sgl-sg7/materialom/material/indisponivel`, {
+      state: { selectedCmdo, selectedBrigada, selectedEqp, motivo },
+    });
+  };
+
+  /**
+   * Função para mudar o painel do carrossel.
+   * O "refreshTrigger" é necessário para lidar com um bug do Leaflet,
+   * que não carrega os 'tiles' se não for na página inicial. Dessa forma,
+   * ao clicar no índice do "COp" ele força a recarregar os componentes
+   * e os 'tiles' carregam.
+   * @param index
+   */
   const handleMenuClick = (index: number) => {
     if (carouselRef.current) {
       if (!carouselInstance.current) {
@@ -182,6 +221,11 @@ const UniquePage = () => {
     }
   };
 
+  /**
+   * Funciona como um observador para dar refresh nos componentes de mapa
+   * do COp. Se faz necessário pois o carrossel navega sozinho entre os painéis,
+   * e dessa forma ao detectar que está no índice 2 dá o trigger no refresh.
+   */
   useActiveObserver({
     onActive: () => {
       setRefreshTrigger((prev) => prev + 1);
@@ -226,6 +270,35 @@ const UniquePage = () => {
                     <span className="span-subtitle">Existentes e Previstos</span>
                     <QtdMaterialTipoEqpSmall selectedData={selectedTipoEqp} />
                   </div>
+                  {/**
+                   * MODAL PARA MOSTRAR OS MOTIVOS DE INDISPONIBILIDADE
+                   */}
+                  <Modal
+                    open={openModalMotivoIndisponibilidade}
+                    onClose={() => setOpenModalMotivoIndisponibilidade(!openModalMotivoIndisponibilidade)}
+                  >
+                    <Box className="modal-on-unique-page">
+                      {openModalMotivoIndisponibilidade && (
+                        <>
+                          <div className="modal-header">
+                            <button onClick={() => setOpenModalMotivoIndisponibilidade(false)}>
+                              <img src={CloseIcon} alt="" />
+                            </button>
+                          </div>
+                          <div className="modal-grid-object">
+                            <span className="span-title">Materiais Classe VII</span>
+                            <span className="span-subtitle">Motivos de Indisponibilidade</span>
+                            <QtdMotivoIndisponibilidade
+                              bda={selectedBrigada || ""}
+                              cmdo={selectedCmdo || ""}
+                              eqp={selectedEqp || ""}
+                              onSelectMotivo={(m) => handleSelectMotivo(m)}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </Box>
+                  </Modal>
                   <div className="grid-object">
                     <span className="span-title">Materiais Classe VII</span>
                     <span className="span-subtitle">Indisponibilidade por Categoria</span>
@@ -243,38 +316,27 @@ const UniquePage = () => {
                   <div className="grid-object">
                     <span className="span-title">Execução orçamentária 2025</span>
                     <span className="span-subtitle">Área Interna</span>
-                    <ExecucaoOrcamentaria2025 />
-                    <span className="hint">Atualizado em 28/03/2025</span>
+                    <ExecucaoOrcamentaria2025AreaInterna />
                   </div>
-                  <div className="grid-object">
+                  <div className="grid-object-two-squares">
                     <span className="span-title">Execução orçamentária 2025</span>
-                    <span className="span-subtitle">Porcentagem Empenhada</span>
-                    <PorcentagemEmpenhadaGauge />
-                    <span className="hint">Atualizado em 28/03/2025</span>
+                    <span className="span-subtitle">por OM</span>
+                    <OmOrcamento />
                   </div>
                   <div className="grid-object">
                     <span className="span-title">Execução orçamentária 2025</span>
                     <span className="span-subtitle">Porcentagem Liquidada</span>
                     <PorcentagemLiquidadaGauge />
-                    <span className="hint">Atualizado em 28/03/2025</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Execução Orçamentária das Ações Finalísticas 2025</span>
-                    <span className="span-subtitle">147F, 15W6, 20XE, 20XJ, 14T5 e 21D2</span>
-                    <ExecucaoOrcamentaria2025TipoAcao />
-                    <span className="hint">Atualizado em 28/03/2025</span>
+                    <span className="span-title">Execução orçamentária 2025</span>
+                    <span className="span-subtitle">Porcentagem Empenhada</span>
+                    <PorcentagemEmpenhadaGauge />
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Restos a Pagar Não Processados a Liquidar</span>
+                    <span className="span-title">Restos a Pagar Não Processados a Pagar</span>
                     <span className="span-subtitle">Restante por Ano</span>
                     <RestantePorAno />
-                    <span className="hint">Atualizado em 28/03/2025</span>
-                  </div>
-                  <div className="grid-object">
-                    <span className="span-title">Restos a Pagar Não Processados a Liquidar</span>
-                    <span className="span-subtitle">por Tipo de Ação</span>
-                    <TipoAcaoValor />
-                    <span className="hint">Atualizado em 28/03/2025</span>
                   </div>
                   <span className="painel-title">PAINEL AGGE</span>
                 </div>
@@ -293,24 +355,24 @@ const UniquePage = () => {
               <div className="carousel-item" id="sisfron">
                 <div className="unique-page-grid">
                   <div className="grid-object">
-                    <span className="span-title">SGL</span>
-                    <span className="span-subtitle">Chamados por Ano</span>
-                    <QtdChamadoAnoSmall />
+                    <span className="em-desenvolvimento-title">SAD 1</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Gestão de Riscos dos Projetos SAD</span>
-                    <span className="span-subtitle">Quantidade de riscos por magnitude</span>
-                    <SituacaoRisco />
+                    <span className="em-desenvolvimento-title">SAD 2</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Resultados da Parceria CComGEx - CTCEA</span>
-                    <span className="span-subtitle">Quantidade de demandas realizadas por Projetos SAD/SISFRON</span>
-                    <QuantidadeDemandas />
+                    <span className="em-desenvolvimento-title">SAD 3</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <div className="grid-object">
-                    <span className="span-title">Execução Financeira Anual</span>
-                    <span className="span-subtitle">em 2025</span>
-                    <ExecucaoFinanceira />
+                    <span className="em-desenvolvimento-title">SAD 3A</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
+                  </div>
+                  <div className="grid-object">
+                    <span className="em-desenvolvimento-title">SAD 7</span>
+                    <span className="em-desenvolvimento-text">Em desenvolvimento</span>
                   </div>
                   <span className="painel-title">PAINEL SISFRON</span>
                 </div>

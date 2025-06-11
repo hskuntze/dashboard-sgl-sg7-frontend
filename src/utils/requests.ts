@@ -22,8 +22,7 @@ export const BASE_URL =
 // process.env.REACT_APP_BACKEND_URL ?? "http://10.134.0.163:9989/dashboard-sgl-sg7/api";
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID ?? config.CLIENT_ID;
-const CLIENT_SECRET =
-process.env.REACT_APP_CLIENT_SECRET ?? config.CLIENT_SECRET;
+const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET ?? config.CLIENT_SECRET;
 
 type LoginData = {
   username: string;

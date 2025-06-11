@@ -16,7 +16,7 @@ const MaterialIndisponivelCard = ({ element }: Props) => {
         <div className="card-content">{element.equipamento}</div>
       </td>
       <td>
-        <div className="card-content">{element.motivoindisp}</div>
+        <div className="card-content">{element.motivoindisp === "" ? "Não identificado" : element.motivoindisp}</div>
       </td>
       <td>
         <div className="card-content">{element.pn}</div>

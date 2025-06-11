@@ -1,3 +1,5 @@
+import "./styles.css";
+
 import { useState, useEffect, useCallback } from "react";
 import { AxiosRequestConfig } from "axios";
 import { requestBackend } from "utils/requests";
@@ -6,7 +8,6 @@ import Loader from "components/Loader";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-import "./styles.css";
 import { AcaoOrcamentariaType } from "types/relatorio/acaoorcamentaria";
 import { formatarNumero } from "utils/functions";
 
@@ -40,12 +41,12 @@ const AcaoOrcamentaria2025 = () => {
   }, [loadData]);
 
   // Definição das categorias no eixo X
-  const categorias = ["Provisão Recebida", "Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
+  const categorias = ["Provisão Recebida", "Crédito Disponível", "Despesas Empenhadas", "Despesas Liquidadas", "Despesas Pagas"];
  
   // Criando as séries baseadas em `grupoCodUo`
   const series = data.map((item) => ({
     name: item.acao,
-    data: [item.provisaoRecebida, item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
+    data: [item.provisaoRecebida, item.creditoDisponivel, item.despesasEmpenhadas, item.despesasLiquidadas, item.despesasPagas],
   }));
 
   const options: ApexOptions = {
@@ -125,7 +126,7 @@ const AcaoOrcamentaria2025 = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <ReactApexChart options={options} series={series} type="bar" height={720} width={800} />
+        <ReactApexChart options={options} series={series} type="bar" height={720} width={1400} />
       )}
     </div>
   );

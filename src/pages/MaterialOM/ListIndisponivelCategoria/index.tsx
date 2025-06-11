@@ -46,7 +46,7 @@ const MaterialOMIndisponivelCategoria = () => {
       toast.info("Nenhum estado recebido");
     };
 
-    const { selectedBrigada, cat } = state;
+    const { selectedCmdo, selectedBrigada, selectedEqp, motivo } = state;
 
     (async () => {
       const params: AxiosRequestConfig = {
@@ -57,7 +57,9 @@ const MaterialOMIndisponivelCategoria = () => {
           page: controlComponentsData.activePage,
           size: rowsPerPage,
           bda: selectedBrigada,
-          eqp: cat
+          cmdo: selectedCmdo,
+          eqp: selectedEqp,
+          motivo: motivo
         },
       };
 
@@ -185,7 +187,7 @@ const MaterialOMIndisponivelCategoria = () => {
           </thead>
           <tbody className="table-body">
             {page?.content.map((el) => (
-              <MaterialIndisponivelCard element={el} key={el.sn} />
+              <MaterialIndisponivelCard element={el} key={el.sn + Math.random()} />
             ))}
           </tbody>
           <tfoot>

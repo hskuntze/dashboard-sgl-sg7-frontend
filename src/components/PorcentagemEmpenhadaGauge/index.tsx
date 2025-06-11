@@ -6,28 +6,27 @@ import Loader from "components/Loader";
 import { useCallback, useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { toast } from "react-toastify";
-import { SomaFinanceira } from "types/relatorio/somafinanceira";
 import { requestBackend } from "utils/requests";
 
 const PorcentagemEmpenhadaGauge = () => {
-  const [data, setData] = useState<SomaFinanceira>();
+  const [data, setData] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
 
     const requestParams: AxiosRequestConfig = {
-      url: "/execucao/soma",
+      url: "/execucao/percentual/empenhado",
       method: "GET",
       withCredentials: true,
     };
 
     requestBackend(requestParams)
       .then((res) => {
-        setData(res.data as SomaFinanceira);
+        setData(res.data as number);
       })
       .catch(() => {
-        toast.error("Erro ao carregar total de materiais para formar a porcentagem.");
+        toast.error("Erro ao carregar porcentagem empenhada.");
       })
       .finally(() => {
         setLoading(false);
@@ -44,12 +43,11 @@ const PorcentagemEmpenhadaGauge = () => {
     return "#02C208";
   };
 
-  const percentage = data ? (data.despesasEmpenhadas / data.provisaoRecebida) * 100 : 0;
+  const percentage = data;
 
   const options: ApexOptions = {
     chart: {
       type: "radialBar",
-      background: "transparent",
       fontFamily: "Nunito, serif",
     },
     plotOptions: {
@@ -57,7 +55,8 @@ const PorcentagemEmpenhadaGauge = () => {
         startAngle: -90,
         endAngle: 90,
         track: {
-          background: "#E0E0E0", // Cor da trilha
+          background: "#E0E0E0",
+          strokeWidth: "100%",
         },
         dataLabels: {
           name: {
@@ -66,6 +65,7 @@ const PorcentagemEmpenhadaGauge = () => {
             fontWeight: "bold",
             color: "#141824",
             fontFamily: "Nunito, serif",
+            offsetY: 5,
           },
           value: {
             show: true,
@@ -73,7 +73,8 @@ const PorcentagemEmpenhadaGauge = () => {
             fontWeight: "bold",
             color: "#141824",
             fontFamily: "Nunito, serif",
-            formatter: () => `${percentage.toFixed(1)}%`, // Exibe o valor real
+            offsetY: 0,
+            formatter: () => `${percentage.toFixed(1)}%`,
           },
         },
       },
@@ -88,7 +89,7 @@ const PorcentagemEmpenhadaGauge = () => {
           <Loader width="150px" height="150px" />
         </div>
       ) : (
-        <div className="severity-column-chart">
+        <div className="percentage-chart">
           <ReactApexChart options={options} series={[percentage]} type="radialBar" height={450} width={500} />
         </div>
       )}

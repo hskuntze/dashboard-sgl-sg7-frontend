@@ -9,7 +9,11 @@ import { QtdChamadoAnoType } from "types/relatorio/qtdchamadosano";
 
 import "./styles.css";
 
-const QtdChamadoAnoSmall = () => {
+interface Props {
+  onSelectAno: (ano: number) => void;
+}
+
+const QtdChamadoAnoSmall = ({ onSelectAno }: Props) => {
   const [data, setData] = useState<QtdChamadoAnoType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -102,6 +106,14 @@ const QtdChamadoAnoSmall = () => {
           speed: 1000,
         },
       },
+      events: {
+        markerClick: (event, chartContext, config) => {
+          const selectedIndex = config.dataPointIndex;
+          const clickedItem = data[selectedIndex];
+
+          onSelectAno(clickedItem.ano);
+        },
+      },
       offsetX: 6,
     },
     xaxis: {
@@ -116,7 +128,7 @@ const QtdChamadoAnoSmall = () => {
       }
     },
     yaxis: {
-      show: false, //REMOVER DEPOIS
+      show: false,
       title: {
         text: "Quantidade",
         style: {

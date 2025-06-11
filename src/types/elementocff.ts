@@ -1,0 +1,22 @@
+export type ElementoCFF = {
+  id: string;
+  elemenDesp: string;
+  conjunto: string;
+  descricaoEtapa: string;
+  omDestinoRep: string;
+  localDestinoRep: string;
+  brigadaRep: string;
+  quantRep: string;
+  valorApostilamento: number;
+  valorLiquidado: number;
+  valorPago: number;
+  dtTrd: string;
+  valorEmpenhado: number;
+  dtAtualizadaEntrega: string;
+  dtPago: string;
+  dtLiquidado: string;
+  solucao: string;
+  lote: string;
+  qtdeEntrega: string;
+  evento: string;
+};

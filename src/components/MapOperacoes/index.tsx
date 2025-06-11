@@ -21,6 +21,9 @@ import OpCore25 from "assets/images/op-core-25.png";
 import OpCop30 from "assets/images/op-cop-30.png";
 import OpAtlas from "assets/images/op-atlas.png";
 import OpBrics from "assets/images/op-brics.png";
+import OpAgata from "assets/images/op-agata.png";
+import OpSaci from "assets/images/op-saci.png";
+import OpSerraNegra from "assets/images/op-esimex.png";
 import MapaBrasil from "assets/images/mapa-brasil-cmdo.svg";
 import markerIcon from "assets/images/marker-icon-3.png";
 
@@ -69,6 +72,9 @@ const MapOperacoes = ({ refreshTrigger }: Props) => {
     "Op COP 30": OpCop30,
     "Manobra Escolar": OpManobraEscolar,
     "Op BRICS 2025": OpBrics,
+    "Op Ágata Cj Norte": OpAgata,
+    "Op SACI 2025": OpSaci,
+    "Op SERRA NEGRA": OpSerraNegra,
   };
 
   const loadPoints = useCallback(() => {

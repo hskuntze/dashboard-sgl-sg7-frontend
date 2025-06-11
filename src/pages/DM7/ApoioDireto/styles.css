@@ -1,0 +1,27 @@
+.apoio-direto-dados {
+  width: 100%;
+  height: 75%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.apoio-direto-dados span {
+  font-size: 23px;
+  margin: 2px 0;
+  letter-spacing: 0.023em;
+}
+
+.apoio-direto-dados span b {
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.green-label {
+  color: "green";
+}
+
+.red-label {
+  color: "red";
+}

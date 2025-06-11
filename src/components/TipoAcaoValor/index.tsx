@@ -46,13 +46,23 @@ const TipoAcaoValor = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const labels = data.map((item) => item.tipo);
-  const values = data.map((item) => item.valor);
+  const dadosFiltrados = data.filter((item) => item.valor >= 1_000_000);
+  const totalOutros = data
+    .filter((item) => item.valor < 1_000_000)
+    .reduce((acc, item) => acc + item.valor, 0);
+
+  if(totalOutros > 0) {
+    dadosFiltrados.push(({ tipo: "Outros", valor: totalOutros }));
+  }
+
+  const labels = dadosFiltrados.map((item) => item.tipo);
+  const values = dadosFiltrados.map((item) => item.valor);
 
   const colorMap: Record<string, string> = {
     "14T5": "#0011CC",
     "147F": "#9148CD",
     "20XE": "#CABACD",
+    "21GO": "#3781F0",
     // Adicione mais subsistemas conforme necessário
   };
 
