@@ -79,7 +79,6 @@ const ApoioDireto = () => {
   };
 
   const handleSelectOm = (om: string | null) => {
-    console.log(om);
   };
 
   const handleSelectFabricante = (fabricante: string | null) => {

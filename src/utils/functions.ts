@@ -11,7 +11,7 @@ export const formatarData = (date: string) => {
       const [dt, time] = date.split(" ");
       const [year, month, day] = dt.split("-");
       return `${day}/${month}/${year}`;
-    } else if(!containsT) {
+    } else if (!containsT) {
       const [year, month, day] = date.split("-"); // Divide a string em ano, mês e dia
       return `${day}/${month}/${year}`;
     } else {
@@ -23,6 +23,16 @@ export const formatarData = (date: string) => {
     return "-";
   }
 };
+
+export function formatarDataParaMesAno(dataStr: string): string {
+  const meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+  const data = new Date(dataStr);
+  const mes = meses[data.getMonth()];
+  const ano = data.getFullYear();
+
+  return `${mes}/${ano}`;
+}
 
 /**
  * Função que formata o perfil do usuário
@@ -59,7 +69,7 @@ export const formatarNumero = (num: number): string => {
 };
 
 export const formatarDinheiro = (num: number): string => {
-  if(num !== undefined && num !== 0) {
+  if (num !== undefined && num !== 0) {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(num));
   } else {
     return "R$ 0,00";

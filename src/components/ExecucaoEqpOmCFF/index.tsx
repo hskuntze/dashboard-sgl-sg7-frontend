@@ -3,28 +3,28 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
 import "./styles.css";
-import { ExecucaoPagoCFF } from "types/relatorio/execucaopagocff";
+import { ExecucaoValorCFF } from "types/relatorio/execucaopagocff";
 import { useFetchData } from "utils/hooks/usefetchdata";
 
 interface Props {
-  selectedData?: ExecucaoPagoCFF[];
+  selectedData?: ExecucaoValorCFF[];
 }
 
 const ExecucaoEqpOmCFF = ({ selectedData }: Props) => {
-  const { data, loading } = useFetchData<ExecucaoPagoCFF>({
+  const { data, loading } = useFetchData<ExecucaoValorCFF>({
     url: "/cff/equipamentos/execucao",
     initialData: selectedData,
   });
 
   // Definição das categorias no eixo X
-  const categorias = data.filter((x) => x.pago !== 0).map((x) => x.elemento);
+  const categorias = data.filter((x) => x.valor !== 0).map((x) => x.elemento);
 
   // Criando as séries baseadas em `grupoCodUo`
 
   const series = [
     {
       name: "Total",
-      data: data.filter((x) => x.pago !== 0).map((x) => x.pago),
+      data: data.filter((x) => x.valor !== 0).map((x) => x.valor),
     },
   ];
 

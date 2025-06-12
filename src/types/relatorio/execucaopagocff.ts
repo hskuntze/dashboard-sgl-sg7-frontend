@@ -1,4 +1,4 @@
-export type ExecucaoPagoCFF = {
-  pago: number;
+export type ExecucaoValorCFF = {
+  valor: number;
   elemento: string;
 };

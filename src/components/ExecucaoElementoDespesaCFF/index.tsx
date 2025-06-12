@@ -3,15 +3,15 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
 import "./styles.css";
-import { ExecucaoPagoCFF } from "types/relatorio/execucaopagocff";
+import { ExecucaoValorCFF } from "types/relatorio/execucaopagocff";
 import { useFetchData } from "utils/hooks/usefetchdata";
 
 interface Props {
-  selectedData?: ExecucaoPagoCFF[];
+  selectedData?: ExecucaoValorCFF[];
 }
 
 const ExecucaoElementoDespesaCFF = ({ selectedData }: Props) => {
-  const { data, loading } = useFetchData<ExecucaoPagoCFF>({
+  const { data, loading } = useFetchData<ExecucaoValorCFF>({
     url: "/cff/execucao/elementoDespesa",
     initialData: selectedData,
   });
@@ -24,7 +24,7 @@ const ExecucaoElementoDespesaCFF = ({ selectedData }: Props) => {
   const series = [
     {
       name: "Total",
-      data: data.map((x) => x.pago),
+      data: data.map((x) => x.valor),
     },
   ];
 
